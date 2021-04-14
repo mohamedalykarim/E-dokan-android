@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import mohalim.store.edokan.core.data_source.room.AppCacheDatabase
+import mohalim.store.edokan.core.data_source.room.CategoryDao
 import mohalim.store.edokan.core.data_source.room.UserDao
 import javax.inject.Singleton
 
@@ -31,5 +32,11 @@ class CahcheDatabaseModule {
     @Provides
     fun provideUserDao(appCacheDatabase: AppCacheDatabase) : UserDao{
         return appCacheDatabase.userDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCategoryDao(appCacheDatabase: AppCacheDatabase) : CategoryDao{
+        return appCacheDatabase.categoryDoa()
     }
 }

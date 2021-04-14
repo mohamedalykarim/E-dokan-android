@@ -1,8 +1,8 @@
 package mohalim.store.edokan.ui.main
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -12,15 +12,13 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
 import androidx.lifecycle.Lifecycle
-import androidx.viewpager.widget.ViewPager
+import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.databinding.ActivityMainBinding
 
 @AndroidEntryPoint
@@ -60,7 +58,27 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        subscribeObservers();
+
         handleBottomClicks();
+    }
+
+    private fun subscribeObservers() {
+        viewmodel.noParentCategories.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+
+                }
+
+                is DataState.Success -> {
+                    Log.d(TAG, "Success: "+ it)
+                }
+
+                is DataState.Failure -> {
+                    Log.d(TAG, "Failure: "+ it)
+                }
+            }
+        })
     }
 
     private fun handleBottomClicks() {
