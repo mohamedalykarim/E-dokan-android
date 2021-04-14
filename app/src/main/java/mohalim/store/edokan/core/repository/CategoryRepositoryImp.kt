@@ -36,7 +36,6 @@ class CategoryRepositoryImp
             try {
                 val categoriesNetwork = retrofit.getNoParentCategories()
                 categoriesNetwork.forEach{
-                    Log.d(TAG, "getNoParentCategories: "+ it)
                     categoryDao.insert(categoryCacheMapper.mapToEntity(categoryNetworkMapper.mapFromEntity(it)))
                 }
                 val categories : List<Category> = categoryCacheMapper.mapFromEntityList(categoryDao.getAll());

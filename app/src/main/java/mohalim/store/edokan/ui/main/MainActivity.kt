@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is DataState.Success -> {
-                    Log.d(TAG, "Success: "+ it)
+                    homeFragment.updateCategoryData(it.data)
                 }
 
                 is DataState.Failure -> {

@@ -24,11 +24,14 @@ class HomeViewModel
     var currentTab = HOME;
     var bottomVisibility = BOTTOM_VISIBLE;
 
+    var categories : List<Category>;
+
     private val _noParentCategories : MutableLiveData<DataState<List<Category>>> = MutableLiveData()
     val noParentCategories : LiveData<DataState<List<Category>>> get() = _noParentCategories
 
 
     init {
+        categories = ArrayList();
         getNoParentCategories()
     }
 
