@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.utils.BindingUtils
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -17,7 +18,7 @@ import mohalim.store.edokan.ui.main.MainActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
     @Inject lateinit var auth: FirebaseAuth;
     val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(this) }
 

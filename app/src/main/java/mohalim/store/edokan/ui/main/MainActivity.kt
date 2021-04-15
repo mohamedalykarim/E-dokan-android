@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -20,13 +21,17 @@ import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.ErrorHandler
+import mohalim.store.edokan.core.utils.NetworkAvailabilityInterface
+import mohalim.store.edokan.core.utils.NetworkVariables
 import mohalim.store.edokan.databinding.ActivityMainBinding
 import retrofit2.HttpException
+import java.net.ConnectException
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     val TAG : String = "MainActivity";
 
     lateinit var binding : ActivityMainBinding;
@@ -39,9 +44,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
 
+        checkInternetAvailability()
+
         homeFragment = HomeFragment();
         cartFragment = CartFragment();
         accountFragment = AccountFragment()
+
 
         binding.pager.adapter = HomePagerAdapter(
                 supportFragmentManager,
@@ -53,18 +61,68 @@ class MainActivity : AppCompatActivity() {
 
         binding.pager.currentItem = 2
 
+
+
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                if(position == 2) homeBottom()
-                if (position == 1) cartBottom()
-                if (position == 0) accountBottom()
+                if(position == 2) {
+                    homeBottom()
+                    viewmodel.CURRENT_FRAGMENT = HomeFragment::class.java.name
+                }
+                if (position == 1) {
+                    cartBottom()
+                    viewmodel.CURRENT_FRAGMENT = CartFragment::class.java.name
+                }
+                if (position == 0) {
+                    accountBottom()
+                    viewmodel.CURRENT_FRAGMENT = AccountFragment::class.java.name
+                }
             }
         })
 
         subscribeObservers();
 
         handleBottomClicks();
+    }
+
+
+
+    private fun checkInternetAvailability() {
+        //first check
+        if (NetworkVariables.isNetworkConnected){
+            binding.internetAvailabilityContainer.visibility = View.GONE
+        }else{
+            binding.internetAvailabilityContainer.visibility = View.VISIBLE
+        }
+
+        // listener
+        NetworkVariables.isNetworkAvailabeListListeners.add(object : NetworkAvailabilityInterface {
+            override fun isInternetAvailable(boolean: Boolean) {
+
+                if (boolean) {
+
+                    runOnUiThread {
+                        binding.pager.setCurrentItem(2)
+                        if (viewmodel.CURRENT_FRAGMENT == HomeFragment::class.java.name) viewmodel.fetchHomeFragmentData()
+
+                        binding.internetAvailabilityContainer.visibility = View.GONE
+                        binding.pager.visibility = View.VISIBLE
+                    }
+
+                } else {
+
+                    runOnUiThread {
+                        binding.internetAvailabilityContainer.visibility = View.VISIBLE
+                        binding.pager.visibility = View.GONE
+
+                    }
+
+
+                }
+            }
+
+        })
     }
 
     private fun subscribeObservers() {
@@ -82,7 +140,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is DataState.Failure -> {
-                    Log.d(TAG, "Failure: "+ it)
                 }
             }
         })
@@ -102,7 +159,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is DataState.Failure -> {
-                    Log.d(TAG, "Failure: " + ErrorHandler.DO.getResponseMapFromHTTPException(it.exception as HttpException))
+                    when (it) {
+                        is HttpException -> {
+                            Log.d(TAG, "Failure: " + ErrorHandler.DO.getResponseMapFromHTTPException(it.exception as HttpException))
+                        }
+                    }
                 }
             }
 

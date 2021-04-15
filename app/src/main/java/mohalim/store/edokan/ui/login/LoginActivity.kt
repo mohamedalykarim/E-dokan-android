@@ -16,6 +16,7 @@ import com.google.firebase.auth.*
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.ErrorHandler
 import mohalim.store.edokan.core.utils.IPreferenceHelper
@@ -27,7 +28,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
     private final val TAG : String = "LoginActivity"
 
     lateinit var binding : ActivityLoginBinding;

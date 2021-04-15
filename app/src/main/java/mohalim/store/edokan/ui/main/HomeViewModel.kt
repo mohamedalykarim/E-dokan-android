@@ -2,6 +2,7 @@ package mohalim.store.edokan.ui.main
 
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mohalim.store.edokan.core.model.category.Category
@@ -19,6 +20,7 @@ class HomeViewModel
     private val categoryRepository: CategoryRepositoryImp,
     private val productRepository: ProductRepositoryImp
     ) : ViewModel(){
+    var CURRENT_FRAGMENT: String = "";
     val HOME : String = "Home";
     val CART : String = "Cart";
     val ACCOUNT : String = "Account";
@@ -45,10 +47,12 @@ class HomeViewModel
 
 
 
-    init {
+
+    fun fetchHomeFragmentData (){
         getNoParentCategories()
         getChosenProducts(PAGE, PAGE_COUNT)
     }
+
 
     fun getNoParentCategories(){
        viewModelScope.launch {

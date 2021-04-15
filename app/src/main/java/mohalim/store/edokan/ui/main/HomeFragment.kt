@@ -31,8 +31,9 @@ class HomeFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
         val activity = activity as MainActivity
-
+        chosenProductsAdapter = ChosenProductsAdapter(activity.viewmodel.products)
         categoryAdapter = CategoryAdapter(activity.viewmodel.categories)
+
         binding.categoriesRV.adapter = categoryAdapter;
 
         val categoryLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -41,7 +42,6 @@ class HomeFragment : Fragment() {
 
 
 
-        chosenProductsAdapter = ChosenProductsAdapter(activity.viewmodel.products)
         binding.chosenRV.adapter = chosenProductsAdapter;
 
         val chosenLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -50,33 +50,20 @@ class HomeFragment : Fragment() {
         binding.chosenRV.layoutManager = chosenLayoutManager
 
 
+        activity.viewmodel.fetchHomeFragmentData()
 
 
         return binding.root
     }
 
-    suspend fun updateCategoryData(data: List<Category>) {
-        if (this::categoryAdapter.isInitialized){
-            categoryAdapter.categories = data;
-            categoryAdapter.notifyDataSetChanged()
-        }else{
-            delay(1000)
-            categoryAdapter.categories = data;
-            categoryAdapter.notifyDataSetChanged()
-        }
-
+    fun updateCategoryData(data: List<Category>) {
+        categoryAdapter.categories = data;
+        categoryAdapter.notifyDataSetChanged()
     }
 
-    suspend fun updateChosenProductsData(data: List<Product>) {
-        if (this::chosenProductsAdapter.isInitialized){
-            chosenProductsAdapter.products = data;
-            chosenProductsAdapter.notifyDataSetChanged()
-        }else{
-            delay(1000)
-            chosenProductsAdapter.products = data;
-            chosenProductsAdapter.notifyDataSetChanged()
-
-        }
+    fun updateChosenProductsData(data: List<Product>) {
+        chosenProductsAdapter.products = data;
+        chosenProductsAdapter.notifyDataSetChanged()
     }
 
 

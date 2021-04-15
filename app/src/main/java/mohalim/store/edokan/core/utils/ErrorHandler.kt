@@ -2,6 +2,7 @@ package mohalim.store.edokan.core.utils
 
 import com.google.gson.Gson
 import retrofit2.HttpException
+import java.net.ConnectException
 
 class ErrorHandler {
 
