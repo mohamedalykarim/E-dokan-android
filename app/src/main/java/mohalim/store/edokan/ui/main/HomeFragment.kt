@@ -1,30 +1,30 @@
 package mohalim.store.edokan.ui.main
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.FragmentHomeBinding
 import mohalim.store.edokan.databinding.RowHomeCategoryBinding
+import mohalim.store.edokan.databinding.RowHomeChosenProductsBinding
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     lateinit var categoryAdapter : CategoryAdapter;
+    lateinit var chosenProductsAdapter: ChosenProductsAdapter;
     lateinit var binding : FragmentHomeBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -35,18 +35,51 @@ class HomeFragment : Fragment() {
         categoryAdapter = CategoryAdapter(activity.viewmodel.categories)
         binding.categoriesRV.adapter = categoryAdapter;
 
-        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        layoutManager.reverseLayout = true
-        binding.categoriesRV.layoutManager = layoutManager
+        val categoryLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        categoryLayoutManager.reverseLayout = true
+        binding.categoriesRV.layoutManager = categoryLayoutManager
+
+
+
+        chosenProductsAdapter = ChosenProductsAdapter(activity.viewmodel.products)
+        binding.chosenRV.adapter = chosenProductsAdapter;
+
+        val chosenLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        chosenLayoutManager.reverseLayout = true
+
+        binding.chosenRV.layoutManager = chosenLayoutManager
+
+
 
 
         return binding.root
     }
 
-    fun updateCategoryData(data: List<Category>) {
-        categoryAdapter.categories = data;
-        categoryAdapter.notifyDataSetChanged()
+    suspend fun updateCategoryData(data: List<Category>) {
+        if (this::categoryAdapter.isInitialized){
+            categoryAdapter.categories = data;
+            categoryAdapter.notifyDataSetChanged()
+        }else{
+            delay(1000)
+            categoryAdapter.categories = data;
+            categoryAdapter.notifyDataSetChanged()
+        }
+
     }
+
+    suspend fun updateChosenProductsData(data: List<Product>) {
+        if (this::chosenProductsAdapter.isInitialized){
+            chosenProductsAdapter.products = data;
+            chosenProductsAdapter.notifyDataSetChanged()
+        }else{
+            delay(1000)
+            chosenProductsAdapter.products = data;
+            chosenProductsAdapter.notifyDataSetChanged()
+
+        }
+    }
+
+
 
 
     class CategoryAdapter(var categories : List<Category>) : RecyclerView.Adapter<CategoryAdapter.HomeCategoryRecyclerView>(){
@@ -81,4 +114,38 @@ class HomeFragment : Fragment() {
         }
 
     }
+
+    class ChosenProductsAdapter(var products : List<Product>) : RecyclerView.Adapter<ChosenProductsAdapter.HomeChosenProductsRecyclerView>(){
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeChosenProductsRecyclerView {
+            val binding : RowHomeChosenProductsBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.row_home_chosen_products,
+                parent,
+                false
+            )
+
+            return HomeChosenProductsRecyclerView(binding)
+        }
+
+        override fun onBindViewHolder(holder: HomeChosenProductsRecyclerView, position: Int) {
+            holder.bindItems(products[position])
+        }
+
+        override fun getItemCount(): Int {
+            return products.size
+        }
+
+        class HomeChosenProductsRecyclerView(val binding: RowHomeChosenProductsBinding) : RecyclerView.ViewHolder(binding.root) {
+
+            fun bindItems(product : Product){
+                binding.priceTV.text = product.productPrice.toString()
+                binding.productNameTV.text = product.productName
+                binding.marketplaceTV.text = product.marketPlaceName
+                Glide.with(binding.root.context).load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage).into(binding.imageView4)
+            }
+
+        }
+
+    }
+
 }

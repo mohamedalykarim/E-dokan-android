@@ -2,7 +2,7 @@ package mohalim.store.edokan.core.data_source.network.req
 
 import com.google.gson.annotations.SerializedName
 
-class GetUserBody
+data class GetUserBody
 constructor (
         @SerializedName("user_id")
         val userId : String?,

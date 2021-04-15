@@ -14,12 +14,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.utils.DataState
+import mohalim.store.edokan.core.utils.ErrorHandler
 import mohalim.store.edokan.databinding.ActivityMainBinding
+import retrofit2.HttpException
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -71,7 +75,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is DataState.Success -> {
-                    homeFragment.updateCategoryData(it.data)
+                    lifecycleScope.launch {
+                        homeFragment.updateCategoryData(it.data)
+                    }
+
                 }
 
                 is DataState.Failure -> {
@@ -79,10 +86,30 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        viewmodel.chosenProducts.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+
+                }
+
+                is DataState.Success -> {
+                    viewmodel.PAGE++
+                    lifecycleScope.launch {
+                        homeFragment.updateChosenProductsData(it.data)
+                    }
+
+                }
+
+                is DataState.Failure -> {
+                    Log.d(TAG, "Failure: " + ErrorHandler.DO.getResponseMapFromHTTPException(it.exception as HttpException))
+                }
+            }
+
+        })
     }
 
     private fun handleBottomClicks() {
-
 
         binding.homeIcon.setOnClickListener(View.OnClickListener {
             homeBottom();

@@ -8,13 +8,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import mohalim.store.edokan.core.data_source.network.CategoryInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.UserInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.room.CategoryDao
+import mohalim.store.edokan.core.data_source.room.ProductDao
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
 import mohalim.store.edokan.core.data_source.room.UserDao
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
+import mohalim.store.edokan.core.model.product.ProductCacheMapper
+import mohalim.store.edokan.core.model.product.ProductNetworkMapper
 import mohalim.store.edokan.core.repository.CategoryRepositoryImp
+import mohalim.store.edokan.core.repository.ProductRepositoryImp
 import mohalim.store.edokan.core.repository.UserRepositoryImp
 import javax.inject.Singleton
 
@@ -37,13 +42,25 @@ class RepositoryModule {
     @Singleton
     @Provides
     fun provideCategoryRepository(
-            retrofit: CategoryInterfaceRetrofit,
-            networkMapper: CategoryNetworkMapper,
-            categoryDao: CategoryDao,
-            cacheMapper: CategoryCacheMapper,
-            @ApplicationContext context: Context
+        retrofit: CategoryInterfaceRetrofit,
+        networkMapper: CategoryNetworkMapper,
+        categoryDao: CategoryDao,
+        cacheMapper: CategoryCacheMapper,
+        @ApplicationContext context: Context
     ) : CategoryRepositoryImp{
         return CategoryRepositoryImp(retrofit, networkMapper, categoryDao, cacheMapper, context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductRepository(
+        retrofit: ProductInterfaceRetrofit,
+        networkMapper: ProductNetworkMapper,
+        productDao: ProductDao,
+        cacheMapper: ProductCacheMapper,
+        @ApplicationContext context: Context
+    ) : ProductRepositoryImp{
+        return ProductRepositoryImp(retrofit, networkMapper, productDao, cacheMapper, context)
     }
 
 }

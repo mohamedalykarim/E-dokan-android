@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import mohalim.store.edokan.core.data_source.network.CategoryInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.UserInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -46,8 +47,17 @@ class NetworkModule {
     @Provides
     fun provideCategoryInterfaceRetrofit(retrofit: Retrofit.Builder): CategoryInterfaceRetrofit{
         return retrofit
-                .build()
-                .create(CategoryInterfaceRetrofit::class.java)
+            .build()
+            .create(CategoryInterfaceRetrofit::class.java)
+
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductInterfaceRetrofit(retrofit: Retrofit.Builder): ProductInterfaceRetrofit {
+        return retrofit
+            .build()
+            .create(ProductInterfaceRetrofit::class.java)
 
     }
 
