@@ -31,7 +31,8 @@ class CategoryRepositoryImp
 
 
     override fun getNoParentCategories(): Flow<DataState<List<Category>>> {
-
+        Log.d(TAG, "getNoParentCategories: ")
+        
         return flow {
             try {
                 val categoriesNetwork = retrofit.getNoParentCategories()

@@ -11,6 +11,7 @@ import mohalim.store.edokan.core.data_source.room.AppCacheDatabase
 import mohalim.store.edokan.core.data_source.room.CategoryDao
 import mohalim.store.edokan.core.data_source.room.ProductDao
 import mohalim.store.edokan.core.data_source.room.UserDao
+import mohalim.store.edokan.core.data_source.room.converter.OfferDao
 import javax.inject.Singleton
 
 @Module
@@ -45,5 +46,11 @@ class CahcheDatabaseModule {
     @Provides
     fun provideProductDao(appCacheDatabase: AppCacheDatabase) : ProductDao{
         return appCacheDatabase.productDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOfferDao(appCacheDatabase: AppCacheDatabase) : OfferDao{
+        return appCacheDatabase.offerDao()
     }
 }

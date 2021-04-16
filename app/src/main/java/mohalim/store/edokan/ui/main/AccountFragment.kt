@@ -18,4 +18,5 @@ class AccountFragment : Fragment() {
 
         return binding.root
     }
+
 }

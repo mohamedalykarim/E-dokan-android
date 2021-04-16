@@ -2,13 +2,17 @@ package mohalim.store.edokan.ui.main
 
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.user.User
 import mohalim.store.edokan.core.repository.CategoryRepositoryImp
+import mohalim.store.edokan.core.repository.OfferRepositoryImp
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
 import mohalim.store.edokan.core.utils.DataState
 import javax.inject.Inject
@@ -18,9 +22,10 @@ class HomeViewModel
 @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val categoryRepository: CategoryRepositoryImp,
-    private val productRepository: ProductRepositoryImp
+    private val productRepository: ProductRepositoryImp,
+    private val offerRepository: OfferRepositoryImp
     ) : ViewModel(){
-    var CURRENT_FRAGMENT: String = "";
+    var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
     val CART : String = "Cart";
     val ACCOUNT : String = "Account";
@@ -31,11 +36,12 @@ class HomeViewModel
     val PAGE_COUNT = 10;
     var PAGE = 1;
 
-    var currentTab = HOME;
+    var currentTab = MainActivity::class.java.toString();
     var bottomVisibility = BOTTOM_VISIBLE;
 
     var categories : List<Category> = ArrayList();
     var products : List<Product> = ArrayList();
+    var offers : List<Offer> = ArrayList();
 
     private val _noParentCategories : MutableLiveData<DataState<List<Category>>> = MutableLiveData()
     val noParentCategories : LiveData<DataState<List<Category>>> get() = _noParentCategories
@@ -44,17 +50,18 @@ class HomeViewModel
     private val _chosenProducts : MutableLiveData<DataState<List<Product>>> = MutableLiveData()
     val chosenProducts : LiveData<DataState<List<Product>>> get() = _chosenProducts
 
-
-
+    private val _offersComing : MutableLiveData<DataState<List<Offer>>> = MutableLiveData()
+    val offersComing : LiveData<DataState<List<Offer>>> get() = _offersComing
 
 
     fun fetchHomeFragmentData (){
         getNoParentCategories()
         getChosenProducts(PAGE, PAGE_COUNT)
+        getCurrentOffers()
     }
 
 
-    fun getNoParentCategories(){
+    private fun getNoParentCategories(){
        viewModelScope.launch {
            categoryRepository.getNoParentCategories().collect {
                _noParentCategories.value = it
@@ -62,10 +69,18 @@ class HomeViewModel
        }
     }
 
-    fun getChosenProducts(page : Int, count : Int){
+    private fun getChosenProducts(page : Int, count : Int){
         viewModelScope.launch {
             productRepository.getChosenProducts(page, count).collect {
                 _chosenProducts.value = it
+            }
+        }
+    }
+
+    private fun getCurrentOffers(){
+        viewModelScope.launch {
+            offerRepository.getCurrentOffers().collect {
+                _offersComing.value = it
             }
         }
     }

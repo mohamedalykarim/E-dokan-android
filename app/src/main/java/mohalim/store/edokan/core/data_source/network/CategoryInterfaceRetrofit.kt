@@ -10,7 +10,7 @@ interface CategoryInterfaceRetrofit {
 
     @HTTP(
             method = "GET",
-            path = "/api/category/",
+            path = "/api/categories/",
     )
     suspend fun getNoParentCategories(
     ) : List<CategoryNetWork>
