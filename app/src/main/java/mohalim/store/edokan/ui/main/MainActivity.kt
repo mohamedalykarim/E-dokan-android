@@ -1,10 +1,7 @@
 package mohalim.store.edokan.ui.main
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -13,25 +10,14 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.utils.DataState
-import mohalim.store.edokan.core.utils.ErrorHandler
 import mohalim.store.edokan.core.utils.NetworkAvailabilityInterface
 import mohalim.store.edokan.core.utils.NetworkVariables
-import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
 import mohalim.store.edokan.databinding.ActivityMainBinding
 import retrofit2.HttpException
 
@@ -57,27 +43,34 @@ class MainActivity : BaseActivity() {
         accountFragment = AccountFragment()
 
         subscribeObservers();
-
         handleBottomClicks();
-
         loadFragment(homeFragment)
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
-
-    fun loadFragment(fragment : Fragment){
-        viewmodel.CURRENT_FRAGMENT = fragment.toString()
-
-        supportFragmentManager.commit {
-            setReorderingAllowed(false)
-            replace(binding.fragmentContainerView.id, fragment)
-            addToBackStack(null)
+        if(viewmodel.CURRENT_FRAGMENT == HomeFragment::class.java.name){
+            Log.d(TAG, "onBackPressed: "+HomeFragment::class.java.name)
+            finish()
+        }else if(viewmodel.CURRENT_FRAGMENT == CartFragment::class.java.name){
+            Log.d(TAG, "onBackPressed: "+CartFragment::class.java.name)
+            loadFragment(homeFragment)
+            homeBottom()
+        }else if(viewmodel.CURRENT_FRAGMENT == AccountFragment::class.java.name){
+            Log.d(TAG, "onBackPressed: "+AccountFragment::class.java.name)
+            loadFragment(homeFragment)
+            homeBottom()
         }
     }
 
+    fun loadFragment(fragment : Fragment){
+        viewmodel.CURRENT_FRAGMENT = fragment.javaClass.name
+
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace(binding.fragmentContainerView.id, fragment)
+            addToBackStack(fragment.toString())
+        }
+    }
 
     private fun checkInternetAvailability() {
         //first check
@@ -140,7 +133,7 @@ class MainActivity : BaseActivity() {
                 is DataState.Failure -> {
                     when (it) {
                         is HttpException -> {
-                            Log.d(TAG, "Failure: " + ErrorHandler.DO.getResponseMapFromHTTPException(it.exception as HttpException))
+
                         }
                     }
                 }
@@ -154,18 +147,13 @@ class MainActivity : BaseActivity() {
                 }
 
                 is DataState.Success -> {
-                    Log.d(TAG, "subscribeObservers: chosen"+it.data)
-
                     viewmodel.PAGE++
                     homeFragment.updateChosenProductsData(it.data)
-
-
                 }
 
                 is DataState.Failure -> {
                     when (it) {
                         is HttpException -> {
-                            Log.d(TAG, "Failure: " + ErrorHandler.DO.getResponseMapFromHTTPException(it.exception as HttpException))
                         }
                     }
                 }
@@ -303,10 +291,5 @@ class MainActivity : BaseActivity() {
 
         loadFragment(homeFragment)
     }
-
-
-
-
-
 
 }

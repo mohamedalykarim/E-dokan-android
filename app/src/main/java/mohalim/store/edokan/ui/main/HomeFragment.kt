@@ -2,9 +2,7 @@ package mohalim.store.edokan.ui.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -14,7 +12,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.category.Category
@@ -22,9 +22,7 @@ import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
-import mohalim.store.edokan.databinding.FragmentHomeBinding
-import mohalim.store.edokan.databinding.RowHomeCategoryBinding
-import mohalim.store.edokan.databinding.RowHomeChosenProductsBinding
+import mohalim.store.edokan.databinding.*
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -34,21 +32,43 @@ class HomeFragment : Fragment() {
     private lateinit var chosenProductsAdapter: ChosenProductsAdapter;
     private lateinit var offersAdapter: HomeFragment.HomeFragmentSliderAdapter
 
+    lateinit var inflater: LayoutInflater;
+    lateinit var container : ViewGroup;
+
     lateinit var binding : FragmentHomeBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
+        this.inflater = inflater;
+        if (container != null) {
+            this.container = container
+        };
 
         val activity = activity as MainActivity
         activity.viewmodel.fetchHomeFragmentData()
 
         initCategoryRV(activity)
         initChosenRV(activity)
-        initSlider(activity);
-
+        initSlider(activity,inflater,container);
+        initSliderDots(inflater, container, 0)
 
         return binding.root
+    }
+
+    private fun initSliderDots(layoutInflater: LayoutInflater, container: ViewGroup?, index: Int) {
+        binding.sliderDotContainer.removeAllViews();
+        var i : Int = 0
+        offersAdapter.offers.forEach {
+            if (i == index){
+                val dotActiveBinding : SliderDotActiveBinding = DataBindingUtil.inflate(layoutInflater, R.layout.slider_dot_active, container, false)
+                binding.sliderDotContainer.addView(dotActiveBinding.root)
+            }else{
+                val dotActiveBinding : SliderDotNotActiveBinding = DataBindingUtil.inflate(layoutInflater, R.layout.slider_dot_not_active, container, false)
+                binding.sliderDotContainer.addView(dotActiveBinding.root)
+            }
+            i++
+        }
     }
 
     private fun initChosenRV(activity: MainActivity) {
@@ -69,7 +89,7 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initSlider(activity: MainActivity) {
+    private fun initSlider(activity: MainActivity, inflater: LayoutInflater, container: ViewGroup?) {
         offersAdapter = HomeFragmentSliderAdapter(
                 childFragmentManager,
                 lifecycle,
@@ -77,6 +97,12 @@ class HomeFragment : Fragment() {
         );
         binding.pager.adapter = offersAdapter
         binding.pager.setPageTransformer(ZoomOutPageTransformer())
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                initSliderDots(inflater, container, position)
+            }
+        })
     }
 
     fun updateCategoryData(data: List<Category>) {
@@ -87,13 +113,16 @@ class HomeFragment : Fragment() {
     fun updateChosenProductsData(data: List<Product>) {
         chosenProductsAdapter.products = data;
         chosenProductsAdapter.notifyDataSetChanged()
-        Log.d(TAG, "updateChosenProductsData: size"+chosenProductsAdapter.products.size)
     }
 
     fun updateOffersData(data: List<Offer>) {
         offersAdapter.offers = data
         offersAdapter.notifyDataSetChanged()
+        initSliderDots(inflater, container, binding.pager.currentItem)
     }
+
+
+    // Adapters
 
     class CategoryAdapter(var categories: List<Category>) : RecyclerView.Adapter<CategoryAdapter.HomeCategoryRecyclerView>(){
 
@@ -121,7 +150,10 @@ class HomeFragment : Fragment() {
 
             fun bindItems(category: Category){
                 binding.categoryName.text = category.categoryName
-                Glide.with(binding.root.context).load(Constants.constants.CATEGORY_IMAGE_BASE_URL + category.categoryImage).into(binding.imageView3)
+                Glide.with(binding.root.context)
+                        .load(Constants.constants.CATEGORY_IMAGE_BASE_URL + category.categoryImage)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.imageView3)
             }
 
         }
@@ -151,17 +183,18 @@ class HomeFragment : Fragment() {
         class HomeChosenProductsRecyclerView(val binding: RowHomeChosenProductsBinding) : RecyclerView.ViewHolder(binding.root) {
 
             fun bindItems(product: Product){
-                Log.d("TAG", "bindItems: price" + product.productPrice)
                 binding.priceTV.text = product.productPrice.toString()
                 binding.productNameTV.text = product.productName
                 binding.marketplaceTV.text = product.marketPlaceName
-                Glide.with(binding.root.context).load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage).into(binding.imageView4)
+                Glide.with(binding.root.context)
+                        .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.imageView4)
             }
 
         }
 
     }
-
 
     private inner class HomeFragmentSliderAdapter constructor(
             fm: FragmentManager,
