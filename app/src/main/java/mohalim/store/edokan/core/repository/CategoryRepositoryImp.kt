@@ -50,5 +50,16 @@ class CategoryRepositoryImp
 
     }
 
+    override fun getCategoryFromCacheById(id : Int): Flow<DataState<Category>> {
+        return flow {
+            try {
+                val category = categoryDao.getCategoryFromCacheById("$id")
+                emit(DataState.Success(categoryCacheMapper.mapFromEntity(category)))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
 
 }

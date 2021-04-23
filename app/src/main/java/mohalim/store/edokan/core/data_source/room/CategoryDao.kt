@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.category.CategoryCache
 
 @Dao
@@ -14,4 +15,7 @@ interface CategoryDao {
 
     @Query("SELECT * FROM category")
     suspend fun getAll() : List<CategoryCache>
+
+    @Query("SELECT * FROM category where category_id = :id")
+    abstract fun getCategoryFromCacheById(id : String): CategoryCache
 }

@@ -30,7 +30,7 @@ class SplashActivity : BaseActivity() {
 
 
 
-        val timer = object: CountDownTimer(3000, 1000) {
+        val timer = object: CountDownTimer(1000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 Log.d(TAG, "onTick: ")
             }

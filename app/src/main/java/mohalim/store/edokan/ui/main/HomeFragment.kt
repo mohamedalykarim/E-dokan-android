@@ -1,6 +1,7 @@
 package mohalim.store.edokan.ui.main
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
 import mohalim.store.edokan.databinding.*
+import mohalim.store.edokan.ui.category.CategoryActivity
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -154,6 +156,12 @@ class HomeFragment : Fragment() {
                         .load(Constants.constants.CATEGORY_IMAGE_BASE_URL + category.categoryImage)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.imageView3)
+
+                binding.root.setOnClickListener(View.OnClickListener {
+                    val intent : Intent = Intent(binding.root.context, CategoryActivity::class.java)
+                    intent.putExtra(Constants.constants.CATEGORY_ID, category.categoryId)
+                    it.context.startActivity(intent)
+                })
             }
 
         }

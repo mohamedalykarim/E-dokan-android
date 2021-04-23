@@ -13,7 +13,6 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity

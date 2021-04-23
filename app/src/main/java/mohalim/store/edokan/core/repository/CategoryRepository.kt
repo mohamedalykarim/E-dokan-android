@@ -8,4 +8,5 @@ import mohalim.store.edokan.core.utils.DataState
 
 interface CategoryRepository {
     fun getNoParentCategories() : Flow<DataState<List<Category>>>
+    fun getCategoryFromCacheById(id : Int) : Flow<DataState<Category>>
 }
