@@ -40,7 +40,7 @@ class CategoryRepositoryImp
                 categoriesNetwork.forEach{
                     categoryDao.insert(categoryCacheMapper.mapToEntity(categoryNetworkMapper.mapFromEntity(it)))
                 }
-                val categories : List<Category> = categoryCacheMapper.mapFromEntityList(categoryDao.getAll());
+                val categories : List<Category> = categoryCacheMapper.mapFromEntityList(categoryDao.getNoParentCategories());
                 emit(DataState.Success(categories))
             }catch (e : Exception){
                 emit(DataState.Failure(e))

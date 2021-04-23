@@ -6,4 +6,5 @@ import mohalim.store.edokan.core.utils.DataState
 
 interface ProductRepository {
     fun getChosenProducts(page:Int, count:Int) : Flow<DataState<List<Product>>>
+    fun getProductForCategory(categoryId : Int, randomId : Int, limit : Int , offset : Int) : Flow<DataState<List<Product>>>
 }

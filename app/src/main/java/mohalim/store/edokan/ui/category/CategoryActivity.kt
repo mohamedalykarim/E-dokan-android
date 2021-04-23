@@ -76,6 +76,23 @@ class CategoryActivity : AppCompatActivity() {
             }
 
         })
+
+        viewModel.products.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+
+                }
+
+                is DataState.Success -> {
+                    cateFragment.updateProductsAdapter(it.data)
+                    viewModel.productOffset = viewModel.productOffset + viewModel.productLimit
+                }
+
+                is DataState.Failure -> {
+
+                }
+            }
+        })
     }
 }
 

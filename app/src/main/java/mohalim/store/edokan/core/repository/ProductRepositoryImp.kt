@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.req.ChosenProductBody
+import mohalim.store.edokan.core.data_source.network.req.GetProductInsideCategory
 import mohalim.store.edokan.core.data_source.room.ProductDao
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
@@ -46,6 +47,21 @@ class ProductRepositoryImp
             }
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override fun getProductForCategory(categoryId: Int, randomId: Int, limit: Int, offset: Int): Flow<DataState<List<Product>>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val productsNetwork = retrofit.getProductForCategory(GetProductInsideCategory(categoryId,randomId, limit, offset))
+                productsNetwork.forEach {
+                    productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
+                }
+                emit(DataState.Success(productNetworkMapper.mapFromEntityList(productsNetwork)))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
 

@@ -13,14 +13,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ffffff"
-            android:fillViewport="false"
+            android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#ffffff">
+                android:background="#f4f4f4">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/categoriesRV"
@@ -31,16 +31,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/textView20"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="500dp"
-                    android:text="test"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/productsRV"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/categoriesRV" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -61,15 +60,12 @@
                     android:id="@+id/bgImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/test" />
+                    android:scaleType="centerCrop" />
 
                 <androidx.appcompat.widget.Toolbar
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     app:contentInsetEnd="0dp"
                     app:contentInsetLeft="0dp"
                     app:contentInsetRight="0dp"
@@ -91,7 +87,7 @@
                             android:layout_marginBottom="8dp"
                             android:customFont="@{@string/ge_ss_two_light}"
                             android:textAlignment="center"
-                            android:textColor="@color/primary"
+                            android:textColor="#000000"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

@@ -7,20 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.FragmentCategoryBinding
 import mohalim.store.edokan.databinding.RowCategoryCategoryItemBinding
+import mohalim.store.edokan.databinding.RowCategoryProductBinding
 
 class CategoryFragment : Fragment() {
     private var categoryId: Int = 0;
     lateinit var binding : FragmentCategoryBinding;
     private lateinit var categoryAdapter: CategoryAdapter;
+    private lateinit var productAdpater : ProductCategoryAdapter;
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +35,31 @@ class CategoryFragment : Fragment() {
         val activity = activity as CategoryActivity
 
         categoryAdapter = CategoryAdapter(ArrayList<Category>())
+
         val categoryLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         categoryLayoutManager.reverseLayout = true
         binding.categoriesRV.layoutManager = categoryLayoutManager
         binding.categoriesRV.adapter = categoryAdapter
 
+
+        productAdpater = ProductCategoryAdapter(ArrayList<Product>())
+        val productGridLayoutManager = GridLayoutManager(context, 3)
+        productGridLayoutManager.reverseLayout = true
+        binding.productsRV.layoutManager = productGridLayoutManager
+        binding.productsRV.adapter = productAdpater
+
         activity.viewModel.getCategoryFromCacheById(categoryId)
         activity.viewModel.getCategoriesByParentId(categoryId)
+
+        val random = (1..1000).random()
+        activity.viewModel.productRandomId = random
+
+        activity.viewModel.getProductForCategory(
+                categoryId,
+                activity.viewModel.productRandomId,
+                activity.viewModel.productLimit,
+                activity.viewModel.productOffset
+        )
 
         return binding.root
     }
@@ -60,6 +82,45 @@ class CategoryFragment : Fragment() {
     fun updateCategoriesRV(data: List<Category>) {
         categoryAdapter.categories = data
         categoryAdapter.notifyDataSetChanged()
+    }
+
+    fun updateProductsAdapter(data: List<Product>) {
+        productAdpater.products.addAll(data)
+        productAdpater.notifyDataSetChanged()
+    }
+
+    class ProductCategoryAdapter(val products : MutableList<Product>) : RecyclerView.Adapter<ProductCategoryAdapter.CategoryProductViewHolder>(){
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryProductViewHolder {
+            val binding : RowCategoryProductBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(parent.context),
+                    R.layout.row_category_product,
+                    parent,
+                    false)
+
+            return CategoryProductViewHolder(binding)
+        }
+
+        override fun onBindViewHolder(holder: CategoryProductViewHolder, position: Int) {
+            holder.bindItems(products.get(position))
+        }
+
+        override fun getItemCount(): Int {
+            return products.size
+        }
+
+        class CategoryProductViewHolder(val binding : RowCategoryProductBinding) : RecyclerView.ViewHolder(binding.root) {
+            fun bindItems(product: Product) {
+                Glide.with(binding.root.context)
+                        .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.imageView3)
+
+                binding.productNameTV2.text = product.productName
+                binding.marketplaceTV.text = product.marketPlaceName
+
+            }
+        }
     }
 
 
