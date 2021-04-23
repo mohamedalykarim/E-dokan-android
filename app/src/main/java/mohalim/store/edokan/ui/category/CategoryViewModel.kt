@@ -20,7 +20,7 @@ class CategoryViewModel
 @Inject
 constructor(private val categoryRepository : CategoryRepositoryImp, private val productRepository: ProductRepositoryImp) : ViewModel() {
     var productRandomId : Int = 0;
-    var productLimit : Int = 10;
+    var productLimit : Int = 9;
     var productOffset : Int = 0;
 
 

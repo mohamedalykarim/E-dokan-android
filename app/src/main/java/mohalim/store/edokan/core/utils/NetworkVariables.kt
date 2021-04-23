@@ -10,7 +10,6 @@ object NetworkVariables {
     var isNetworkConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
         isNetworkAvailabeListListeners.forEach{
             it.isInternetAvailable(newValue)
-            Log.d("TAG", "add: "+newValue)
         }
     }
 

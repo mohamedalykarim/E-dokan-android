@@ -2,9 +2,11 @@ package mohalim.store.edokan.ui.category
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,6 +23,7 @@ import mohalim.store.edokan.databinding.RowCategoryCategoryItemBinding
 import mohalim.store.edokan.databinding.RowCategoryProductBinding
 
 class CategoryFragment : Fragment() {
+    val TAG : String = "CategoryFragment"
     private var categoryId: Int = 0;
     lateinit var binding : FragmentCategoryBinding;
     private lateinit var categoryAdapter: CategoryAdapter;
@@ -38,15 +41,33 @@ class CategoryFragment : Fragment() {
 
         val categoryLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         categoryLayoutManager.reverseLayout = true
+        binding.categoriesRV.setHasFixedSize(true)
         binding.categoriesRV.layoutManager = categoryLayoutManager
         binding.categoriesRV.adapter = categoryAdapter
 
 
         productAdpater = ProductCategoryAdapter(ArrayList<Product>())
         val productGridLayoutManager = GridLayoutManager(context, 3)
-        productGridLayoutManager.reverseLayout = true
+        binding.productsRV.setHasFixedSize(true)
         binding.productsRV.layoutManager = productGridLayoutManager
         binding.productsRV.adapter = productAdpater
+        binding.productsRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (productGridLayoutManager.findLastCompletelyVisibleItemPosition() == productAdpater.products.size - 1) {
+                    activity.viewModel.getProductForCategory(
+                            categoryId,
+                            activity.viewModel.productRandomId,
+                            activity.viewModel.productLimit,
+                            activity.viewModel.productOffset
+                    )
+
+                    Log.d(TAG, "onScrolled: last")
+
+                    activity.viewModel.productOffset = activity.viewModel.productOffset + activity.viewModel.productLimit
+                }
+            }
+        })
+
 
         activity.viewModel.getCategoryFromCacheById(categoryId)
         activity.viewModel.getCategoriesByParentId(categoryId)
@@ -118,6 +139,7 @@ class CategoryFragment : Fragment() {
 
                 binding.productNameTV2.text = product.productName
                 binding.marketplaceTV.text = product.marketPlaceName
+                binding.priceTV.text = "" + product.productPrice
 
             }
         }
