@@ -23,10 +23,10 @@
                 android:background="#ffffff">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/cateforyRV"
+                    android:id="@+id/categoriesRV"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -68,6 +68,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_gravity="bottom"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
                     app:contentInsetEnd="0dp"
                     app:contentInsetLeft="0dp"
                     app:contentInsetRight="0dp"
@@ -87,10 +89,10 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="8dp"
+                            android:customFont="@{@string/ge_ss_two_light}"
                             android:textAlignment="center"
                             android:textColor="@color/primary"
                             android:textStyle="bold"
-                            android:customFont="@{@string/ge_ss_two_light}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

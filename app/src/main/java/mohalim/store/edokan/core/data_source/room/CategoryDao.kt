@@ -17,5 +17,8 @@ interface CategoryDao {
     suspend fun getAll() : List<CategoryCache>
 
     @Query("SELECT * FROM category where category_id = :id")
-    abstract fun getCategoryFromCacheById(id : String): CategoryCache
+    suspend fun getCategoryFromCacheById(id : String): CategoryCache
+
+    @Query("SELECT * FROM category where category_parent = :id")
+    suspend fun getCategoryFromCacheByParentId(id : String): List<CategoryCache>
 }

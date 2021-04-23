@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.CategoryInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.req.GetCategoriesByParentBody
 import mohalim.store.edokan.core.data_source.room.CategoryDao
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
@@ -50,6 +51,22 @@ class CategoryRepositoryImp
 
     }
 
+    override fun getCategoriesByParentId(parentId: Int): Flow<DataState<List<Category>>> {
+        return flow {
+            try {
+                val categoriesNetwork = retrofit.getCategoriesByParentId(GetCategoriesByParentBody(parentId))
+                categoriesNetwork.forEach{
+                    categoryDao.insert(categoryCacheMapper.mapToEntity(categoryNetworkMapper.mapFromEntity(it)))
+                }
+                val categories : List<Category> = categoryCacheMapper.mapFromEntityList(categoryDao.getCategoryFromCacheByParentId("$parentId"));
+                emit(DataState.Success(categories))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun getCategoryFromCacheById(id : Int): Flow<DataState<Category>> {
         return flow {
             try {
@@ -60,6 +77,8 @@ class CategoryRepositoryImp
             }
         }.flowOn(Dispatchers.IO)
     }
+
+
 
 
 }

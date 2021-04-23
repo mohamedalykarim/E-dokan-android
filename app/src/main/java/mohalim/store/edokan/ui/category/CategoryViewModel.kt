@@ -22,12 +22,25 @@ constructor(private val categoryRepository : CategoryRepositoryImp) : ViewModel(
     val category : LiveData<DataState<Category>> get() = _category
 
 
+    private val _categories : MutableLiveData<DataState<List<Category>>> = MutableLiveData()
+    val categories : LiveData<DataState<List<Category>>> get() = _categories
+
+
+
     public fun getCategoryFromCacheById(id : Int){
         viewModelScope.launch {
             categoryRepository.getCategoryFromCacheById(id)
                     .collect {
                         _category.value = it
                     }
+        }
+    }
+
+    public fun getCategoriesByParentId(parentId : Int){
+        viewModelScope.launch {
+            categoryRepository.getCategoriesByParentId(parentId).collect {
+                _categories.value = it
+            }
         }
     }
 }

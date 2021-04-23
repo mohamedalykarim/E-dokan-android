@@ -59,6 +59,23 @@ class CategoryActivity : AppCompatActivity() {
                 }
             }
         })
+
+        viewModel.categories.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+
+                }
+
+                is DataState.Success -> {
+                    cateFragment.updateCategoriesRV(it.data)
+                }
+
+                is DataState.Failure -> {
+
+                }
+            }
+
+        })
     }
 }
 
