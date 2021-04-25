@@ -14,10 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Edokan"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.category.CategoryActivity"></activity>
+        <activity android:name=".ui.product.ProductActivity"></activity>
+        <activity android:name=".ui.category.CategoryActivity" />
         <activity
             android:name=".ui.login.LoginActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

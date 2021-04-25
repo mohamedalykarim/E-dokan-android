@@ -21,6 +21,7 @@ import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.FragmentCategoryBinding
 import mohalim.store.edokan.databinding.RowCategoryCategoryItemBinding
 import mohalim.store.edokan.databinding.RowCategoryProductBinding
+import mohalim.store.edokan.ui.product.ProductActivity
 
 class CategoryFragment : Fragment() {
     val TAG : String = "CategoryFragment"
@@ -140,6 +141,12 @@ class CategoryFragment : Fragment() {
                 binding.productNameTV2.text = product.productName
                 binding.marketplaceTV.text = product.marketPlaceName
                 binding.priceTV.text = "" + product.productPrice
+
+                binding.root.setOnClickListener(View.OnClickListener {
+                    val intent : Intent = Intent(binding.root.context, ProductActivity::class.java)
+                    intent.putExtra(Constants.constants.PRODUCT_ID, product.productId)
+                    binding.root.context.startActivity(intent)
+                })
 
             }
         }

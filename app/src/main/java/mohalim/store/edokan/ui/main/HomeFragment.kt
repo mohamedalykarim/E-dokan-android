@@ -25,6 +25,7 @@ import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
 import mohalim.store.edokan.databinding.*
 import mohalim.store.edokan.ui.category.CategoryActivity
+import mohalim.store.edokan.ui.product.ProductActivity
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -198,6 +199,13 @@ class HomeFragment : Fragment() {
                         .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.imageView4)
+
+                binding.root.setOnClickListener(View.OnClickListener {
+                    val intent : Intent = Intent(binding.root.context, ProductActivity::class.java)
+                    intent.putExtra(Constants.constants.PRODUCT_ID, product.productId)
+                    binding.root.context.startActivity(intent)
+
+                })
             }
 
         }
