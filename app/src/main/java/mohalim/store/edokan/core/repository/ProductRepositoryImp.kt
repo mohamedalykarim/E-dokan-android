@@ -10,9 +10,13 @@ import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.req.ChosenProductBody
 import mohalim.store.edokan.core.data_source.network.req.GetProductInsideCategory
 import mohalim.store.edokan.core.data_source.room.ProductDao
+import mohalim.store.edokan.core.data_source.room.ProductImageDao
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
 import mohalim.store.edokan.core.model.product.ProductNetworkMapper
+import mohalim.store.edokan.core.model.product_image.ProductImage
+import mohalim.store.edokan.core.model.product_image.ProductImageCacheMapper
+import mohalim.store.edokan.core.model.product_image.ProductImageNetworkMapper
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -25,6 +29,9 @@ class ProductRepositoryImp
     private val productNetworkMapper: ProductNetworkMapper,
     private val productDao: ProductDao,
     private val productCacheMapper: ProductCacheMapper,
+    private val productImageDao: ProductImageDao,
+    private val productImageNetworkMapper: ProductImageNetworkMapper,
+    private val productImageCacheMapper: ProductImageCacheMapper,
     context: Context
 ) : ProductRepository {
 
@@ -40,7 +47,6 @@ class ProductRepositoryImp
                 productsNetwork.forEach {
                     productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
                 }
-                //todo get from cache
                 emit(DataState.Success(productNetworkMapper.mapFromEntityList(productsNetwork)))
             }catch (e : Exception){
                 emit(DataState.Failure(e))
@@ -64,5 +70,20 @@ class ProductRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
+    override fun getProductImages(productId: Int): Flow<DataState<List<ProductImage>>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val productImagesNetwork = retrofit.getProductImages(productId)
+                productImagesNetwork.forEach {
+                    productImageDao.insert(productImageCacheMapper.mapToEntity(productImageNetworkMapper.mapFromEntity(it)))
+                }
+                emit(DataState.Success(productImageNetworkMapper.mapFromEntityList(productImagesNetwork)))
+            }catch (e : Exception){
+                Log.d(TAG, "getProductImages: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
 
 }

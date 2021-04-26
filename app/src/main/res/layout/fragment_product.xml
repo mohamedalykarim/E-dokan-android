@@ -196,7 +196,7 @@
                             android:layout_weight="1">
 
                             <com.makeramen.roundedimageview.RoundedImageView
-                                android:id="@+id/imageView12"
+                                android:id="@+id/image1"
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
                                 android:layout_marginStart="8dp"
@@ -218,7 +218,7 @@
                             android:layout_weight="1">
 
                             <com.makeramen.roundedimageview.RoundedImageView
-                                android:id="@+id/imageView14"
+                                android:id="@+id/image2"
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
                                 android:layout_marginStart="8dp"
@@ -240,7 +240,7 @@
                             android:layout_weight="1">
 
                             <com.makeramen.roundedimageview.RoundedImageView
-                                android:id="@+id/imageView15"
+                                android:id="@+id/image3"
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
                                 android:layout_marginStart="8dp"
@@ -263,7 +263,7 @@
                         android:layout_weight="1">
 
                         <com.makeramen.roundedimageview.RoundedImageView
-                            android:id="@+id/imageView11"
+                            android:id="@+id/bigImage"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:layout_marginStart="4dp"

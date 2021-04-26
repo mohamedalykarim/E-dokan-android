@@ -12,6 +12,7 @@ import mohalim.store.edokan.core.data_source.network.UserInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.room.CategoryDao
 import mohalim.store.edokan.core.data_source.room.ProductDao
+import mohalim.store.edokan.core.data_source.room.ProductImageDao
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
 import mohalim.store.edokan.core.data_source.room.UserDao
@@ -22,6 +23,8 @@ import mohalim.store.edokan.core.model.offer.OfferCacheMapper
 import mohalim.store.edokan.core.model.offer.OfferNetworkMapper
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
 import mohalim.store.edokan.core.model.product.ProductNetworkMapper
+import mohalim.store.edokan.core.model.product_image.ProductImageCacheMapper
+import mohalim.store.edokan.core.model.product_image.ProductImageNetworkMapper
 import mohalim.store.edokan.core.repository.CategoryRepositoryImp
 import mohalim.store.edokan.core.repository.OfferRepositoryImp
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
@@ -41,7 +44,13 @@ class RepositoryModule {
             cacheMapper: UserCacheMapper,
             @ApplicationContext context: Context
     ) : UserRepositoryImp{
-        return UserRepositoryImp(retrofit, networkMapper, userDao, cacheMapper, context)
+        return UserRepositoryImp(
+                retrofit,
+                networkMapper,
+                userDao,
+                cacheMapper,
+                context
+        )
     }
 
     @Singleton
@@ -63,9 +72,21 @@ class RepositoryModule {
             networkMapper: ProductNetworkMapper,
             productDao: ProductDao,
             cacheMapper: ProductCacheMapper,
+            productImageDao: ProductImageDao,
+            productImageNetworkMapper: ProductImageNetworkMapper,
+            productImageCacheMapper: ProductImageCacheMapper,
             @ApplicationContext context: Context
     ) : ProductRepositoryImp{
-        return ProductRepositoryImp(retrofit, networkMapper, productDao, cacheMapper, context)
+        return ProductRepositoryImp(
+                retrofit,
+                networkMapper,
+                productDao,
+                cacheMapper,
+                productImageDao,
+                productImageNetworkMapper,
+                productImageCacheMapper,
+                context
+        )
     }
 
     @Singleton

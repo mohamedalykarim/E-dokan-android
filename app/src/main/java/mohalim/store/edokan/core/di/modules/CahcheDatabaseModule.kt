@@ -7,10 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import mohalim.store.edokan.core.data_source.room.AppCacheDatabase
-import mohalim.store.edokan.core.data_source.room.CategoryDao
-import mohalim.store.edokan.core.data_source.room.ProductDao
-import mohalim.store.edokan.core.data_source.room.UserDao
+import mohalim.store.edokan.core.data_source.room.*
 import mohalim.store.edokan.core.data_source.room.converter.OfferDao
 import javax.inject.Singleton
 
@@ -52,5 +49,11 @@ class CahcheDatabaseModule {
     @Provides
     fun provideOfferDao(appCacheDatabase: AppCacheDatabase) : OfferDao{
         return appCacheDatabase.offerDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductImagesDao(appCacheDatabase: AppCacheDatabase) : ProductImageDao{
+        return appCacheDatabase.productImageDao()
     }
 }
