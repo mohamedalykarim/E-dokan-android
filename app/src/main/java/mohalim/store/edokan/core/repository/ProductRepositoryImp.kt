@@ -17,6 +17,8 @@ import mohalim.store.edokan.core.model.product.ProductNetworkMapper
 import mohalim.store.edokan.core.model.product_image.ProductImage
 import mohalim.store.edokan.core.model.product_image.ProductImageCacheMapper
 import mohalim.store.edokan.core.model.product_image.ProductImageNetworkMapper
+import mohalim.store.edokan.core.model.product_rating.ProductRating
+import mohalim.store.edokan.core.model.product_rating.ProductRatingNetworkMapper
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -32,6 +34,7 @@ class ProductRepositoryImp
     private val productImageDao: ProductImageDao,
     private val productImageNetworkMapper: ProductImageNetworkMapper,
     private val productImageCacheMapper: ProductImageCacheMapper,
+    private val productRatingNetworkMapper: ProductRatingNetworkMapper,
     context: Context
 ) : ProductRepository {
 
@@ -108,7 +111,19 @@ class ProductRepositoryImp
                 }
                 emit(DataState.Success(productImageNetworkMapper.mapFromEntityList(productImagesNetwork)))
             }catch (e : Exception){
-                Log.d(TAG, "getProductImages: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getProductRating(productId: Int): Flow<DataState<ProductRating>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val productRating = retrofit.getProductRating(productId)
+                emit(DataState.Success(productRatingNetworkMapper.mapFromEntity(productRating)))
+            }catch (e : Exception){
+                Log.d(TAG, "getProductRating: "+e.message)
                 emit(DataState.Failure(e))
             }
         }.flowOn(Dispatchers.IO)

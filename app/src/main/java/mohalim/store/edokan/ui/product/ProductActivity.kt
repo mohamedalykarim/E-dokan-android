@@ -84,5 +84,19 @@ class ProductActivity : AppCompatActivity() {
                 }
             }
         })
+
+        viewModel.productRatingObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+                }
+
+                is DataState.Success -> {
+                    productFragment.updateRating(it.data)
+                }
+
+                is DataState.Failure -> {
+                }
+            }
+        })
     }
 }

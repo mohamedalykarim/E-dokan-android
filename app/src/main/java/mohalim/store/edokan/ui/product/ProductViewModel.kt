@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_image.ProductImage
+import mohalim.store.edokan.core.model.product_rating.ProductRating
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
 import mohalim.store.edokan.core.utils.DataState
 import javax.inject.Inject
@@ -33,11 +34,22 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
     private val _productObserver : MutableLiveData<DataState<Product>> = MutableLiveData()
     val productObserver : LiveData<DataState<Product>> get() = _productObserver
 
+    private val _productRatingObserver : MutableLiveData<DataState<ProductRating>> = MutableLiveData()
+    val productRatingObserver : LiveData<DataState<ProductRating>> get() = _productRatingObserver
+
 
     fun getProductImages(productId : Int){
         viewModelScope.launch {
             productRepository.getProductImages(productId).collect {
                 _productImages.value = it
+            }
+        }
+    }
+
+    fun getProductRating(productId : Int){
+        viewModelScope.launch {
+            productRepository.getProductRating(productId).collect {
+                _productRatingObserver.value = it
             }
         }
     }

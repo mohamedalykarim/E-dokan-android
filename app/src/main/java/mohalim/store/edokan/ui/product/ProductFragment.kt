@@ -2,6 +2,7 @@ package mohalim.store.edokan.ui.product
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.product.Product
+import mohalim.store.edokan.core.model.product_rating.ProductRating
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.FragmentProductBinding
 import mohalim.store.edokan.databinding.RowCategoryProductBinding
@@ -45,7 +47,7 @@ class ProductFragment : Fragment() {
         productActivity = activity as ProductActivity;
         productActivity.viewModel.getProductById(productId)
         productActivity.viewModel.getProductImages(productId)
-
+        productActivity.viewModel.getProductRating(productId)
 
 
         imageClicks()
@@ -126,6 +128,11 @@ class ProductFragment : Fragment() {
     fun updateSimilarProductsData(data: List<Product>) {
         similarProductAdapter.products = data
         similarProductAdapter.notifyDataSetChanged()
+    }
+
+    fun updateRating(data: ProductRating) {
+        binding.rating.rating = data.productRate
+        binding.ratingTv.text = data.productRate.toString()
     }
 
     class SimilarProductAdapter(var products : List<Product>) : RecyclerView.Adapter<SimilarProductAdapter.SimilarProductViewHodler>() {
