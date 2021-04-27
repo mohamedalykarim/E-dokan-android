@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_image.ProductImage
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
 import mohalim.store.edokan.core.utils.DataState
@@ -21,14 +22,38 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
 
     var productImages: List<ProductImage> = ArrayList();
 
+    private val _similarProductObserver : MutableLiveData<DataState<List<Product>>> = MutableLiveData()
+    val similarProductObserver : LiveData<DataState<List<Product>>> get() = _similarProductObserver
+
+
     private val _productImages : MutableLiveData<DataState<List<ProductImage>>> = MutableLiveData()
     val productImagesObserver : LiveData<DataState<List<ProductImage>>> get() = _productImages
+
+
+    private val _productObserver : MutableLiveData<DataState<Product>> = MutableLiveData()
+    val productObserver : LiveData<DataState<Product>> get() = _productObserver
 
 
     fun getProductImages(productId : Int){
         viewModelScope.launch {
             productRepository.getProductImages(productId).collect {
                 _productImages.value = it
+            }
+        }
+    }
+
+    fun getProductById(productId : Int){
+        viewModelScope.launch {
+            productRepository.getProductById(productId).collect {
+                _productObserver.value = it
+            }
+        }
+    }
+
+    fun getSimilarProducts(productName : String){
+        viewModelScope.launch {
+            productRepository.getSimilarProducts(productName).collect {
+                _similarProductObserver.value = it
             }
         }
     }

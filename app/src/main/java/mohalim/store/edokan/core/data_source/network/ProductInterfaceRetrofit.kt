@@ -12,11 +12,15 @@ interface ProductInterfaceRetrofit {
     @HTTP(method = "POST", path = "/api/products/chosen-products", hasBody = true)
     suspend fun getChosenProducts(@Body chosenProductBody: ChosenProductBody): List<ProductNetwork>
 
+    @HTTP(method = "GET", path = "/api/products/similar/{name}")
+    suspend fun getSimilarProducts(@Path("name")productName: String): List<ProductNetwork>
+
     @HTTP(method = "POST", path = "/api/products/category", hasBody = true)
     suspend fun getProductForCategory(@Body getProductInsideCategory: GetProductInsideCategory): List<ProductNetwork>
 
     @HTTP(method = "GET", path = "/api/products/images/{productId}")
     suspend fun getProductImages(@Path("productId") productId : Int): List<ProductImageNetwork>
+
 
 
 

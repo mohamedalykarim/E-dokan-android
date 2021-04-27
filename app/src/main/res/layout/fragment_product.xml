@@ -25,9 +25,9 @@
                     app:layout_constraintTop_toBottomOf="@+id/button">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/similarProduct"
+                        android:id="@+id/similarProductRV"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
@@ -84,7 +84,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/textView28"
+                        android:id="@+id/priceTV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -110,8 +110,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="1000dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
 
@@ -281,7 +279,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView20"
+                    android:id="@+id/productNameTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -301,28 +299,14 @@
                     android:layout_marginEnd="8dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView20">
+                    app:layout_constraintTop_toBottomOf="@+id/productNameTV">
 
                     <TextView
-                        android:id="@+id/textView23"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="4dp"
-                        android:text="مشروبات"
-                        android:textColor="@color/primary" />
-
-                    <TextView
-                        android:id="@+id/textView22"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=">" />
-
-                    <TextView
-                        android:id="@+id/textView21"
+                        android:id="@+id/marketplaceNameTV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
-                        android:text="سوبر ماركت الدكان" />
+                        android:textColor="@color/primary" />
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -332,7 +316,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_rec"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
@@ -362,13 +345,16 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView26"
+                        android:id="@+id/desciptionTv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
+                        android:background="@drawable/rounded_rec"
                         android:gravity="center"
+                        android:padding="8dp"
                         android:text="وصف المنتج"
                         android:textAlignment="center"
                         app:layout_constraintBottom_toBottomOf="parent"

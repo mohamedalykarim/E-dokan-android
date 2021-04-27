@@ -57,5 +57,32 @@ class ProductActivity : AppCompatActivity() {
                 }
             }
         })
+
+        viewModel.productObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> { }
+
+                is DataState.Success -> {
+                    productFragment.updateProductData(it.data)
+                }
+
+                is DataState.Failure -> { }
+            }
+        })
+
+        viewModel.similarProductObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+                }
+
+                is DataState.Success -> {
+                    Log.d("TAG", "subscribeObserver: "+ it.data.size)
+                    productFragment.updateSimilarProductsData(it.data)
+                }
+
+                is DataState.Failure -> {
+                }
+            }
+        })
     }
 }

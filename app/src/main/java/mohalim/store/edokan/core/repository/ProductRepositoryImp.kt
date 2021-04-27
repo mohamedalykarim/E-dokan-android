@@ -55,6 +55,22 @@ class ProductRepositoryImp
 
     }
 
+    override fun getSimilarProducts(productName: String): Flow<DataState<List<Product>>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val productsNetwork = retrofit.getSimilarProducts(productName)
+                productsNetwork.forEach {
+                    productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
+                }
+                emit(DataState.Success(productNetworkMapper.mapFromEntityList(productsNetwork)))
+            }catch (e : Exception){
+                Log.d(TAG, "getSimilarProducts: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun getProductForCategory(categoryId: Int, randomId: Int, limit: Int, offset: Int): Flow<DataState<List<Product>>> {
         return flow {
             emit(DataState.Loading)
@@ -64,6 +80,18 @@ class ProductRepositoryImp
                     productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
                 }
                 emit(DataState.Success(productNetworkMapper.mapFromEntityList(productsNetwork)))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getProductById(productId: Int): Flow<DataState<Product>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val productsCache = productDao.getProductById(productId)
+                emit(DataState.Success(productCacheMapper.mapFromEntity(productsCache)))
             }catch (e : Exception){
                 emit(DataState.Failure(e))
             }
