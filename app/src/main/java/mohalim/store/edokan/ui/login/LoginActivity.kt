@@ -1,11 +1,9 @@
 package mohalim.store.edokan.ui.login
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -146,7 +144,7 @@ class LoginActivity : BaseActivity() {
 
     private fun loginToApi(user: FirebaseUser?, passowrd : String) {
         user?.getIdToken(false)?.addOnSuccessListener {
-            Log.d(TAG, "loginToApi: "+ it.token)
+            Log.d(TAG, "ftoken: "+ it.token)
             preferenceHelper.setFirebaseToken(it.token.toString())
             viewModel.loginAfterPhone(user, passowrd)
         }
@@ -173,21 +171,29 @@ class LoginActivity : BaseActivity() {
                     preferenceHelper.setApiToken("")
                     preferenceHelper.setFirebaseToken("")
 
+                    Log.d(TAG, "subscribeObservers: "+it.exception.message)
+
                     when (it.exception) {
                         is HttpException -> {
 
+                            val error =
+                                ErrorHandler.DO.getResponseMapFromHTTPException(httpException = it.exception)
 
-                            val error = ErrorHandler.DO.getResponseMapFromHTTPException(httpException = it.exception)
+                            Log.d(TAG, "subscribeObservers: " + error.toString())
 
-                            Log.d(TAG, "subscribeObservers: "+ error.toString())
-
-                                if (error[ErrorHandler.ERROR_ENTRIES.ERROR_NUMBER]?.equals(ErrorHandler.ERRORS.AUTH_FAILED) == true) {
-                                    Toast.makeText(this, error[ErrorHandler.ERROR_ENTRIES.ERROR_MESSAGE].toString(), Toast.LENGTH_LONG).show();
-                                }else if (error[ErrorHandler.ERROR_ENTRIES.ERROR_NUMBER]?.equals(ErrorHandler.ERRORS.AUTH_FAILED_EMPTY_PASSWORD) == true) {
-                                    loadFragment(enterPasswordFragment)
-                                }
-
+                            if (error[ErrorHandler.ERROR_ENTRIES.ERROR_NUMBER]?.equals(ErrorHandler.ERRORS.AUTH_FAILED) == true) {
+                                Log.d(
+                                    TAG,
+                                    error[ErrorHandler.ERROR_ENTRIES.ERROR_MESSAGE].toString()
+                                )
+                            } else if (error[ErrorHandler.ERROR_ENTRIES.ERROR_NUMBER]?.equals(
+                                    ErrorHandler.ERRORS.AUTH_FAILED_EMPTY_PASSWORD
+                                ) == true
+                            ) {
+                                loadFragment(enterPasswordFragment)
                             }
+
+                        }
                     }
 
                     phoneTokenFragment.setLoadingVisibility(View.GONE)

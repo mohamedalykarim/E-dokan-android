@@ -1,16 +1,13 @@
 package mohalim.store.edokan.ui.splash
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
-import mohalim.store.edokan.core.utils.BindingUtils
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.ui.login.LoginActivity

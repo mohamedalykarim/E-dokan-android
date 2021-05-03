@@ -14,7 +14,6 @@ class UserCacheMapper
             defaultAddress = entity.defaultAddress,
             defaultAddressId= entity.defaultAddressId,
             profileImage = entity.profileImage,
-            ftoken = "",
             wtoken = "",
         )
 

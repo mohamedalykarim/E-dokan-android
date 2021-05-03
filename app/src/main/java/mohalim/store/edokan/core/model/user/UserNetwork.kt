@@ -33,9 +33,6 @@ data class UserNetwork(
         @Expose
         var profileImage : String,
 
-        @SerializedName("ftoken")
-        @Expose
-        var ftoken : String,
 
         @SerializedName("wtoken")
         @Expose

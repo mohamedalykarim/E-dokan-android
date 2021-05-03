@@ -8,6 +8,5 @@ data class User(
         var defaultAddress: String,
         var defaultAddressId: Int,
         var profileImage : String,
-        var ftoken : String,
         var wtoken : String
     )

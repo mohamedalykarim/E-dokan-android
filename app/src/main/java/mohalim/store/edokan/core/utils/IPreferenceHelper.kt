@@ -7,4 +7,7 @@ interface IPreferenceHelper {
     fun setFirebaseToken(firebaseToken : String)
     fun getFirebaseToken() : String?
 
+    fun setRefreshToken(firebaseToken : String)
+    fun getRefreshToken() : String?
+
 }

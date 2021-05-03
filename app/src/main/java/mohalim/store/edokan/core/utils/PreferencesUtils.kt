@@ -3,29 +3,38 @@ package mohalim.store.edokan.core.utils
 import android.content.Context
 import android.content.SharedPreferences
 
-open class PreferencesUtils constructor(context: Context) : IPreferenceHelper{
+open class PreferencesUtils(context: Context?) : IPreferenceHelper{
     private val PREFS_NAME = "SharedPreference"
-    private var preferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private var preferences: SharedPreferences? = context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     override fun setApiToken(apiKey: String) {
-        preferences[API_TOKEN] = apiKey
+        preferences?.set(API_TOKEN, apiKey)
     }
 
     override fun getApiToken(): String? {
-        return preferences[API_TOKEN] ?: ""
+        return preferences?.get(API_TOKEN) ?: ""
     }
 
     override fun setFirebaseToken(firebaseToken: String) {
-        preferences[FIREBASE_TOKEN] = firebaseToken
+        preferences?.set(FIREBASE_TOKEN, firebaseToken)
     }
 
     override fun getFirebaseToken(): String? {
-        return preferences[FIREBASE_TOKEN] ?: ""
+        return preferences?.get(FIREBASE_TOKEN) ?: ""
+    }
+
+    override fun setRefreshToken(token: String) {
+        preferences?.set(REFRESH_TOKEN, token)
+    }
+
+    override fun getRefreshToken(): String? {
+        return preferences?.get(REFRESH_TOKEN) ?: ""
     }
 
     companion object {
         const val API_TOKEN = "api_key"
-        const val FIREBASE_TOKEN = "api_key"
+        const val FIREBASE_TOKEN = "firebase_key"
+        const val REFRESH_TOKEN = "refresh_token"
     }
 
 }

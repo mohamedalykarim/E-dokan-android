@@ -15,7 +15,6 @@ class UserNetworkMapper
             defaultAddress = entity.defaultAddress,
             defaultAddressId= entity.defaultAddressId,
             profileImage = entity.profileImage,
-            ftoken = entity.ftoken,
             wtoken = entity.wtoken
         )
     }
@@ -29,7 +28,6 @@ class UserNetworkMapper
             defaultAddress = domainModel.defaultAddress,
             defaultAddressId= domainModel.defaultAddressId,
             profileImage = domainModel.profileImage,
-            ftoken = domainModel.ftoken,
             wtoken = domainModel.wtoken
         )
     }
