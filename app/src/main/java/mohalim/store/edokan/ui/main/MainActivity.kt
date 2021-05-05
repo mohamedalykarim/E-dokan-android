@@ -31,6 +31,7 @@ class MainActivity : BaseActivity() {
     lateinit var homeFragment : HomeFragment;
     lateinit var cartFragment: CartFragment;
     lateinit var accountFragment: AccountFragment;
+    lateinit var techSupportDialog: TechSupportDialog;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +39,10 @@ class MainActivity : BaseActivity() {
 
         checkInternetAvailability()
 
-        homeFragment = HomeFragment();
-        cartFragment = CartFragment();
+        homeFragment = HomeFragment()
+        cartFragment = CartFragment()
         accountFragment = AccountFragment()
+
 
         subscribeObservers();
         handleBottomClicks();
@@ -159,6 +161,24 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+        })
+
+        viewmodel.supportItemObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+
+                }
+
+                is DataState.Success -> {
+                    techSupportDialog.updateSupportItemsData(it.data)
+                    Log.d(TAG, "subscribeObservers: "+ it.data)
+
+                }
+
+                is DataState.Failure -> {
+                    Log.d(TAG, "subscribeObservers: "+ it.exception.message)
+                }
+            }
         })
     }
 
@@ -290,6 +310,13 @@ class MainActivity : BaseActivity() {
         binding.accountIconTv.visibility = View.GONE
 
         loadFragment(homeFragment)
+    }
+
+    fun techSupportDialog(){
+        techSupportDialog = TechSupportDialog()
+
+        techSupportDialog.show(supportFragmentManager, "techSupportDialog")
+
     }
 
 }

@@ -2,18 +2,16 @@ package mohalim.store.edokan.ui.main
 
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
-import mohalim.store.edokan.core.model.user.User
+import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.repository.CategoryRepositoryImp
 import mohalim.store.edokan.core.repository.OfferRepositoryImp
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
+import mohalim.store.edokan.core.repository.SupportItemRepositoryImp
 import mohalim.store.edokan.core.utils.DataState
 import javax.inject.Inject
 
@@ -23,7 +21,8 @@ class HomeViewModel
     private val savedStateHandle: SavedStateHandle,
     private val categoryRepository: CategoryRepositoryImp,
     private val productRepository: ProductRepositoryImp,
-    private val offerRepository: OfferRepositoryImp
+    private val offerRepository: OfferRepositoryImp,
+    private val supportItemRepository : SupportItemRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -53,6 +52,9 @@ class HomeViewModel
     private val _offersComing : MutableLiveData<DataState<List<Offer>>> = MutableLiveData()
     val offersComing : LiveData<DataState<List<Offer>>> get() = _offersComing
 
+    private val _supportItemObserver : MutableLiveData<DataState<List<SupportItem>>> = MutableLiveData()
+    val supportItemObserver : LiveData<DataState<List<SupportItem>>> get() = _supportItemObserver
+
 
     fun fetchHomeFragmentData (){
         getNoParentCategories()
@@ -81,6 +83,14 @@ class HomeViewModel
         viewModelScope.launch {
             offerRepository.getCurrentOffers().collect {
                 _offersComing.value = it
+            }
+        }
+    }
+
+    fun getSupportItems(userId : String, fToken : String){
+        viewModelScope.launch {
+            supportItemRepository.getSupportItems(userId, fToken).collect {
+                _supportItemObserver.value = it
             }
         }
     }

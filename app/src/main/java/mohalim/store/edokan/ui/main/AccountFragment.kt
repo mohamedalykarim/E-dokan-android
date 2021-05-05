@@ -26,6 +26,12 @@ class AccountFragment : Fragment() {
         val binding : FragmentAccountBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
         firebaseAuth = FirebaseAuth.getInstance();
 
+        val mainActivity = activity as MainActivity
+
+        binding.supportContainer.setOnClickListener {
+            mainActivity.techSupportDialog()
+        }
+
         binding.exitContainer.setOnClickListener {
             preferenceHelper.setApiToken("")
             preferenceHelper.setFirebaseToken("")

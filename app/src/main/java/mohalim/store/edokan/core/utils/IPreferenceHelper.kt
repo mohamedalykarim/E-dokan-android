@@ -10,4 +10,9 @@ interface IPreferenceHelper {
     fun setRefreshToken(firebaseToken : String)
     fun getRefreshToken() : String?
 
+
+    fun setUserId(id : String)
+    fun getUserId() : String?
+
+
 }

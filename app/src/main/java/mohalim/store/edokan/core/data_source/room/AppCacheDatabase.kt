@@ -10,6 +10,7 @@ import mohalim.store.edokan.core.model.category.CategoryCache
 import mohalim.store.edokan.core.model.offer.OfferCache
 import mohalim.store.edokan.core.model.product.ProductCache
 import mohalim.store.edokan.core.model.product_image.ProductImageCache
+import mohalim.store.edokan.core.model.support_item.SupportItemCache
 import mohalim.store.edokan.core.model.user.UserCache
 
 @Database(entities = [
@@ -17,7 +18,8 @@ import mohalim.store.edokan.core.model.user.UserCache
                         CategoryCache::class,
                         ProductCache::class,
                         OfferCache::class,
-                        ProductImageCache::class
+                        ProductImageCache::class,
+                        SupportItemCache::class
                      ],
         version = 1,
         exportSchema = false)
@@ -29,6 +31,7 @@ abstract class AppCacheDatabase : RoomDatabase(){
     abstract fun productDao() : ProductDao
     abstract fun offerDao() : OfferDao
     abstract fun productImageDao() : ProductImageDao
+    abstract fun supportItemDao() : SupportItemDao
 
     companion object{
         const val DATABASE_NAME = "e-dokan_app_database"

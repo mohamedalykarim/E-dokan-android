@@ -1,15 +1,16 @@
 package mohalim.store.edokan.core.di.modules
 
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import mohalim.store.edokan.core.data_source.network.CategoryInterfaceRetrofit
-import mohalim.store.edokan.core.data_source.network.UserInterfaceRetrofit
-import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
-import mohalim.store.edokan.core.data_source.network.OfferInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.*
+import mohalim.store.edokan.core.utils.Constants
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -28,10 +29,16 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun ProvideRetrofit (gson: Gson) : Retrofit.Builder{
+    fun ProvideRetrofit (gson: Gson, @ApplicationContext context: Context) : Retrofit.Builder{
+        val client = OkHttpClient.Builder()
+                .addInterceptor(SignedRequestInterceptor(context))
+                .build()
+
+
         return Retrofit.Builder()
-            .baseUrl("http:192.168.1.105:3000")
+            .baseUrl(Constants.constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
 
     }
 
@@ -68,6 +75,15 @@ class NetworkModule {
         return retrofit
                 .build()
                 .create(OfferInterfaceRetrofit::class.java)
+
+    }
+
+    @Singleton
+    @Provides
+    fun provideSupportItemInterfaceRetrofit(retrofit: Retrofit.Builder): SupportItemInterfaceRetrofit {
+        return retrofit
+                .build()
+                .create(SupportItemInterfaceRetrofit::class.java)
 
     }
 

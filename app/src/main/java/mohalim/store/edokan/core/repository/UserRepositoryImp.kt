@@ -34,9 +34,11 @@ class UserRepositoryImp
 
 
     override fun loginUserAfterPhone(user: FirebaseUser?, password: String): Flow<DataState<User>> {
+
         return flow {
             emit(DataState.Loading)
             try {
+                Log.d(TAG, "loginUserAfterPhone: "+preferenceHelper.getFirebaseToken())
                 val response : retrofit2.Response<UserNetwork> = retrofit.loginUserAfterPhone(
                     GetUserBody(
                         user?.uid,
@@ -46,7 +48,7 @@ class UserRepositoryImp
                 )
                 val userNetwork : UserNetwork = response.body()!!
                 val cookielist = response.headers().values("Set-Cookie")
-                val refreshToken : String = cookielist.get(0).split(";")[0].substring(14)
+                val refreshToken : String = cookielist[0].split(";")[0].substring(14)
                 preferenceHelper.setRefreshToken(refreshToken)
 
                 emit(DataState.Success(userNetworkMapper.mapFromEntity(userNetwork)))
@@ -58,6 +60,8 @@ class UserRepositoryImp
 
 
     }
+
+
 
 
 }

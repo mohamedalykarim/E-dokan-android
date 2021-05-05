@@ -18,5 +18,4 @@ interface UserInterfaceRetrofit {
             @Body body : GetUserBody,
             @Header("Authorization") token: String
     ) : retrofit2.Response<UserNetwork>
-
 }

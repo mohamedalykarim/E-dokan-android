@@ -56,4 +56,10 @@ class CahcheDatabaseModule {
     fun provideProductImagesDao(appCacheDatabase: AppCacheDatabase) : ProductImageDao{
         return appCacheDatabase.productImageDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideSupportItemDao(appCacheDatabase: AppCacheDatabase) : SupportItemDao{
+        return appCacheDatabase.supportItemDao()
+    }
 }

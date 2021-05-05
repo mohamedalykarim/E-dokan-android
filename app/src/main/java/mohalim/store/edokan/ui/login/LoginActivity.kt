@@ -156,9 +156,9 @@ class LoginActivity : BaseActivity() {
                 is DataState.Success -> {
                     phoneTokenFragment.setLoadingVisibility(View.GONE)
 
-                    Log.d(TAG, "subscribeObservers: " + it.data.phoneNumber)
-
                     preferenceHelper.setApiToken(it.data.wtoken)
+                    preferenceHelper.setUserId(it.data.userId)
+
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()
                 }
@@ -170,8 +170,6 @@ class LoginActivity : BaseActivity() {
                 is DataState.Failure -> {
                     preferenceHelper.setApiToken("")
                     preferenceHelper.setFirebaseToken("")
-
-                    Log.d(TAG, "subscribeObservers: "+it.exception.message)
 
                     when (it.exception) {
                         is HttpException -> {

@@ -31,10 +31,19 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         return preferences?.get(REFRESH_TOKEN) ?: ""
     }
 
+    override fun setUserId(id: String) {
+        preferences?.set(USER_ID, id)
+    }
+
+    override fun getUserId(): String? {
+        return preferences?.get(USER_ID) ?: ""
+    }
+
     companion object {
         const val API_TOKEN = "api_key"
         const val FIREBASE_TOKEN = "firebase_key"
         const val REFRESH_TOKEN = "refresh_token"
+        const val USER_ID = "user_id"
     }
 
 }
