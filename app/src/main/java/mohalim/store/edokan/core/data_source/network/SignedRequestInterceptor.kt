@@ -2,23 +2,18 @@ package mohalim.store.edokan.core.data_source.network
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.JsonObject
-import mohalim.store.edokan.core.model.user.User
-import mohalim.store.edokan.core.model.user.UserNetwork
 import mohalim.store.edokan.core.utils.Constants.constants.BASE_URL
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.ui.splash.SplashActivity
-import okhttp3.Interceptor
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.*
+import okio.BufferedSink
+import okio.GzipSink
+import okio.Okio
 import org.json.JSONObject
-import retrofit2.http.Headers
-import java.net.HttpURLConnection
-import kotlin.math.log
+import java.io.IOException
+
 
 class SignedRequestInterceptor(val context: Context) : Interceptor {
 
@@ -60,17 +55,39 @@ class SignedRequestInterceptor(val context: Context) : Interceptor {
             refreshTokenResponse.close()
 
             val newRequest = request.newBuilder()
+                    .url(request.url())
+                    .method(request.method(), request.body()?.let { gzip(it) })
                     .removeHeader("Authorization")
                     .addHeader("Authorization",
-                            "Bearer "+
-                                    preferenceHelper.getFirebaseToken()+
-                                    "///"+
-                                    preferenceHelper.getApiToken()
-                    ).build()
+                        "Bearer "+
+                                preferenceHelper.getFirebaseToken()+
+                                "///"+
+                                preferenceHelper.getApiToken()
+                    )
+                    .build()
 
             return chain.proceed(newRequest)
         }else{
             return response
+        }
+    }
+
+    private fun gzip(body: RequestBody): RequestBody? {
+        return object : RequestBody() {
+            override fun contentType(): MediaType? {
+                return body.contentType()
+            }
+
+            override fun contentLength(): Long {
+                return -1 // We don't know the compressed length in advance!
+            }
+
+            @Throws(IOException::class)
+            override fun writeTo(sink: BufferedSink) {
+                val gzipSink = Okio.buffer(GzipSink(sink))
+                body.writeTo(gzipSink)
+                gzipSink.close()
+            }
         }
     }
 }

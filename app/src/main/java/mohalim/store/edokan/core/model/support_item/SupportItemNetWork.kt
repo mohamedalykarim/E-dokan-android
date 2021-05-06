@@ -11,7 +11,7 @@ data class SupportItemNetWork(
 
         @SerializedName("user_id")
         @Expose
-        var userId : Int,
+        var userId : String,
 
         @SerializedName("support_item_status")
         @Expose

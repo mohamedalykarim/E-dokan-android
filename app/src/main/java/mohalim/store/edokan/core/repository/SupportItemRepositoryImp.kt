@@ -35,7 +35,6 @@ class SupportItemRepositoryImp
 
 
     override fun getSupportItems(userId: String, fToken: String): Flow<DataState<List<SupportItem>>> {
-        Log.d(TAG, "getSupportItems: ")
        return flow {
            emit(DataState.Loading)
 

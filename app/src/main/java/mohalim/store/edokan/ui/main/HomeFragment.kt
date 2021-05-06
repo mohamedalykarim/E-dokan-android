@@ -80,7 +80,6 @@ class HomeFragment : Fragment() {
         val chosenLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         chosenLayoutManager.reverseLayout = true
         binding.chosenRV.layoutManager = chosenLayoutManager
-
     }
 
     private fun initCategoryRV(activity: MainActivity) {

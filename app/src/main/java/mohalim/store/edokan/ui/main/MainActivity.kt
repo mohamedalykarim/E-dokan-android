@@ -166,16 +166,16 @@ class MainActivity : BaseActivity() {
         viewmodel.supportItemObserver.observe(this, Observer {
             when (it) {
                 is DataState.Loading -> {
-
+                    techSupportDialog.changeProgressBarVisibility(View.VISIBLE)
                 }
 
                 is DataState.Success -> {
+                    techSupportDialog.changeProgressBarVisibility(View.GONE)
                     techSupportDialog.updateSupportItemsData(it.data)
-                    Log.d(TAG, "subscribeObservers: "+ it.data)
-
                 }
 
                 is DataState.Failure -> {
+                    techSupportDialog.changeProgressBarVisibility(View.GONE)
                     Log.d(TAG, "subscribeObservers: "+ it.exception.message)
                 }
             }

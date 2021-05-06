@@ -24,23 +24,23 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="8dp"
                     android:background="#ffffff"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/categoriesRV">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
                         android:id="@+id/sliderDotContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:layout_marginTop="8dp"
-                        android:orientation="horizontal"
                         android:layoutDirection="rtl"
+                        android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/pager"/>
+                        app:layout_constraintTop_toBottomOf="@+id/pager" />
 
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/pager"
@@ -59,27 +59,27 @@
                     android:id="@+id/textView9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="8dp"
                     android:customFont="@{@string/ge_ss_two_light}"
                     android:text="اخترنا لك"
                     android:textColor="#000"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sliderContainer" />
+                    app:layout_constraintTop_toBottomOf="@+id/view" />
 
                 <TextView
                     android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="8dp"
                     android:customFont="@{@string/ge_ss_two_light}"
                     android:text="الأقسام الرئيسية"
                     android:textColor="#000"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/sliderContainer" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -169,7 +169,9 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true">
 
                         <ImageView
                             android:id="@+id/imageView2"
@@ -193,7 +195,6 @@
                             android:layout_marginBottom="4dp"
                             android:background="@color/transparent"
                             android:customFont="@{@string/ge_ss_two_light}"
-                            android:ems="10"
                             android:hint="ابحث عن طلبك من هنا"
                             android:inputType="textPersonName"
                             android:textSize="12sp"

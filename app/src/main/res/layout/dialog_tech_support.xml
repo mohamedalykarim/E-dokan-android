@@ -5,7 +5,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="0dp">
+        android:background="#f4f4f4">
 
 
         <TextView
@@ -97,12 +97,23 @@
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout5"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/techItemsRV"
+            app:layout_constraintEnd_toEndOf="@+id/techItemsRV"
+            app:layout_constraintStart_toStartOf="@+id/techItemsRV"
+            app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/techItemsRV"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

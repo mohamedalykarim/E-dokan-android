@@ -4,7 +4,7 @@ import java.math.BigInteger
 
 data class SupportItem(
         var supportItemId : Int,
-        var userId : Int,
+        var userId : String,
         var supportItemStatus : Int,
         var supportItemDate: BigInteger
 )

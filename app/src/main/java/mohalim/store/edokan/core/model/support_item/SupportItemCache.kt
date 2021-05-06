@@ -12,7 +12,7 @@ data class SupportItemCache(
         var supportItemId : Int,
 
         @ColumnInfo(name = "user_id")
-        var userId : Int,
+        var userId : String,
 
         @ColumnInfo(name = "support_item_status")
         var supportItemStatus : Int,
