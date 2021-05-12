@@ -33,6 +33,17 @@ data class UserNetwork(
         @Expose
         var profileImage : String,
 
+        @SerializedName("is_seller")
+        @Expose
+        var isSeller : Int,
+
+        @SerializedName("is_delivery")
+        @Expose
+        var isDelivery : Int,
+
+        @SerializedName("is_delivery_supervisor")
+        @Expose
+        var isDeliverySupervisor : Int,
 
         @SerializedName("wtoken")
         @Expose

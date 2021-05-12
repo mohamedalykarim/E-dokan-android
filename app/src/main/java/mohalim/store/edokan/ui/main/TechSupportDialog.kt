@@ -1,6 +1,5 @@
 package mohalim.store.edokan.ui.main
 
-import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -10,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.Window
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,14 +25,13 @@ import mohalim.store.edokan.databinding.DialogTechSupportBinding
 import mohalim.store.edokan.databinding.RowSupportItemBinding
 
 class TechSupportDialog : DialogFragment() {
-    private val TAG = "TechSupportDialog"
 
-    private lateinit var mainActivity: MainActivity;
-    private lateinit var binding : DialogTechSupportBinding;
+    private lateinit var mainActivity: MainActivity
+    private lateinit var binding : DialogTechSupportBinding
     private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var adapter: TechAdapter;
+    private lateinit var adapter: TechAdapter
 
-    private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance();
+    private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance()
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
 
 
@@ -40,13 +39,13 @@ class TechSupportDialog : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_tech_support, container, false)
 
         mainActivity = activity as MainActivity
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-            mainActivity.viewmodel.getSupportItems(
+            mainActivity.viewModel.getSupportItems(
                     preferenceHelper.getUserId() + "",
                     it.token + ""
             )
@@ -54,9 +53,28 @@ class TechSupportDialog : DialogFragment() {
 
         initRecyclerView()
 
+        binding.addNewSupportItemBtn.setOnClickListener {
+
+            if (binding.techMessageET.text.toString() == ""){
+                binding.techMessageET.error = "رجاء استيفاء مشكلتك بشكل واضح ومبسط واذكر كل التفاصيل"
+                return@setOnClickListener
+            }
+
+            firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                mainActivity.viewModel.addSupportItems(
+                    preferenceHelper.getUserId() + "",
+                    it.token + "",
+                    binding.techMessageET.text.toString()
+                    )
+
+            }
+        }
+
         binding.techBackImg.setOnClickListener {
             dismiss()
         }
+
+
 
         return binding.root
 
@@ -69,10 +87,6 @@ class TechSupportDialog : DialogFragment() {
         binding.techItemsRV.adapter = adapter
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState)
-    }
-
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(MATCH_PARENT,MATCH_PARENT)
@@ -80,18 +94,38 @@ class TechSupportDialog : DialogFragment() {
     }
 
     fun updateSupportItemsData(data: List<SupportItem>) {
-        adapter.items = data
+        adapter.items.clear()
+        adapter.items.addAll(data)
         adapter.notifyDataSetChanged()
+    }
+
+    fun addNewSupportItemToAdapter(data: SupportItem) {
+        adapter.items.add(data)
+        adapter.notifyDataSetChanged()
+        binding.techMessageET.text.clear()
+        Toast.makeText(context, "تم اضافة المشكلة بنجاح", Toast.LENGTH_LONG).show()
     }
 
     fun changeProgressBarVisibility(visibility: Int) {
         binding.progressBar.visibility = visibility
     }
 
-    class TechAdapter : RecyclerView.Adapter<TechAdapter.TechViewHodler>(){
-        var items : List<SupportItem> = ArrayList();
+    fun changeAddProgressBarVisibility(visibility: Int, btnEnable : Boolean, clearED : Boolean) {
+        binding.addProgressBar.visibility = visibility
+        binding.addProgressBarTv.visibility = visibility
+        binding.addNewSupportItemBtn.isEnabled = btnEnable
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TechViewHodler {
+        if (clearED){
+            binding.techMessageET.text.clear()
+        }
+
+    }
+
+
+    class TechAdapter : RecyclerView.Adapter<TechAdapter.TechViewHolder>(){
+        var items : MutableList<SupportItem> = ArrayList()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TechViewHolder {
             val binding : RowSupportItemBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(parent.context),
                     R.layout.row_support_item,
@@ -99,10 +133,10 @@ class TechSupportDialog : DialogFragment() {
                     false
             )
 
-            return TechViewHodler(binding)
+            return TechViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: TechViewHodler, position: Int) {
+        override fun onBindViewHolder(holder: TechViewHolder, position: Int) {
             holder.bindItem(items[position])
         }
 
@@ -111,12 +145,13 @@ class TechSupportDialog : DialogFragment() {
         }
 
 
-        class TechViewHodler(val binding: RowSupportItemBinding) : RecyclerView.ViewHolder(binding.root){
+        class TechViewHolder(val binding: RowSupportItemBinding) : RecyclerView.ViewHolder(binding.root){
 
             fun bindItem(supportItem : SupportItem){
                 binding.dateTv.text = DateUtils.convertMilisToDate(supportItem.supportItemDate)
                 binding.statustTv.text = OtherUtils.getSupportItemStatus(supportItem.supportItemStatus)
-                binding.numberTv.text = "" + supportItem.supportItemId
+                binding.numberTv.text = supportItem.supportItemId.toString()
+                binding.messageTv.text = supportItem.message
             }
         }
 

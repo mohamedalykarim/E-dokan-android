@@ -29,39 +29,38 @@ import mohalim.store.edokan.ui.product.ProductActivity
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
-    val TAG : String = "HomeFragment"
 
-    private lateinit var categoryAdapter : CategoryAdapter;
-    private lateinit var chosenProductsAdapter: ChosenProductsAdapter;
+    private lateinit var categoryAdapter : CategoryAdapter
+    private lateinit var chosenProductsAdapter: ChosenProductsAdapter
     private lateinit var offersAdapter: HomeFragment.HomeFragmentSliderAdapter
 
-    lateinit var inflater: LayoutInflater;
-    lateinit var container : ViewGroup;
+    lateinit var inflater: LayoutInflater
+    lateinit var container : ViewGroup
 
     lateinit var binding : FragmentHomeBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
-        this.inflater = inflater;
+        this.inflater = inflater
         if (container != null) {
             this.container = container
-        };
+        }
 
         val activity = activity as MainActivity
-        activity.viewmodel.fetchHomeFragmentData()
+        activity.viewModel.fetchHomeFragmentData()
 
         initCategoryRV(activity)
         initChosenRV(activity)
-        initSlider(activity,inflater,container);
+        initSlider(activity,inflater,container)
         initSliderDots(inflater, container, 0)
 
         return binding.root
     }
 
     private fun initSliderDots(layoutInflater: LayoutInflater, container: ViewGroup?, index: Int) {
-        binding.sliderDotContainer.removeAllViews();
-        var i : Int = 0
+        binding.sliderDotContainer.removeAllViews()
+        var i = 0
         offersAdapter.offers.forEach {
             if (i == index){
                 val dotActiveBinding : SliderDotActiveBinding = DataBindingUtil.inflate(layoutInflater, R.layout.slider_dot_active, container, false)
@@ -75,16 +74,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun initChosenRV(activity: MainActivity) {
-        chosenProductsAdapter = ChosenProductsAdapter(activity.viewmodel.products)
-        binding.chosenRV.adapter = chosenProductsAdapter;
+        chosenProductsAdapter = ChosenProductsAdapter(activity.viewModel.products)
+        binding.chosenRV.adapter = chosenProductsAdapter
         val chosenLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         chosenLayoutManager.reverseLayout = true
         binding.chosenRV.layoutManager = chosenLayoutManager
     }
 
     private fun initCategoryRV(activity: MainActivity) {
-        categoryAdapter = CategoryAdapter(activity.viewmodel.categories)
-        binding.categoriesRV.adapter = categoryAdapter;
+        categoryAdapter = CategoryAdapter(activity.viewModel.categories)
+        binding.categoriesRV.adapter = categoryAdapter
         val categoryLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         categoryLayoutManager.reverseLayout = true
         binding.categoriesRV.layoutManager = categoryLayoutManager
@@ -95,8 +94,8 @@ class HomeFragment : Fragment() {
         offersAdapter = HomeFragmentSliderAdapter(
                 childFragmentManager,
                 lifecycle,
-                activity.viewmodel.offers
-        );
+                activity.viewModel.offers
+        )
         binding.pager.adapter = offersAdapter
         binding.pager.setPageTransformer(ZoomOutPageTransformer())
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -108,12 +107,12 @@ class HomeFragment : Fragment() {
     }
 
     fun updateCategoryData(data: List<Category>) {
-        categoryAdapter.categories = data;
+        categoryAdapter.categories = data
         categoryAdapter.notifyDataSetChanged()
     }
 
     fun updateChosenProductsData(data: List<Product>) {
-        chosenProductsAdapter.products = data;
+        chosenProductsAdapter.products = data
         chosenProductsAdapter.notifyDataSetChanged()
     }
 
@@ -157,11 +156,11 @@ class HomeFragment : Fragment() {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.imageView3)
 
-                binding.root.setOnClickListener(View.OnClickListener {
-                    val intent : Intent = Intent(binding.root.context, CategoryActivity::class.java)
+                binding.root.setOnClickListener{
+                    val intent = Intent(binding.root.context, CategoryActivity::class.java)
                     intent.putExtra(Constants.constants.CATEGORY_ID, category.categoryId)
                     it.context.startActivity(intent)
-                })
+                }
             }
 
         }
@@ -199,12 +198,12 @@ class HomeFragment : Fragment() {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.imageView4)
 
-                binding.root.setOnClickListener(View.OnClickListener {
-                    val intent : Intent = Intent(binding.root.context, ProductActivity::class.java)
+                binding.root.setOnClickListener{
+                    val intent = Intent(binding.root.context, ProductActivity::class.java)
                     intent.putExtra(Constants.constants.PRODUCT_ID, product.productId)
                     binding.root.context.startActivity(intent)
 
-                })
+                }
             }
 
         }
@@ -221,7 +220,7 @@ class HomeFragment : Fragment() {
         override fun getItemCount(): Int = offers.size
 
         override fun createFragment(position: Int): Fragment {
-            return HomeSliderFragment(offers.get(position))
+            return HomeSliderFragment(offers[position])
         }
     }
 

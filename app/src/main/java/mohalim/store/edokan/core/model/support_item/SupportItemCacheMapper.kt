@@ -11,7 +11,8 @@ class SupportItemCacheMapper
                 supportItemId = entity.supportItemId,
                 userId = entity.userId,
                 supportItemStatus = entity.supportItemStatus,
-                supportItemDate = entity.supportItemDate
+                supportItemDate = entity.supportItemDate,
+                message = entity.message
         )
 
     }
@@ -21,7 +22,8 @@ class SupportItemCacheMapper
                 supportItemId = domainModel.supportItemId,
                 userId = domainModel.userId,
                 supportItemStatus = domainModel.supportItemStatus,
-                supportItemDate = domainModel.supportItemDate
+                supportItemDate = domainModel.supportItemDate,
+                message = domainModel.message
         )
     }
 

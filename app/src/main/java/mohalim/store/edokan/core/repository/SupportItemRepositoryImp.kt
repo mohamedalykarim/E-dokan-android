@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.SupportItemInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.req.AddSupportItemBody
 import mohalim.store.edokan.core.data_source.room.SupportItemDao
 import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.model.support_item.SupportItemCacheMapper
 import mohalim.store.edokan.core.model.support_item.SupportItemNetWork
 import mohalim.store.edokan.core.model.support_item.SupportItemNetworkMapper
-import mohalim.store.edokan.core.model.user.UserNetwork
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -29,7 +29,7 @@ class SupportItemRepositoryImp
     context: Context
 ) : SupportItemRepository {
 
-    val TAG = "SupportItemRepositoryImp"
+    private val tag = "SupportItemRep"
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(context) }
 
@@ -47,18 +47,46 @@ class SupportItemRepositoryImp
                                preferenceHelper.getApiToken()
                )
 
-               Log.d(TAG, "getSupportItems: "+response.body())
+               val supportItems : List<SupportItemNetWork> = response.body()!!
 
+               supportItems.forEach {
+                   dao.insert(cacheMapper.mapToEntity(networkMapper.mapFromEntity(it)))
+               }
 
-               val supportItems : List<SupportItemNetWork> = response.body()!!;
                emit(DataState.Success(networkMapper.mapFromEntityList(supportItems)))
 
            }catch (e : Exception){
-               Log.d(TAG, "getSupportItems: error "+ e.message)
                emit(DataState.Failure(e))
            }
 
        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun addSupportItem(
+        userId: String,
+        fToken: String,
+        message: String
+    ): Flow<DataState<SupportItem>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val supportItemNetWork = retrofit.addSupportItem(
+                    userId,
+                    "Bearer "+
+                            fToken+
+                            "///"+
+                            preferenceHelper.getApiToken(),
+                    AddSupportItemBody(message)
+                )
+
+                emit(DataState.Success(networkMapper.mapFromEntity(supportItemNetWork)))
+
+            }catch (e : Exception){
+                Log.d("TAG", "addSupportItem: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
     }
 
 

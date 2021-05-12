@@ -28,6 +28,15 @@ data class UserCache(
     @ColumnInfo(name = "default_address_id")
     var defaultAddressId: Int,
 
+    @ColumnInfo(name = "is_seller")
+    var isSeller : Int,
+
+    @ColumnInfo(name = "is_delivery")
+    var isDelivery : Int,
+
+    @ColumnInfo(name = "is_delivery_supervisor")
+    var isDeliverySupervisor : Int,
+
     @ColumnInfo(name = "profile_image")
     var profileImage : String
 )

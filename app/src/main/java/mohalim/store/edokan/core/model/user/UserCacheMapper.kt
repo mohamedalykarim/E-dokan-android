@@ -14,6 +14,9 @@ class UserCacheMapper
             defaultAddress = entity.defaultAddress,
             defaultAddressId= entity.defaultAddressId,
             profileImage = entity.profileImage,
+            isSeller =  entity.isSeller,
+            isDelivery = entity.isDelivery,
+            isDeliverySupervisor = entity.isDeliverySupervisor,
             wtoken = "",
         )
 
@@ -27,7 +30,10 @@ class UserCacheMapper
             email = domainModel.email,
             defaultAddress = domainModel.defaultAddress,
             defaultAddressId= domainModel.defaultAddressId,
-            profileImage = domainModel.profileImage
+            profileImage = domainModel.profileImage,
+            isSeller =  domainModel.isSeller,
+            isDelivery = domainModel.isDelivery,
+            isDeliverySupervisor = domainModel.isDeliverySupervisor,
         )
     }
 

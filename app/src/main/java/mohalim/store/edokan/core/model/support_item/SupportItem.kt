@@ -6,5 +6,6 @@ data class SupportItem(
         var supportItemId : Int,
         var userId : String,
         var supportItemStatus : Int,
-        var supportItemDate: BigInteger
+        var supportItemDate: BigInteger,
+        var message : String
 )

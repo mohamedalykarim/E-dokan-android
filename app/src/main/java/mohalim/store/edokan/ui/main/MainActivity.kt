@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
@@ -24,14 +23,14 @@ import retrofit2.HttpException
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-    val TAG : String = "MainActivity";
+    val tag : String = "MainActivity"
 
-    lateinit var binding : ActivityMainBinding;
-    val viewmodel : HomeViewModel by viewModels()
-    lateinit var homeFragment : HomeFragment;
-    lateinit var cartFragment: CartFragment;
-    lateinit var accountFragment: AccountFragment;
-    lateinit var techSupportDialog: TechSupportDialog;
+    lateinit var binding : ActivityMainBinding
+    val viewModel : HomeViewModel by viewModels()
+    private lateinit var homeFragment : HomeFragment
+    lateinit var cartFragment: CartFragment
+    private lateinit var accountFragment: AccountFragment
+    private lateinit var techSupportDialog: TechSupportDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,28 +43,29 @@ class MainActivity : BaseActivity() {
         accountFragment = AccountFragment()
 
 
-        subscribeObservers();
-        handleBottomClicks();
+        subscribeObservers()
+        handleBottomClicks()
         loadFragment(homeFragment)
     }
 
     override fun onBackPressed() {
-        if(viewmodel.CURRENT_FRAGMENT == HomeFragment::class.java.name){
-            Log.d(TAG, "onBackPressed: "+HomeFragment::class.java.name)
-            finish()
-        }else if(viewmodel.CURRENT_FRAGMENT == CartFragment::class.java.name){
-            Log.d(TAG, "onBackPressed: "+CartFragment::class.java.name)
-            loadFragment(homeFragment)
-            homeBottom()
-        }else if(viewmodel.CURRENT_FRAGMENT == AccountFragment::class.java.name){
-            Log.d(TAG, "onBackPressed: "+AccountFragment::class.java.name)
-            loadFragment(homeFragment)
-            homeBottom()
+        when (viewModel.CURRENT_FRAGMENT) {
+            HomeFragment::class.java.name -> {
+                finish()
+            }
+            CartFragment::class.java.name -> {
+                loadFragment(homeFragment)
+                homeBottom()
+            }
+            AccountFragment::class.java.name -> {
+                loadFragment(homeFragment)
+                homeBottom()
+            }
         }
     }
 
     fun loadFragment(fragment : Fragment){
-        viewmodel.CURRENT_FRAGMENT = fragment.javaClass.name
+        viewModel.CURRENT_FRAGMENT = fragment.javaClass.name
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
@@ -89,7 +89,7 @@ class MainActivity : BaseActivity() {
                 if (boolean) {
 
                     runOnUiThread {
-                        if (viewmodel.CURRENT_FRAGMENT == HomeFragment::class.java.name) viewmodel.fetchHomeFragmentData()
+                        if (viewModel.CURRENT_FRAGMENT == HomeFragment::class.java.name) viewModel.fetchHomeFragmentData()
                         binding.internetAvailabilityContainer.visibility = View.GONE
                     }
 
@@ -107,7 +107,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun subscribeObservers() {
-        viewmodel.noParentCategories.observe(this, Observer {
+        viewModel.noParentCategories.observe(this, {
             when (it) {
                 is DataState.Loading -> {
 
@@ -122,7 +122,7 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        viewmodel.offersComing.observe(this, Observer {
+        viewModel.offersComing.observe(this, {
             when (it) {
                 is DataState.Loading -> {
 
@@ -137,19 +137,22 @@ class MainActivity : BaseActivity() {
                         is HttpException -> {
 
                         }
+                        else -> {
+
+                        }
                     }
                 }
             }
         })
 
-        viewmodel.chosenProducts.observe(this, Observer {
+        viewModel.chosenProducts.observe(this, {
             when (it) {
                 is DataState.Loading -> {
 
                 }
 
                 is DataState.Success -> {
-                    viewmodel.PAGE++
+                    viewModel.PAGE++
                     homeFragment.updateChosenProductsData(it.data)
                 }
 
@@ -157,13 +160,16 @@ class MainActivity : BaseActivity() {
                     when (it) {
                         is HttpException -> {
                         }
+                        else -> {
+
+                        }
                     }
                 }
             }
 
         })
 
-        viewmodel.supportItemObserver.observe(this, Observer {
+        viewModel.supportItemObserver.observe(this,  {
             when (it) {
                 is DataState.Loading -> {
                     techSupportDialog.changeProgressBarVisibility(View.VISIBLE)
@@ -176,48 +182,66 @@ class MainActivity : BaseActivity() {
 
                 is DataState.Failure -> {
                     techSupportDialog.changeProgressBarVisibility(View.GONE)
-                    Log.d(TAG, "subscribeObservers: "+ it.exception.message)
                 }
             }
         })
+
+        viewModel.addSupportItemObserver.observe(this, {
+            when (it) {
+                is DataState.Loading -> {
+                    techSupportDialog.changeAddProgressBarVisibility(View.VISIBLE, btnEnable = false, clearED = false)
+                }
+
+                is DataState.Success -> {
+                    techSupportDialog.changeAddProgressBarVisibility(View.GONE, btnEnable = false, clearED = false)
+                    techSupportDialog.addNewSupportItemToAdapter(it.data)
+                }
+
+                is DataState.Failure -> {
+                    techSupportDialog.changeAddProgressBarVisibility(View.GONE, btnEnable = false, clearED = false)
+                }
+            }
+
+        })
+
     }
 
     private fun handleBottomClicks() {
 
-        binding.homeIcon.setOnClickListener(View.OnClickListener {
-            homeBottom();
-        })
+        binding.homeIcon.setOnClickListener {
+            homeBottom()
+        }
 
-        binding.cartIcon.setOnClickListener(View.OnClickListener {
+        binding.cartIcon.setOnClickListener{
             cartBottom()
-        })
+        }
 
-        binding.accountContainer.setOnClickListener(View.OnClickListener {
+        binding.accountContainer.setOnClickListener{
             accountBottom()
-        })
+        }
 
-        binding.bottomHeaderView.setOnClickListener(View.OnClickListener {
-            if (viewmodel.bottomVisibility == viewmodel.BOTTOM_VISIBLE) {
+        binding.bottomHeaderView.setOnClickListener{
+            if (viewModel.bottomVisibility == viewModel.BOTTOM_VISIBLE) {
                 val value: Float = binding.bottomContainer.height.toFloat()
                 binding.bottom.animate().translationY(value).setListener(null)
-                viewmodel.bottomVisibility = viewmodel.BOTTOM_HIDE
+                viewModel.bottomVisibility = viewModel.BOTTOM_HIDE
                 binding.arrowIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_up_arrow))
 
-            } else if (viewmodel.bottomVisibility == viewmodel.BOTTOM_HIDE) {
+            } else if (viewModel.bottomVisibility == viewModel.BOTTOM_HIDE) {
                 binding.bottom.animate().translationY(0f).setListener(null)
-                viewmodel.bottomVisibility = viewmodel.BOTTOM_VISIBLE
+                viewModel.bottomVisibility = viewModel.BOTTOM_VISIBLE
                 binding.arrowIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_down_arrow))
 
             }
-        })
+        }
     }
 
     private fun accountBottom() {
-        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        if (viewmodel.currentTab == viewmodel.ACCOUNT) return
-        viewmodel.currentTab = viewmodel.ACCOUNT
+        if (viewModel.currentTab == viewModel.ACCOUNT) return
+        viewModel.currentTab = viewModel.ACCOUNT
 
         binding.accountContainerBG.setBackgroundResource(R.drawable.bottom_bar_item_bg)
         binding.homeContainerBG.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.transparent))
@@ -228,11 +252,11 @@ class MainActivity : BaseActivity() {
 
 
         params1.weight = 2f
-        binding.accountContainer.layoutParams = params1;
+        binding.accountContainer.layoutParams = params1
 
         params2.weight = 3f
-        binding.cartContainer.layoutParams = params2;
-        binding.homeContainer.layoutParams = params2;
+        binding.cartContainer.layoutParams = params2
+        binding.homeContainer.layoutParams = params2
 
         binding.homeIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_main_not_active))
         binding.cartIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cart_not_active))
@@ -246,11 +270,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun cartBottom() {
-        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        if (viewmodel.currentTab == viewmodel.CART) return
-        viewmodel.currentTab = viewmodel.CART
+        if (viewModel.currentTab == viewModel.CART) return
+        viewModel.currentTab = viewModel.CART
 
         binding.cartContainerBG.setBackgroundResource(R.drawable.bottom_bar_item_bg)
         binding.homeContainerBG.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent))
@@ -262,11 +286,11 @@ class MainActivity : BaseActivity() {
 
 
         params1.weight = 2f
-        binding.cartContainer.layoutParams = params1;
+        binding.cartContainer.layoutParams = params1
 
         params2.weight = 3f
-        binding.homeContainer.layoutParams = params2;
-        binding.accountContainer.layoutParams = params2;
+        binding.homeContainer.layoutParams = params2
+        binding.accountContainer.layoutParams = params2
 
         binding.homeIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_main_not_active))
         binding.cartIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cart_active))
@@ -280,11 +304,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun homeBottom() {
-        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
-        if (viewmodel.currentTab == viewmodel.HOME) return
-        viewmodel.currentTab = viewmodel.HOME
+        if (viewModel.currentTab == viewModel.HOME) return
+        viewModel.currentTab = viewModel.HOME
 
         binding.homeContainerBG.setBackgroundResource(R.drawable.bottom_bar_item_bg)
         binding.cartContainerBG.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent))
@@ -295,11 +319,11 @@ class MainActivity : BaseActivity() {
 
 
         params1.weight = 2f
-        binding.homeContainer.layoutParams = params1;
+        binding.homeContainer.layoutParams = params1
 
         params2.weight = 3f
-        binding.cartContainer.layoutParams = params2;
-        binding.accountContainer.layoutParams = params2;
+        binding.cartContainer.layoutParams = params2
+        binding.accountContainer.layoutParams = params2
 
         binding.homeIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_main_active))
         binding.cartIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_cart_not_active))
@@ -314,7 +338,7 @@ class MainActivity : BaseActivity() {
 
     fun techSupportDialog(){
         techSupportDialog = TechSupportDialog()
-
+        if(techSupportDialog.isAdded) return
         techSupportDialog.show(supportFragmentManager, "techSupportDialog")
 
     }

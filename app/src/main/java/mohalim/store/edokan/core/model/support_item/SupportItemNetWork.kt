@@ -19,5 +19,9 @@ data class SupportItemNetWork(
 
         @SerializedName("support_item_date")
         @Expose
-        var supportItemDate: BigInteger
+        var supportItemDate: BigInteger,
+
+        @SerializedName("support_item_message")
+        @Expose
+        var message: String
 )

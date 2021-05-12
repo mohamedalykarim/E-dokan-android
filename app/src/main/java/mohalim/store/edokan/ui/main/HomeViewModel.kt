@@ -55,6 +55,9 @@ class HomeViewModel
     private val _supportItemObserver : MutableLiveData<DataState<List<SupportItem>>> = MutableLiveData()
     val supportItemObserver : LiveData<DataState<List<SupportItem>>> get() = _supportItemObserver
 
+    private val _addSupportItemObserver : MutableLiveData<DataState<SupportItem>> = MutableLiveData()
+    val addSupportItemObserver : LiveData<DataState<SupportItem>> get() = _addSupportItemObserver
+
 
     fun fetchHomeFragmentData (){
         getNoParentCategories()
@@ -91,6 +94,14 @@ class HomeViewModel
         viewModelScope.launch {
             supportItemRepository.getSupportItems(userId, fToken).collect {
                 _supportItemObserver.value = it
+            }
+        }
+    }
+
+    fun addSupportItems(userId : String, fToken : String, message : String){
+        viewModelScope.launch {
+            supportItemRepository.addSupportItem(userId, fToken, message).collect {
+                _addSupportItemObserver.value = it
             }
         }
     }

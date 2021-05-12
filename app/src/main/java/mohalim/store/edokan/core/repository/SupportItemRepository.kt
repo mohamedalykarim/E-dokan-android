@@ -6,4 +6,5 @@ import mohalim.store.edokan.core.utils.DataState
 
 interface SupportItemRepository {
     fun getSupportItems(userId: String, fToken: String) : Flow<DataState<List<SupportItem>>>
+    fun addSupportItem(userId: String, fToken: String, message : String) : Flow<DataState<SupportItem>>
 }
