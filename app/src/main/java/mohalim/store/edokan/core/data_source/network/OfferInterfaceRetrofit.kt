@@ -9,8 +9,8 @@ interface OfferInterfaceRetrofit {
 
     @HTTP(
             method = "GET",
-            path = "/api/offers",
+            path = "/api/offers/{city_id}",
     )
-    suspend fun getCurrentOffers(): List<OfferNetwork>
+    suspend fun getCurrentOffers(@Path("city_id")cityId : Int): List<OfferNetwork>
 
 }

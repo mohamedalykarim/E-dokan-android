@@ -32,6 +32,10 @@ class AccountFragment : Fragment() {
             mainActivity.techSupportDialog()
         }
 
+        binding.cityContainer.setOnClickListener {
+            mainActivity.loadCity()
+        }
+
         binding.exitContainer.setOnClickListener {
             preferenceHelper.setApiToken("")
             preferenceHelper.setFirebaseToken("")

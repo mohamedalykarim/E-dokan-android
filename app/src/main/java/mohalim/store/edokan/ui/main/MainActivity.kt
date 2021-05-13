@@ -35,7 +35,7 @@ class MainActivity : BaseActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(null)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         checkInternetAvailability()
@@ -77,6 +77,12 @@ class MainActivity : BaseActivity() {
 
     fun loadHome() {
         loadFragment(homeFragment)
+    }
+
+    fun loadCity() {
+        homeBottom()
+        loadFragment(cityFragment)
+        binding.bottom.visibility = View.GONE
     }
 
     fun loadFragment(fragment : Fragment){
@@ -213,14 +219,17 @@ class MainActivity : BaseActivity() {
     private fun handleBottomClicks() {
 
         binding.homeIcon.setOnClickListener {
+            loadFragment(homeFragment)
             homeBottom()
         }
 
         binding.cartIcon.setOnClickListener{
+            loadFragment(cartFragment)
             cartBottom()
         }
 
         binding.accountContainer.setOnClickListener{
+            loadFragment(accountFragment)
             accountBottom()
         }
 
@@ -269,8 +278,6 @@ class MainActivity : BaseActivity() {
         binding.homeIcontTv.visibility = View.GONE
         binding.cartIconTv.visibility = View.GONE
         binding.accountIconTv.visibility = View.VISIBLE
-        loadFragment(accountFragment)
-
     }
 
     private fun cartBottom() {
@@ -303,8 +310,6 @@ class MainActivity : BaseActivity() {
         binding.homeIcontTv.visibility = View.GONE
         binding.cartIconTv.visibility = View.VISIBLE
         binding.accountIconTv.visibility = View.GONE
-        loadFragment(cartFragment)
-
     }
 
     private fun homeBottom() {
@@ -337,8 +342,7 @@ class MainActivity : BaseActivity() {
         binding.cartIconTv.visibility = View.GONE
         binding.accountIconTv.visibility = View.GONE
 
-        loadFragment(homeFragment)
-    }
+   }
 
     fun techSupportDialog(){
         techSupportDialog = TechSupportDialog()

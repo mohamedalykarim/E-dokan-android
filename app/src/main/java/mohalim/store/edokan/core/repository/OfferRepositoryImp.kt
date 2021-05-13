@@ -31,7 +31,7 @@ class OfferRepositoryImp
         return flow {
             emit(DataState.Loading)
             try {
-                val offers = retrofit.getCurrentOffers()
+                val offers = retrofit.getCurrentOffers(preferenceHelper.getCityId()!!)
                 emit(DataState.Success(offerNetworkMapper.mapFromEntityList(offers)))
             }catch (e : Exception){
                 emit(DataState.Failure(e))
