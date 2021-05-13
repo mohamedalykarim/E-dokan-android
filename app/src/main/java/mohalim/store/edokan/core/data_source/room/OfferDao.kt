@@ -1,4 +1,4 @@
-package mohalim.store.edokan.core.data_source.room.converter
+package mohalim.store.edokan.core.data_source.room
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -13,6 +13,8 @@ import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.model.support_item.SupportItemCacheMapper
 import mohalim.store.edokan.core.model.support_item.SupportItemNetWork
 import mohalim.store.edokan.core.model.support_item.SupportItemNetworkMapper
+import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessage
+import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessageNetworkMapper
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -24,6 +26,7 @@ class SupportItemRepositoryImp
 @Inject constructor(
     private val retrofit: SupportItemInterfaceRetrofit,
     private val networkMapper: SupportItemNetworkMapper,
+    private val networkMessageMapper : SupportItemMessageNetworkMapper,
     private val dao : SupportItemDao,
     private val cacheMapper: SupportItemCacheMapper,
     context: Context
@@ -83,6 +86,31 @@ class SupportItemRepositoryImp
 
             }catch (e : Exception){
                 Log.d("TAG", "addSupportItem: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getAllMessages(
+        itemId: Int,
+        fToken: String
+    ): Flow<DataState<List<SupportItemMessage>>> {
+        return flow{
+            emit(DataState.Loading)
+
+            try {
+                val networkMessages = retrofit.getAllMessages(
+                    itemId,
+                    "Bearer "+
+                            fToken+
+                            "///"+
+                            preferenceHelper.getApiToken()
+                )
+
+                emit(DataState.Success(networkMessageMapper.mapFromEntityList(networkMessages)))
+
+            }catch (e : Exception){
                 emit(DataState.Failure(e))
             }
 

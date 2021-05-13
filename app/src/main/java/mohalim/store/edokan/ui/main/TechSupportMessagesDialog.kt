@@ -9,28 +9,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.Window
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.support_item.SupportItem
+import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessage
 import mohalim.store.edokan.core.utils.DateUtils
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.OtherUtils
 import mohalim.store.edokan.core.utils.PreferencesUtils
-import mohalim.store.edokan.databinding.DialogTechSupportBinding
 import mohalim.store.edokan.databinding.DialogTechSupportMessagesBinding
-import mohalim.store.edokan.databinding.RowSupportItemBinding
-import mohalim.store.edokan.databinding.RowSupportMessageItemBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TechSupportMessagesDialog : DialogFragment() {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var binding : DialogTechSupportMessagesBinding
-    private lateinit var layoutManager: LinearLayoutManager
+
+    lateinit var supportItem : SupportItem
 
     private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance()
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
@@ -45,12 +43,23 @@ class TechSupportMessagesDialog : DialogFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_tech_support_messages, container, false)
 
         mainActivity = activity as MainActivity
+
+        binding.techMessageBackImg.setOnClickListener {
+            dismiss()
+        }
+
+        binding.dateTv.text = DateUtils.convertMilisToDate(supportItem.supportItemDate)
+        binding.statustTv.text = OtherUtils.getSupportItemStatus(supportItem.supportItemStatus)
+        binding.numberTv.text = supportItem.supportItemId.toString()
+        binding.messageTv.text = supportItem.message
+
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-            mainActivity.viewModel.getSupportItems(
-                    preferenceHelper.getUserId() + "",
-                    it.token + ""
+            mainActivity.viewModel.getSupportItemAllMessages(
+                supportItem.supportItemId,
+                it.token +""
             )
         }
+
 
         return binding.root
     }
@@ -63,34 +72,21 @@ class TechSupportMessagesDialog : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
     }
 
+    fun updateMessages(data: List<SupportItemMessage>) {
 
-   class TechMessageAdapter : RecyclerView.Adapter<TechMessageAdapter.TechMessageViewHolder>(){
-        var items : MutableList<SupportItem> = ArrayList()
+        data.forEach {
+            if (it.senderId  != preferenceHelper.getUserId()){
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TechMessageViewHolder {
-            val binding : RowSupportMessageItemBinding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.context),
-                R.layout.row_support_message_item,
-                parent,
-                false
-            )
-            return TechMessageViewHolder(binding)
-        }
+                val sdf = SimpleDateFormat("yyyy/MM/dd - h:mm a", Locale.FRANCE)
 
-        override fun onBindViewHolder(holder: TechMessageViewHolder, position: Int) {
-            holder.bindItem(items[position])
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-
-        class TechMessageViewHolder(val binding: RowSupportMessageItemBinding) : RecyclerView.ViewHolder(binding.root){
-            fun bindItem(supportItem : SupportItem){
+                binding.responses.append("الدعم الفني [" +sdf.format(it.date)+"]\n")
+                binding.responses.append(it.message + "\n\n")
             }
         }
 
 
+
     }
+
+
 }

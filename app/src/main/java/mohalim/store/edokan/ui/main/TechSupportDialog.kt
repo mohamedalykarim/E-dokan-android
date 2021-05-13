@@ -3,7 +3,6 @@ package mohalim.store.edokan.ui.main
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -82,7 +81,7 @@ class TechSupportDialog : DialogFragment() {
 
     private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(mainActivity)
-        adapter = TechAdapter()
+        adapter = TechAdapter(mainActivity)
         binding.techItemsRV.layoutManager = layoutManager
         binding.techItemsRV.adapter = adapter
     }
@@ -100,7 +99,7 @@ class TechSupportDialog : DialogFragment() {
     }
 
     fun addNewSupportItemToAdapter(data: SupportItem) {
-        adapter.items.add(data)
+        adapter.items.add(0,data)
         adapter.notifyDataSetChanged()
         binding.techMessageET.text.clear()
         Toast.makeText(context, "تم اضافة المشكلة بنجاح", Toast.LENGTH_LONG).show()
@@ -122,7 +121,7 @@ class TechSupportDialog : DialogFragment() {
     }
 
 
-    class TechAdapter : RecyclerView.Adapter<TechAdapter.TechViewHolder>(){
+    class TechAdapter (val mainActivity: MainActivity) : RecyclerView.Adapter<TechAdapter.TechViewHolder>(){
         var items : MutableList<SupportItem> = ArrayList()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TechViewHolder {
@@ -133,7 +132,7 @@ class TechSupportDialog : DialogFragment() {
                     false
             )
 
-            return TechViewHolder(binding)
+            return TechViewHolder(binding, mainActivity)
         }
 
         override fun onBindViewHolder(holder: TechViewHolder, position: Int) {
@@ -145,13 +144,17 @@ class TechSupportDialog : DialogFragment() {
         }
 
 
-        class TechViewHolder(val binding: RowSupportItemBinding) : RecyclerView.ViewHolder(binding.root){
+        class TechViewHolder(val binding: RowSupportItemBinding, val mainActivity: MainActivity) : RecyclerView.ViewHolder(binding.root){
 
             fun bindItem(supportItem : SupportItem){
                 binding.dateTv.text = DateUtils.convertMilisToDate(supportItem.supportItemDate)
                 binding.statustTv.text = OtherUtils.getSupportItemStatus(supportItem.supportItemStatus)
                 binding.numberTv.text = supportItem.supportItemId.toString()
                 binding.messageTv.text = supportItem.message
+
+                binding.root.setOnClickListener{
+                    mainActivity.showTechSupportMessageDialog(supportItem)
+                }
             }
         }
 

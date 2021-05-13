@@ -8,6 +8,7 @@ import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.support_item.SupportItem
+import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessage
 import mohalim.store.edokan.core.repository.CategoryRepositoryImp
 import mohalim.store.edokan.core.repository.OfferRepositoryImp
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
@@ -55,6 +56,10 @@ class HomeViewModel
     private val _supportItemObserver : MutableLiveData<DataState<List<SupportItem>>> = MutableLiveData()
     val supportItemObserver : LiveData<DataState<List<SupportItem>>> get() = _supportItemObserver
 
+    private val _supportItemMessageObserver : MutableLiveData<DataState<List<SupportItemMessage>>> = MutableLiveData()
+    val supportItemMessageObserver : LiveData<DataState<List<SupportItemMessage>>> get() = _supportItemMessageObserver
+
+
     private val _addSupportItemObserver : MutableLiveData<DataState<SupportItem>> = MutableLiveData()
     val addSupportItemObserver : LiveData<DataState<SupportItem>> get() = _addSupportItemObserver
 
@@ -94,6 +99,14 @@ class HomeViewModel
         viewModelScope.launch {
             supportItemRepository.getSupportItems(userId, fToken).collect {
                 _supportItemObserver.value = it
+            }
+        }
+    }
+
+    fun getSupportItemAllMessages(itemId: Int, fToken: String){
+        viewModelScope.launch {
+            supportItemRepository.getAllMessages(itemId, fToken).collect {
+                _supportItemMessageObserver.value = it
             }
         }
     }

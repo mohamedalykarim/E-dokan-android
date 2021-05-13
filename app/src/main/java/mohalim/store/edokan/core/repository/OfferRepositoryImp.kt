@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.OfferInterfaceRetrofit
-import mohalim.store.edokan.core.data_source.room.converter.OfferDao
+import mohalim.store.edokan.core.data_source.room.OfferDao
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.offer.OfferCacheMapper
 import mohalim.store.edokan.core.model.offer.OfferNetworkMapper
@@ -18,11 +18,11 @@ import javax.inject.Inject
 
 class OfferRepositoryImp
 @Inject constructor(
-        private val retrofit: OfferInterfaceRetrofit,
-        private val offerNetworkMapper: OfferNetworkMapper,
-        private val offerDao: OfferDao,
-        private val offerCacheMapper: OfferCacheMapper,
-        context: Context
+    private val retrofit: OfferInterfaceRetrofit,
+    private val offerNetworkMapper: OfferNetworkMapper,
+    private val offerDao: OfferDao,
+    private val offerCacheMapper: OfferCacheMapper,
+    context: Context
 ) : OfferRepository {
 
     val TAG : String = "UserRepositoryImp"

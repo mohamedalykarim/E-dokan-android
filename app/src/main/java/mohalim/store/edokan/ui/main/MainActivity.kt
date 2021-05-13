@@ -1,7 +1,6 @@
 package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -14,11 +13,11 @@ import androidx.fragment.app.commit
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
+import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.NetworkAvailabilityInterface
 import mohalim.store.edokan.core.utils.NetworkVariables
 import mohalim.store.edokan.databinding.ActivityMainBinding
-import retrofit2.HttpException
 
 
 @AndroidEntryPoint
@@ -31,6 +30,7 @@ class MainActivity : BaseActivity() {
     lateinit var cartFragment: CartFragment
     private lateinit var accountFragment: AccountFragment
     private lateinit var techSupportDialog: TechSupportDialog
+    private lateinit var techSupportMessagesDialog: TechSupportMessagesDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +42,7 @@ class MainActivity : BaseActivity() {
         cartFragment = CartFragment()
         accountFragment = AccountFragment()
 
+        techSupportMessagesDialog = TechSupportMessagesDialog()
 
         subscribeObservers()
         handleBottomClicks()
@@ -109,62 +110,28 @@ class MainActivity : BaseActivity() {
     private fun subscribeObservers() {
         viewModel.noParentCategories.observe(this, {
             when (it) {
-                is DataState.Loading -> {
-
-                }
-
-                is DataState.Success -> {
-                    homeFragment.updateCategoryData(it.data)
-                }
-
-                is DataState.Failure -> {
-                }
+                is DataState.Loading -> { }
+                is DataState.Success -> { homeFragment.updateCategoryData(it.data) }
+                is DataState.Failure -> { }
             }
         })
 
         viewModel.offersComing.observe(this, {
             when (it) {
-                is DataState.Loading -> {
-
-                }
-
-                is DataState.Success -> {
-                    homeFragment.updateOffersData(it.data)
-                }
-
-                is DataState.Failure -> {
-                    when (it) {
-                        is HttpException -> {
-
-                        }
-                        else -> {
-
-                        }
-                    }
-                }
+                is DataState.Loading -> { }
+                is DataState.Success -> { homeFragment.updateOffersData(it.data) }
+                is DataState.Failure -> { }
             }
         })
 
         viewModel.chosenProducts.observe(this, {
             when (it) {
-                is DataState.Loading -> {
-
-                }
-
+                is DataState.Loading -> { }
                 is DataState.Success -> {
                     viewModel.PAGE++
                     homeFragment.updateChosenProductsData(it.data)
                 }
-
-                is DataState.Failure -> {
-                    when (it) {
-                        is HttpException -> {
-                        }
-                        else -> {
-
-                        }
-                    }
-                }
+                is DataState.Failure -> { }
             }
 
         })
@@ -174,7 +141,6 @@ class MainActivity : BaseActivity() {
                 is DataState.Loading -> {
                     techSupportDialog.changeProgressBarVisibility(View.VISIBLE)
                 }
-
                 is DataState.Success -> {
                     techSupportDialog.changeProgressBarVisibility(View.GONE)
                     techSupportDialog.updateSupportItemsData(it.data)
@@ -200,6 +166,17 @@ class MainActivity : BaseActivity() {
                 is DataState.Failure -> {
                     techSupportDialog.changeAddProgressBarVisibility(View.GONE, btnEnable = false, clearED = false)
                 }
+            }
+
+        })
+
+        viewModel.supportItemMessageObserver.observe(this, {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    techSupportMessagesDialog.updateMessages(it.data)
+                }
+                is DataState.Failure -> { }
             }
 
         })
@@ -340,7 +317,12 @@ class MainActivity : BaseActivity() {
         techSupportDialog = TechSupportDialog()
         if(techSupportDialog.isAdded) return
         techSupportDialog.show(supportFragmentManager, "techSupportDialog")
+    }
 
+    fun showTechSupportMessageDialog(supportItem: SupportItem) {
+        if(techSupportMessagesDialog.isAdded) return
+        techSupportMessagesDialog.supportItem = supportItem
+        techSupportMessagesDialog.show(supportFragmentManager, "techSupportMessagesDialog")
     }
 
 }

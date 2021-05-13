@@ -10,7 +10,7 @@ import mohalim.store.edokan.core.data_source.network.*
 import mohalim.store.edokan.core.data_source.room.*
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
-import mohalim.store.edokan.core.data_source.room.converter.OfferDao
+import mohalim.store.edokan.core.data_source.room.OfferDao
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
 import mohalim.store.edokan.core.model.offer.OfferCacheMapper
@@ -22,6 +22,7 @@ import mohalim.store.edokan.core.model.product_image.ProductImageNetworkMapper
 import mohalim.store.edokan.core.model.product_rating.ProductRatingNetworkMapper
 import mohalim.store.edokan.core.model.support_item.SupportItemCacheMapper
 import mohalim.store.edokan.core.model.support_item.SupportItemNetworkMapper
+import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessageNetworkMapper
 import mohalim.store.edokan.core.repository.*
 import javax.inject.Singleton
 
@@ -88,11 +89,11 @@ class RepositoryModule {
     @Singleton
     @Provides
     fun provideOfferRepository(
-            retrofit: OfferInterfaceRetrofit,
-            networkMapper: OfferNetworkMapper,
-            offerDao: OfferDao,
-            cacheMapper: OfferCacheMapper,
-            @ApplicationContext context: Context
+        retrofit: OfferInterfaceRetrofit,
+        networkMapper: OfferNetworkMapper,
+        offerDao: OfferDao,
+        cacheMapper: OfferCacheMapper,
+        @ApplicationContext context: Context
     ) : OfferRepositoryImp{
         return OfferRepositoryImp(retrofit, networkMapper, offerDao, cacheMapper, context)
     }
@@ -102,11 +103,12 @@ class RepositoryModule {
     fun provideSupportItemRepository(
             retrofit: SupportItemInterfaceRetrofit,
             networkMapper: SupportItemNetworkMapper,
+            networkMessageMapper : SupportItemMessageNetworkMapper,
             dao : SupportItemDao,
             cacheMapper: SupportItemCacheMapper,
             @ApplicationContext context: Context
     ) : SupportItemRepositoryImp{
-        return SupportItemRepositoryImp(retrofit, networkMapper, dao, cacheMapper, context)
+        return SupportItemRepositoryImp(retrofit, networkMapper, networkMessageMapper, dao, cacheMapper, context)
     }
 
 }
