@@ -54,7 +54,6 @@ class PhoneNumberLoginFragment : Fragment() {
 
     fun setLoadingVisibility(visibility : Int){
         binding.loading.visibility = visibility
-
     }
 
 

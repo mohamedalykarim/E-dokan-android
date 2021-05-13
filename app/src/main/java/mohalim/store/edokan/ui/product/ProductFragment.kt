@@ -17,6 +17,8 @@ import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_rating.ProductRating
 import mohalim.store.edokan.core.utils.Constants
+import mohalim.store.edokan.core.utils.IPreferenceHelper
+import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.FragmentProductBinding
 import mohalim.store.edokan.databinding.RowCategoryProductBinding
 import mohalim.store.edokan.databinding.RowHomeChosenProductsBinding
@@ -27,9 +29,12 @@ class ProductFragment : Fragment() {
     var productId = 0;
     lateinit var product : Product
 
-    lateinit var binding : FragmentProductBinding;
-    lateinit var productActivity: ProductActivity;
-    lateinit var similarProductAdapter : SimilarProductAdapter;
+    lateinit var binding : FragmentProductBinding
+    lateinit var productActivity: ProductActivity
+    lateinit var similarProductAdapter : SimilarProductAdapter
+
+    private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -122,7 +127,7 @@ class ProductFragment : Fragment() {
         binding.desciptionTv.text = product.productDescription
         binding.priceTV.text = product.productPrice.toString()
 
-        productActivity.viewModel.getSimilarProducts(product.productName)
+        productActivity.viewModel.getSimilarProducts(preferenceHelper.getCityId()!!, product.productName)
     }
 
     fun updateSimilarProductsData(data: List<Product>) {

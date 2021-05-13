@@ -22,6 +22,8 @@ import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.Constants
+import mohalim.store.edokan.core.utils.IPreferenceHelper
+import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
 import mohalim.store.edokan.databinding.*
 import mohalim.store.edokan.ui.category.CategoryActivity
@@ -39,6 +41,9 @@ class HomeFragment : Fragment() {
 
     lateinit var binding : FragmentHomeBinding
 
+    private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
@@ -48,7 +53,7 @@ class HomeFragment : Fragment() {
         }
 
         val activity = activity as MainActivity
-        activity.viewModel.fetchHomeFragmentData()
+        activity.viewModel.fetchHomeFragmentData(preferenceHelper.getCityId()!!)
 
         initCategoryRV(activity)
         initChosenRV(activity)

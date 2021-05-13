@@ -7,12 +7,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import mohalim.store.edokan.core.data_source.network.*
+import mohalim.store.edokan.core.data_source.network.req.CityInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.room.*
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
 import mohalim.store.edokan.core.data_source.room.OfferDao
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
+import mohalim.store.edokan.core.model.city.CityNetworkMapper
 import mohalim.store.edokan.core.model.offer.OfferCacheMapper
 import mohalim.store.edokan.core.model.offer.OfferNetworkMapper
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
@@ -101,14 +103,24 @@ class RepositoryModule {
     @Singleton
     @Provides
     fun provideSupportItemRepository(
-            retrofit: SupportItemInterfaceRetrofit,
-            networkMapper: SupportItemNetworkMapper,
-            networkMessageMapper : SupportItemMessageNetworkMapper,
-            dao : SupportItemDao,
-            cacheMapper: SupportItemCacheMapper,
-            @ApplicationContext context: Context
+        retrofit: SupportItemInterfaceRetrofit,
+        networkMapper: SupportItemNetworkMapper,
+        networkMessageMapper : SupportItemMessageNetworkMapper,
+        dao : SupportItemDao,
+        cacheMapper: SupportItemCacheMapper,
+        @ApplicationContext context: Context
     ) : SupportItemRepositoryImp{
         return SupportItemRepositoryImp(retrofit, networkMapper, networkMessageMapper, dao, cacheMapper, context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCityRepository(
+        retrofit: CityInterfaceRetrofit,
+        networkMapper: CityNetworkMapper,
+        @ApplicationContext context: Context
+    ) : CityRepositoryImp{
+        return CityRepositoryImp(retrofit, networkMapper, context)
     }
 
 }

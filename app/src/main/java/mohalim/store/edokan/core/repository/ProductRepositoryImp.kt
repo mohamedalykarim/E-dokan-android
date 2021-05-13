@@ -42,11 +42,11 @@ class ProductRepositoryImp
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(context) }
 
 
-    override fun getChosenProducts(page : Int, count : Int): Flow<DataState<List<Product>>> {
+    override fun getChosenProducts(page : Int, count : Int, cityId: Int): Flow<DataState<List<Product>>> {
         return flow {
             emit(DataState.Loading)
             try {
-                val productsNetwork = retrofit.getChosenProducts(ChosenProductBody(page, count))
+                val productsNetwork = retrofit.getChosenProducts(ChosenProductBody(page, count, cityId))
                 productsNetwork.forEach {
                     productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
                 }
@@ -58,11 +58,11 @@ class ProductRepositoryImp
 
     }
 
-    override fun getSimilarProducts(productName: String): Flow<DataState<List<Product>>> {
+    override fun getSimilarProducts(cityId: Int, productName: String): Flow<DataState<List<Product>>> {
         return flow {
             emit(DataState.Loading)
             try {
-                val productsNetwork = retrofit.getSimilarProducts(productName)
+                val productsNetwork = retrofit.getSimilarProducts(cityId, productName)
                 productsNetwork.forEach {
                     productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
                 }
@@ -78,7 +78,7 @@ class ProductRepositoryImp
         return flow {
             emit(DataState.Loading)
             try {
-                val productsNetwork = retrofit.getProductForCategory(GetProductInsideCategory(categoryId,randomId, limit, offset))
+                val productsNetwork = retrofit.getProductForCategory(GetProductInsideCategory(categoryId,randomId, limit, offset, preferenceHelper.getCityId()!!))
                 productsNetwork.forEach {
                     productDao.insert(productCacheMapper.mapToEntity(productNetworkMapper.mapFromEntity(it)))
                 }

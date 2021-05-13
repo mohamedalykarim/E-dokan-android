@@ -62,9 +62,9 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
         }
     }
 
-    fun getSimilarProducts(productName : String){
+    fun getSimilarProducts(cityId:Int, productName : String){
         viewModelScope.launch {
-            productRepository.getSimilarProducts(productName).collect {
+            productRepository.getSimilarProducts(cityId, productName).collect {
                 _similarProductObserver.value = it
             }
         }

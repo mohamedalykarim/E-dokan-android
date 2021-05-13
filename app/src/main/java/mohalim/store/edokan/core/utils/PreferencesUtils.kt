@@ -7,6 +7,22 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
     private val PREFS_NAME = "SharedPreference"
     private var preferences: SharedPreferences? = context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
+    override fun setCityId(cityId: Int) {
+        preferences?.set(CITY_ID, cityId)
+    }
+
+    override fun getCityId(): Int? {
+        return preferences?.get(CITY_ID)
+    }
+
+    override fun setCityName(cityName: String) {
+        preferences?.set(CITY_NAME, cityName)
+    }
+
+    override fun getCityName(): String? {
+        return preferences?.get(CITY_NAME) ?: ""
+    }
+
     override fun setApiToken(apiKey: String) {
         preferences?.set(API_TOKEN, apiKey)
     }
@@ -40,6 +56,8 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
     }
 
     companion object {
+        const val CITY_ID = "city_id"
+        const val CITY_NAME = "city_name"
         const val API_TOKEN = "api_key"
         const val FIREBASE_TOKEN = "firebase_key"
         const val REFRESH_TOKEN = "refresh_token"

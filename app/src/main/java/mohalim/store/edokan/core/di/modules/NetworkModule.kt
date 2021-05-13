@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import mohalim.store.edokan.core.data_source.network.*
+import mohalim.store.edokan.core.data_source.network.req.CityInterfaceRetrofit
 import mohalim.store.edokan.core.utils.Constants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -82,9 +83,17 @@ class NetworkModule {
     @Provides
     fun provideSupportItemInterfaceRetrofit(retrofit: Retrofit.Builder): SupportItemInterfaceRetrofit {
         return retrofit
-                .build()
-                .create(SupportItemInterfaceRetrofit::class.java)
+            .build()
+            .create(SupportItemInterfaceRetrofit::class.java)
 
+    }
+
+    @Singleton
+    @Provides
+    fun provideCityInterfaceRetrofit(retrofit: Retrofit.Builder): CityInterfaceRetrofit {
+        return retrofit
+            .build()
+            .create(CityInterfaceRetrofit::class.java)
     }
 
 }

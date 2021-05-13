@@ -25,7 +25,6 @@ class OfferRepositoryImp
     context: Context
 ) : OfferRepository {
 
-    val TAG : String = "UserRepositoryImp"
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(context) }
 
     override fun getCurrentOffers(): Flow<DataState<List<Offer>>> {

@@ -1,6 +1,13 @@
 package mohalim.store.edokan.core.utils
 
 interface IPreferenceHelper {
+    fun setCityId(cityId : Int)
+    fun getCityId() : Int?
+
+    fun setCityName(cityName: String)
+    fun getCityName(): String?
+
+
     fun setApiToken(apiKey: String)
     fun getApiToken(): String?
 

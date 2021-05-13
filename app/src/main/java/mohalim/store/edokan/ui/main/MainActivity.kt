@@ -14,9 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.model.support_item.SupportItem
-import mohalim.store.edokan.core.utils.DataState
-import mohalim.store.edokan.core.utils.NetworkAvailabilityInterface
-import mohalim.store.edokan.core.utils.NetworkVariables
+import mohalim.store.edokan.core.utils.*
 import mohalim.store.edokan.databinding.ActivityMainBinding
 
 
@@ -31,6 +29,10 @@ class MainActivity : BaseActivity() {
     private lateinit var accountFragment: AccountFragment
     private lateinit var techSupportDialog: TechSupportDialog
     private lateinit var techSupportMessagesDialog: TechSupportMessagesDialog
+    private lateinit var cityFragment: CityFragment
+
+    private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(this) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,12 +43,20 @@ class MainActivity : BaseActivity() {
         homeFragment = HomeFragment()
         cartFragment = CartFragment()
         accountFragment = AccountFragment()
+        cityFragment = CityFragment()
 
         techSupportMessagesDialog = TechSupportMessagesDialog()
 
         subscribeObservers()
         handleBottomClicks()
-        loadFragment(homeFragment)
+
+        if(preferenceHelper.getCityId()!! > 0 ){
+            loadFragment(homeFragment)
+        }else{
+            loadFragment(cityFragment)
+            binding.bottom.visibility = View.GONE
+        }
+
     }
 
     override fun onBackPressed() {
@@ -65,6 +75,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    fun loadHome() {
+        loadFragment(homeFragment)
+    }
+
     fun loadFragment(fragment : Fragment){
         viewModel.CURRENT_FRAGMENT = fragment.javaClass.name
 
@@ -73,6 +87,8 @@ class MainActivity : BaseActivity() {
             replace(binding.fragmentContainerView.id, fragment)
             addToBackStack(fragment.toString())
         }
+
+        binding.bottom.visibility = View.VISIBLE
     }
 
     private fun checkInternetAvailability() {
@@ -90,7 +106,7 @@ class MainActivity : BaseActivity() {
                 if (boolean) {
 
                     runOnUiThread {
-                        if (viewModel.CURRENT_FRAGMENT == HomeFragment::class.java.name) viewModel.fetchHomeFragmentData()
+                        if (viewModel.CURRENT_FRAGMENT == HomeFragment::class.java.name) viewModel.fetchHomeFragmentData(preferenceHelper.getCityId()!!)
                         binding.internetAvailabilityContainer.visibility = View.GONE
                     }
 
@@ -175,6 +191,17 @@ class MainActivity : BaseActivity() {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
                     techSupportMessagesDialog.updateMessages(it.data)
+                }
+                is DataState.Failure -> { }
+            }
+
+        })
+
+        viewModel.citiesObserver.observe(this, {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    cityFragment.updateCities(it.data)
                 }
                 is DataState.Failure -> { }
             }
@@ -324,5 +351,7 @@ class MainActivity : BaseActivity() {
         techSupportMessagesDialog.supportItem = supportItem
         techSupportMessagesDialog.show(supportFragmentManager, "techSupportMessagesDialog")
     }
+
+
 
 }

@@ -5,14 +5,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.city.City
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessage
-import mohalim.store.edokan.core.repository.CategoryRepositoryImp
-import mohalim.store.edokan.core.repository.OfferRepositoryImp
-import mohalim.store.edokan.core.repository.ProductRepositoryImp
-import mohalim.store.edokan.core.repository.SupportItemRepositoryImp
+import mohalim.store.edokan.core.repository.*
 import mohalim.store.edokan.core.utils.DataState
 import javax.inject.Inject
 
@@ -23,7 +21,8 @@ class HomeViewModel
     private val categoryRepository: CategoryRepositoryImp,
     private val productRepository: ProductRepositoryImp,
     private val offerRepository: OfferRepositoryImp,
-    private val supportItemRepository : SupportItemRepositoryImp
+    private val supportItemRepository : SupportItemRepositoryImp,
+    private val cityRepository : CityRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -64,9 +63,13 @@ class HomeViewModel
     val addSupportItemObserver : LiveData<DataState<SupportItem>> get() = _addSupportItemObserver
 
 
-    fun fetchHomeFragmentData (){
+    private val _citiesObserver : MutableLiveData<DataState<List<City>>> = MutableLiveData()
+    val citiesObserver : LiveData<DataState<List<City>>> get() = _citiesObserver
+
+
+    fun fetchHomeFragmentData (cityId: Int){
         getNoParentCategories()
-        getChosenProducts(PAGE, PAGE_COUNT)
+        getChosenProducts(PAGE, PAGE_COUNT, cityId)
         getCurrentOffers()
     }
 
@@ -79,9 +82,9 @@ class HomeViewModel
        }
     }
 
-    private fun getChosenProducts(page : Int, count : Int){
+    private fun getChosenProducts(page : Int, count : Int, cityId : Int){
         viewModelScope.launch {
-            productRepository.getChosenProducts(page, count).collect {
+            productRepository.getChosenProducts(page, count, cityId).collect {
                 _chosenProducts.value = it
             }
         }
@@ -115,6 +118,14 @@ class HomeViewModel
         viewModelScope.launch {
             supportItemRepository.addSupportItem(userId, fToken, message).collect {
                 _addSupportItemObserver.value = it
+            }
+        }
+    }
+
+    fun getAllCities(){
+        viewModelScope.launch {
+            cityRepository.getAllCities().collect {
+                _citiesObserver.value = it
             }
         }
     }
