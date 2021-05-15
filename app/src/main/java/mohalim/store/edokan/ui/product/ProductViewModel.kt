@@ -86,8 +86,8 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
 
     fun removeCartProduct(productId: Int) {
         viewModelScope.launch {
-            productRepository.removeCartProduct(productId).collect{
-            }
+            productRepository.removeCartProduct(productId)
+            getCartProductFromInternal(productId)
         }
     }
 
@@ -101,17 +101,16 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
 
     fun cartProdcutCountUpInternal(productId: Int) {
         viewModelScope.launch {
-            productRepository.cartProdcutCountUpInternal(productId).collect {
-                getCartProductFromInternal(productId)
-            }
+            productRepository.cartProdcutCountUpInternal(productId);
+            getCartProductFromInternal(productId)
+
         }
     }
 
     fun cartProdcutCountDownInternal(productId: Int) {
         viewModelScope.launch {
-            productRepository.cartProdcutCountDownInternal(productId).collect {
-                getCartProductFromInternal(productId)
-            }
+            productRepository.cartProdcutCountDownInternal(productId)
+            getCartProductFromInternal(productId)
         }
     }
 

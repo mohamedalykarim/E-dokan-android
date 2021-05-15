@@ -16,8 +16,8 @@ interface ProductRepository {
     fun getProductRating(productId : Int): Flow<DataState<ProductRating>>
     fun addProductToCart(cartPrduct: CartProduct) : Flow<DataState<Boolean>>
     fun getCartProductFromInternal(productId: Int) : Flow<DataState<CartProduct>>
-    fun cartProdcutCountUpInternal(productId: Int): Flow<DataState<Boolean>>
-    fun cartProdcutCountDownInternal(productId: Int): Flow<DataState<Boolean>>
-    fun removeCartProduct(productId: Int): Flow<DataState<Boolean>>
+    suspend fun cartProdcutCountUpInternal(productId: Int)
+    suspend fun cartProdcutCountDownInternal(productId: Int)
+    suspend fun removeCartProduct(productId: Int)
 
 }

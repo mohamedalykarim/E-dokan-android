@@ -56,7 +56,8 @@ class LoginActivity : BaseActivity() {
         }
 
         override fun onVerificationFailed(exception: FirebaseException) {
-
+            Log.d(TAG, "onVerificationFailed: "+exception.message)
+            phoneNumberLoginFragment.setLoadingVisibility(View.GONE)
         }
 
     }
@@ -128,7 +129,6 @@ class LoginActivity : BaseActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     val user = task.result?.user
-                    phoneNumberLoginFragment.setLoadingVisibility(View.GONE)
                     loginToApi(user, "")
 
                 } else {

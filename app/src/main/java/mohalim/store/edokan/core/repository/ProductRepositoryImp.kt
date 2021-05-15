@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.req.ChosenProductBody
 import mohalim.store.edokan.core.data_source.network.req.GetProductInsideCategory
@@ -160,38 +161,22 @@ class ProductRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun cartProdcutCountUpInternal(productId: Int) : Flow<DataState<Boolean>> {
-        return flow {
-            emit(DataState.Loading)
-            try {
-                val updated = cartProductDao.countUp(productId)
-            }catch (e : Exception){
-                emit(DataState.Failure(e))
-            }
-        }.flowOn(Dispatchers.IO)
+    override suspend fun cartProdcutCountUpInternal(productId: Int) {
+        withContext(Dispatchers.IO){
+            val updated = cartProductDao.countUp(productId)
+        }
     }
 
-    override fun cartProdcutCountDownInternal(productId: Int) : Flow<DataState<Boolean>> {
-        return flow {
-            emit(DataState.Loading)
-            try {
-                val updated = cartProductDao.countDown(productId)
-                Log.d(TAG, "cartProdcutCountDownInternal: "+ updated)
-            }catch (e : Exception){
-                Log.d(TAG, "cartProdcutCountDownInternal: "+e.message)
-                emit(DataState.Failure(e))
-            }
-        }.flowOn(Dispatchers.IO)
+    override suspend fun cartProdcutCountDownInternal(productId: Int) {
+        withContext(Dispatchers.IO){
+            val updated = cartProductDao.countDown(productId)
+        }
     }
 
-    override fun removeCartProduct(productId: Int): Flow<DataState<Boolean>> {
-        return flow {
-            emit(DataState.Loading)
-            try {
-                val updated = cartProductDao.remove(productId)
-            }catch (e : Exception){
-                emit(DataState.Failure(e))
-            }
-        }.flowOn(Dispatchers.IO)    }
+    override suspend fun removeCartProduct(productId: Int){
+        withContext(Dispatchers.IO){
+            val updated = cartProductDao.remove(productId)
+        }
+    }
 
 }
