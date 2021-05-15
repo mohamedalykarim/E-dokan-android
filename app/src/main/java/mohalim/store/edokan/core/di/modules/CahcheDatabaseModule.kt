@@ -68,4 +68,10 @@ class CahcheDatabaseModule {
     fun provideSupportItemMessageDao(appCacheDatabase: AppCacheDatabase) : SupportItemMessageDao{
         return appCacheDatabase.supportItemMessageDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideCartProdcutDao(appCacheDatabase: AppCacheDatabase) : CartProductDao{
+        return appCacheDatabase.cartProductDao()
+    }
 }

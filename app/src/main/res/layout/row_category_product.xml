@@ -27,7 +27,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
-                android:customFont="@{@string/ge_ss_two_light}"
                 android:text="ج.م"
                 android:textSize="12sp" />
 
@@ -35,7 +34,6 @@
                 android:id="@+id/priceTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:customFont="@{@string/ge_ss_two_light}"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -50,7 +48,6 @@
             android:textColor="#000"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:customFont="@{@string/ge_ss_two_light}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView3" />
@@ -69,7 +66,6 @@
                 android:id="@+id/marketplaceTV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:customFont="@{@string/ge_ss_two_light}"
                 android:textAlignment="center"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -81,7 +77,6 @@
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:customFont="@{@string/ge_ss_two_light}"
                 android:text="من"
                 android:textColor="@color/primary"
                 android:textSize="12sp"

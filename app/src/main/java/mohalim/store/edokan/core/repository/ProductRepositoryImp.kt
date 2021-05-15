@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.ProductInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.req.ChosenProductBody
 import mohalim.store.edokan.core.data_source.network.req.GetProductInsideCategory
+import mohalim.store.edokan.core.data_source.room.CartProductDao
 import mohalim.store.edokan.core.data_source.room.ProductDao
 import mohalim.store.edokan.core.data_source.room.ProductImageDao
+import mohalim.store.edokan.core.model.cart.CartProduct
+import mohalim.store.edokan.core.model.cart.CartProductCacheMapper
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
 import mohalim.store.edokan.core.model.product.ProductNetworkMapper
@@ -23,6 +26,7 @@ import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import java.lang.Exception
+import java.security.spec.ECField
 import javax.inject.Inject
 
 class ProductRepositoryImp
@@ -35,6 +39,8 @@ class ProductRepositoryImp
     private val productImageNetworkMapper: ProductImageNetworkMapper,
     private val productImageCacheMapper: ProductImageCacheMapper,
     private val productRatingNetworkMapper: ProductRatingNetworkMapper,
+    private val cartProductDao: CartProductDao,
+    private val cartProductCacheMapper : CartProductCacheMapper,
     context: Context
 ) : ProductRepository {
 
@@ -128,5 +134,64 @@ class ProductRepositoryImp
             }
         }.flowOn(Dispatchers.IO)
     }
+
+    override fun addProductToCart(cartPrduct: CartProduct): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val inserted = cartProductDao.insert(cartProductCacheMapper.mapToEntity(cartPrduct))
+                emit(DataState.Success(true))
+
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getCartProductFromInternal(productId: Int): Flow<DataState<CartProduct>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val cartProduct = cartProductDao.getProductById(productId)
+                emit(DataState.Success(cartProductCacheMapper.mapFromEntity(cartProduct)))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun cartProdcutCountUpInternal(productId: Int) : Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val updated = cartProductDao.countUp(productId)
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun cartProdcutCountDownInternal(productId: Int) : Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val updated = cartProductDao.countDown(productId)
+                Log.d(TAG, "cartProdcutCountDownInternal: "+ updated)
+            }catch (e : Exception){
+                Log.d(TAG, "cartProdcutCountDownInternal: "+e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun removeCartProduct(productId: Int): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val updated = cartProductDao.remove(productId)
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)    }
 
 }

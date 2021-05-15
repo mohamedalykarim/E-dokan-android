@@ -3,6 +3,8 @@ package mohalim.store.edokan.ui.category
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.commit
@@ -70,9 +72,7 @@ class CategoryActivity : AppCompatActivity() {
                     cateFragment.updateCategoriesRV(it.data)
                 }
 
-                is DataState.Failure -> {
-
-                }
+                is DataState.Failure -> { }
             }
 
         })
@@ -86,10 +86,11 @@ class CategoryActivity : AppCompatActivity() {
                 is DataState.Success -> {
                     cateFragment.updateProductsAdapter(it.data)
                     viewModel.productOffset = viewModel.productOffset + viewModel.productLimit
+                    cateFragment.updateMoreLoadingVisibility(View.GONE)
                 }
 
                 is DataState.Failure -> {
-
+                    cateFragment.updateMoreLoadingVisibility(View.GONE)
                 }
             }
         })

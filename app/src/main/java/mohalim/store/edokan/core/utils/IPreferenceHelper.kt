@@ -21,5 +21,7 @@ interface IPreferenceHelper {
     fun setUserId(id : String)
     fun getUserId() : String?
 
+    fun setCartCityId(cityId : Int)
+    fun getCartCityId() : Int?
 
 }

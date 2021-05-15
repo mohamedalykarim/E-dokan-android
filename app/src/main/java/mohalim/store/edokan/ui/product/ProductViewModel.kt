@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import mohalim.store.edokan.core.model.category.Category
+import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_image.ProductImage
 import mohalim.store.edokan.core.model.product_rating.ProductRating
@@ -19,7 +19,6 @@ import javax.inject.Inject
 class ProductViewModel
 @Inject
 constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
-
 
     var productImages: List<ProductImage> = ArrayList();
 
@@ -36,6 +35,13 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
 
     private val _productRatingObserver : MutableLiveData<DataState<ProductRating>> = MutableLiveData()
     val productRatingObserver : LiveData<DataState<ProductRating>> get() = _productRatingObserver
+
+    private val _addProductToCartObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val addProductToCartObserver : LiveData<DataState<Boolean>> get() = _addProductToCartObserver
+
+
+    private val _getCartProductFromInternalObserver : MutableLiveData<DataState<CartProduct>> = MutableLiveData()
+    val getCartProductFromInternalObserver : LiveData<DataState<CartProduct>> get() = _getCartProductFromInternalObserver
 
 
     fun getProductImages(productId : Int){
@@ -69,6 +75,47 @@ constructor(val productRepository: ProductRepositoryImp) : ViewModel(){
             }
         }
     }
+
+    fun addProductToCart(cartPrduct: CartProduct) {
+        viewModelScope.launch {
+            productRepository.addProductToCart(cartPrduct).collect{
+                _addProductToCartObserver.value = it
+            }
+        }
+    }
+
+    fun removeCartProduct(productId: Int) {
+        viewModelScope.launch {
+            productRepository.removeCartProduct(productId).collect{
+            }
+        }
+    }
+
+    fun getCartProductFromInternal(productId: Int) {
+        viewModelScope.launch {
+            productRepository.getCartProductFromInternal(productId).collect {
+                _getCartProductFromInternalObserver.value = it
+            }
+        }
+    }
+
+    fun cartProdcutCountUpInternal(productId: Int) {
+        viewModelScope.launch {
+            productRepository.cartProdcutCountUpInternal(productId).collect {
+                getCartProductFromInternal(productId)
+            }
+        }
+    }
+
+    fun cartProdcutCountDownInternal(productId: Int) {
+        viewModelScope.launch {
+            productRepository.cartProdcutCountDownInternal(productId).collect {
+                getCartProductFromInternal(productId)
+            }
+        }
+    }
+
+
 
 
 }

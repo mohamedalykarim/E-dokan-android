@@ -12,6 +12,7 @@ import mohalim.store.edokan.core.data_source.room.*
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
 import mohalim.store.edokan.core.data_source.room.OfferDao
+import mohalim.store.edokan.core.model.cart.CartProductCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
 import mohalim.store.edokan.core.model.city.CityNetworkMapper
@@ -73,6 +74,8 @@ class RepositoryModule {
             productImageNetworkMapper: ProductImageNetworkMapper,
             productImageCacheMapper: ProductImageCacheMapper,
             productRatingNetworkMapper: ProductRatingNetworkMapper,
+            cartProductDao: CartProductDao,
+            cartProductCacheMapper: CartProductCacheMapper,
             @ApplicationContext context: Context
     ) : ProductRepositoryImp{
         return ProductRepositoryImp(
@@ -84,6 +87,8 @@ class RepositoryModule {
                 productImageNetworkMapper,
                 productImageCacheMapper,
                 productRatingNetworkMapper,
+                cartProductDao,
+                cartProductCacheMapper,
                 context
         )
     }

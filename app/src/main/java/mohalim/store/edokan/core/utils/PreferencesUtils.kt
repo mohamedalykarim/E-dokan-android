@@ -55,6 +55,14 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         return preferences?.get(USER_ID) ?: ""
     }
 
+    override fun setCartCityId(cityId: Int) {
+        preferences?.set(CART_CITY_ID, cityId)
+    }
+
+    override fun getCartCityId(): Int? {
+        return preferences?.get(CART_CITY_ID)
+    }
+
     companion object {
         const val CITY_ID = "city_id"
         const val CITY_NAME = "city_name"
@@ -62,6 +70,8 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         const val FIREBASE_TOKEN = "firebase_key"
         const val REFRESH_TOKEN = "refresh_token"
         const val USER_ID = "user_id"
+        const val CART_CITY_ID = "cart_city_id"
+
     }
 
 }

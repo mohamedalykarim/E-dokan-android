@@ -106,7 +106,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:customFont="@{@string/ge_ss_two_light}"
             android:text="الدعم الفني"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/techMessageBackImg"

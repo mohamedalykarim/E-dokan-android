@@ -26,10 +26,6 @@ class SignedRequestInterceptor(val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response  {
         val request : Request = chain.request()
-        Log.d("TAG", "intercept: request url: "+request.url())
-        Log.d("TAG", "intercept: request body: "+request.body()?.toString())
-        Log.d("TAG", "intercept: request headers: "+request.headers())
-        Log.d("TAG", "intercept: request method: "+request.method())
         val response : Response = chain.proceed(request)
 
         try {
@@ -86,7 +82,6 @@ class SignedRequestInterceptor(val context: Context) : Interceptor {
                 return response
             }
         }catch (e : Exception){
-            Log.d("TAG", "intercept: exception "+ e.message)
             return response
         }
     }

@@ -59,6 +59,7 @@ class CategoryRepositoryImp
                     categoryDao.insert(categoryCacheMapper.mapToEntity(categoryNetworkMapper.mapFromEntity(it)))
                 }
                 val categories : List<Category> = categoryCacheMapper.mapFromEntityList(categoryDao.getCategoryFromCacheByParentId("$parentId"));
+
                 emit(DataState.Success(categories))
             }catch (e : Exception){
                 emit(DataState.Failure(e))

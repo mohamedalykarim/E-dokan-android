@@ -60,6 +60,8 @@ class HomeFragment : Fragment() {
         initSlider(activity,inflater,container)
         initSliderDots(inflater, container, 0)
 
+        binding.cityTv.text = preferenceHelper.getCityName()
+
         return binding.root
     }
 

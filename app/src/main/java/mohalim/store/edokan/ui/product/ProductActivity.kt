@@ -98,5 +98,29 @@ class ProductActivity : AppCompatActivity() {
                 }
             }
         })
+
+        viewModel.addProductToCartObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    productFragment.cartProductAdded()
+                }
+                is DataState.Failure -> { }
+            }
+
+        })
+
+        viewModel.getCartProductFromInternalObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    productFragment.getCartProduct(it.data)
+                }
+                is DataState.Failure -> { }
+            }
+
+        })
     }
+
+
 }

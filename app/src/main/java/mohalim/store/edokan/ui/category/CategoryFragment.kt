@@ -55,6 +55,9 @@ class CategoryFragment : Fragment() {
         binding.productsRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (productGridLayoutManager.findLastCompletelyVisibleItemPosition() == productAdpater.products.size - 1) {
+
+                    binding.moreProgressbar.visibility = View.VISIBLE
+
                     activity.viewModel.getProductForCategory(
                             categoryId,
                             activity.viewModel.productRandomId,
@@ -102,13 +105,20 @@ class CategoryFragment : Fragment() {
     }
 
     fun updateCategoriesRV(data: List<Category>) {
+        binding.moreProgressbar.visibility = View.GONE
         categoryAdapter.categories = data
         categoryAdapter.notifyDataSetChanged()
     }
 
     fun updateProductsAdapter(data: List<Product>) {
+        binding.moreProgressbar.visibility = View.GONE
+
         productAdpater.products.addAll(data)
         productAdpater.notifyDataSetChanged()
+    }
+
+    fun updateMoreLoadingVisibility(visible: Int) {
+        binding.moreProgressbar.visibility = visible
     }
 
     class ProductCategoryAdapter(val products : MutableList<Product>) : RecyclerView.Adapter<ProductCategoryAdapter.CategoryProductViewHolder>(){

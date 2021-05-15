@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:customFont="@{@string/font}"
             android:text="اهلا بك، فى تطبيق الدكان واللى من خلاله هنسهلك كل مشتريات البيت من غير ما تشيل هم النزول للسوق، مع الدكان هنوصلك كل حاجة لباب البيت"
             android:textAlignment="center"
             android:textColor="#FFC107"

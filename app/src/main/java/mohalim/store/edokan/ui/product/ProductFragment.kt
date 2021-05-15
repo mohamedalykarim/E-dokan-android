@@ -2,7 +2,6 @@ package mohalim.store.edokan.ui.product
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,24 +13,24 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_rating.ProductRating
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.FragmentProductBinding
-import mohalim.store.edokan.databinding.RowCategoryProductBinding
 import mohalim.store.edokan.databinding.RowHomeChosenProductsBinding
 
 @AndroidEntryPoint
 class ProductFragment : Fragment() {
 
-    var productId = 0;
+    var productId = 0
     lateinit var product : Product
 
     lateinit var binding : FragmentProductBinding
     lateinit var productActivity: ProductActivity
-    lateinit var similarProductAdapter : SimilarProductAdapter
+    private lateinit var similarProductAdapter : SimilarProductAdapter
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
 
@@ -40,7 +39,7 @@ class ProductFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = DataBindingUtil.inflate(
             layoutInflater,
@@ -49,14 +48,44 @@ class ProductFragment : Fragment() {
             false
         )
 
-        productActivity = activity as ProductActivity;
+        productActivity = activity as ProductActivity
         productActivity.viewModel.getProductById(productId)
         productActivity.viewModel.getProductImages(productId)
         productActivity.viewModel.getProductRating(productId)
-
+        productActivity.viewModel.getCartProductFromInternal(productId)
 
         imageClicks()
         initSimilarRV()
+
+        binding.addBtn.setOnClickListener {
+            if (preferenceHelper.getCartCityId() == -1 || preferenceHelper.getCartCityId() == preferenceHelper.getCityId() ){
+                preferenceHelper.setCartCityId(preferenceHelper.getCityId()!!)
+
+                val cartPrduct : CartProduct = CartProduct(
+                    product.productId,
+                    product.productName,
+                    product.productDescription,
+                    product.productImage,
+                    product.productPrice,
+                    product.productDiscount,
+                    product.marketPlaceId,
+                    product.marketPlaceName,
+                    1
+                )
+
+                productActivity.viewModel.addProductToCart(cartPrduct)
+            }else{
+                //Todo no same city
+            }
+        }
+
+        binding.countUpBtn.setOnClickListener {
+            productActivity.viewModel.cartProdcutCountUpInternal(productId)
+        }
+
+        binding.countDownBtn.setOnClickListener {
+            productActivity.viewModel.cartProdcutCountDownInternal(productId)
+        }
 
         return binding.root
     }
@@ -70,32 +99,32 @@ class ProductFragment : Fragment() {
     }
 
     private fun imageClicks() {
-        binding.image1.setOnClickListener(View.OnClickListener {
+        binding.image1.setOnClickListener {
             if (productActivity.viewModel.productImages.isNotEmpty()){
                 Glide.with(productActivity)
                         .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + productActivity.viewModel.productImages[0].productImage)
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(binding.bigImage)
             }
-        })
+        }
 
-        binding.image2.setOnClickListener(View.OnClickListener {
+        binding.image2.setOnClickListener{
             if (productActivity.viewModel.productImages.isNotEmpty()){
                 Glide.with(productActivity)
                         .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + productActivity.viewModel.productImages[1].productImage)
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(binding.bigImage)
             }
-        })
+        }
 
-        binding.image3.setOnClickListener(View.OnClickListener {
+        binding.image3.setOnClickListener{
             if (productActivity.viewModel.productImages.isNotEmpty()){
                 Glide.with(productActivity)
                         .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + productActivity.viewModel.productImages[2].productImage)
                         .diskCacheStrategy(DiskCacheStrategy.DATA)
                         .into(binding.bigImage)
             }
-        })
+        }
     }
 
     fun updateImages() {
@@ -131,7 +160,8 @@ class ProductFragment : Fragment() {
     }
 
     fun updateSimilarProductsData(data: List<Product>) {
-        similarProductAdapter.products = data
+        similarProductAdapter.products.addAll(data)
+        similarProductAdapter.products.remove(product)
         similarProductAdapter.notifyDataSetChanged()
     }
 
@@ -140,9 +170,26 @@ class ProductFragment : Fragment() {
         binding.ratingTv.text = data.productRate.toString()
     }
 
-    class SimilarProductAdapter(var products : List<Product>) : RecyclerView.Adapter<SimilarProductAdapter.SimilarProductViewHodler>() {
+    fun cartProductAdded() {
+        binding.addBtn.visibility = View.GONE
+        binding.countCountainer.visibility = View.VISIBLE
+    }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarProductViewHodler {
+    fun getCartProduct(data: CartProduct) {
+        if (data.productCount > 0){
+            binding.addBtn.visibility = View.GONE
+            binding.countCountainer.visibility = View.VISIBLE
+            binding.cartCountTv.text = data.productCount.toString()
+        }else{
+            binding.addBtn.visibility = View.VISIBLE
+            binding.countCountainer.visibility = View.GONE
+            productActivity.viewModel.removeCartProduct(productId)
+        }
+    }
+
+    class SimilarProductAdapter(var products : MutableList<Product>) : RecyclerView.Adapter<SimilarProductAdapter.SimilarProductViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarProductViewHolder {
             val binding : RowHomeChosenProductsBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(parent.context),
                     R.layout.row_home_chosen_products,
@@ -150,17 +197,17 @@ class ProductFragment : Fragment() {
                     false
             )
 
-            return SimilarProductViewHodler(binding)
+            return SimilarProductViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: SimilarProductViewHodler, position: Int) {
+        override fun onBindViewHolder(holder: SimilarProductViewHolder, position: Int) {
             holder.bindItem(products[position])
         }
 
         override fun getItemCount(): Int { return products.size }
 
 
-        class SimilarProductViewHodler(val binding : RowHomeChosenProductsBinding) : RecyclerView.ViewHolder(binding.root) {
+        class SimilarProductViewHolder(val binding : RowHomeChosenProductsBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bindItem(product: Product) {
                 binding.priceTV.text = product.productPrice.toString()
                 binding.productNameTV.text = product.productName
@@ -170,12 +217,12 @@ class ProductFragment : Fragment() {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(binding.imageView4)
 
-                binding.root.setOnClickListener(View.OnClickListener {
-                    val intent : Intent = Intent(binding.root.context, ProductActivity::class.java)
+                binding.root.setOnClickListener{
+                    val intent = Intent(binding.root.context, ProductActivity::class.java)
                     intent.putExtra(Constants.constants.PRODUCT_ID, product.productId)
                     binding.root.context.startActivity(intent)
 
-                })
+                }
             }
 
         }

@@ -1,6 +1,7 @@
 package mohalim.store.edokan.core.repository
 
 import kotlinx.coroutines.flow.Flow
+import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.product_image.ProductImage
 import mohalim.store.edokan.core.model.product_rating.ProductRating
@@ -13,5 +14,10 @@ interface ProductRepository {
     fun getProductById(productId: Int) : Flow<DataState<Product>>
     fun getProductImages(productId : Int): Flow<DataState<List<ProductImage>>>
     fun getProductRating(productId : Int): Flow<DataState<ProductRating>>
+    fun addProductToCart(cartPrduct: CartProduct) : Flow<DataState<Boolean>>
+    fun getCartProductFromInternal(productId: Int) : Flow<DataState<CartProduct>>
+    fun cartProdcutCountUpInternal(productId: Int): Flow<DataState<Boolean>>
+    fun cartProdcutCountDownInternal(productId: Int): Flow<DataState<Boolean>>
+    fun removeCartProduct(productId: Int): Flow<DataState<Boolean>>
 
 }

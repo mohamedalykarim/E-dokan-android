@@ -72,6 +72,11 @@ class MainActivity : BaseActivity() {
                 loadFragment(homeFragment)
                 homeBottom()
             }
+            CityFragment::class.java.name ->{
+                loadFragment(homeFragment)
+                binding.bottom.visibility = View.VISIBLE
+            }
+
         }
     }
 
