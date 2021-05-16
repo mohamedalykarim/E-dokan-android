@@ -1,6 +1,7 @@
 package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -10,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
@@ -217,6 +219,18 @@ class MainActivity : BaseActivity() {
                 is DataState.Failure -> { }
             }
 
+        })
+
+        viewModel.cartProductsObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    cartFragment.cartProducts.clear()
+                    cartFragment.cartProducts.addAll(it.data)
+                    cartFragment.updateProducts(it.data)
+                }
+                is DataState.Failure -> { }
+            }
         })
 
     }

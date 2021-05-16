@@ -179,4 +179,16 @@ class ProductRepositoryImp
         }
     }
 
+    override fun getAllCartProductFromInternal() : Flow<DataState<List<CartProduct>>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val cartProductsCache = cartProductDao.getAll()
+                emit(DataState.Success(cartProductCacheMapper.mapFromEntityList(cartProductsCache)))
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

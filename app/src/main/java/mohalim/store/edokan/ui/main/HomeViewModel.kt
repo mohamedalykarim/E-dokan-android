@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.city.City
 import mohalim.store.edokan.core.model.offer.Offer
@@ -66,6 +67,9 @@ class HomeViewModel
     private val _citiesObserver : MutableLiveData<DataState<List<City>>> = MutableLiveData()
     val citiesObserver : LiveData<DataState<List<City>>> get() = _citiesObserver
 
+    private val _cartProductsObserver : MutableLiveData<DataState<List<CartProduct>>> = MutableLiveData()
+    val cartProductsObserver : LiveData<DataState<List<CartProduct>>> get() = _cartProductsObserver
+
 
     fun fetchHomeFragmentData (cityId: Int){
         getNoParentCategories()
@@ -126,6 +130,14 @@ class HomeViewModel
         viewModelScope.launch {
             cityRepository.getAllCities().collect {
                 _citiesObserver.value = it
+            }
+        }
+    }
+
+    fun getAllCartProductFromInternal() {
+        viewModelScope.launch {
+            productRepository.getAllCartProductFromInternal().collect {
+                _cartProductsObserver.value = it
             }
         }
     }

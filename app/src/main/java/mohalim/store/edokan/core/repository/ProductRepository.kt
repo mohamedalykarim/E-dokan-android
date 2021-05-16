@@ -19,5 +19,6 @@ interface ProductRepository {
     suspend fun cartProdcutCountUpInternal(productId: Int)
     suspend fun cartProdcutCountDownInternal(productId: Int)
     suspend fun removeCartProduct(productId: Int)
+    fun getAllCartProductFromInternal() : Flow<DataState<List<CartProduct>>>
 
 }
