@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.cart.CartProduct
+import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.FragmentCartBinding
+import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
 import mohalim.store.edokan.ui.product.ProductActivity
 
@@ -39,6 +41,8 @@ class CartFragment : Fragment() {
         binding.marketPlaceContainerContainer.removeAllViews()
         binding.cartProductsContainer.removeAllViews()
 
+        val marketPlaces : MutableList<MarketPlace> = ArrayList()
+
         data.forEach {
             val cartProductBinding : RowCartProductBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(context),
@@ -62,6 +66,23 @@ class CartFragment : Fragment() {
             }
 
             binding.cartProductsContainer.addView(cartProductBinding.root)
+
+            marketPlaces.add(MarketPlace(it.marketPlaceId, it.marketPlaceName))
         }
+
+        val distinctMarketplaces = marketPlaces.distinct()
+        distinctMarketplaces.forEach {
+            val marketplaceBinding : RowCartMarketplaceBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context),
+                R.layout.row_cart_marketplace,
+                binding.marketPlaceContainerContainer,
+                false
+            )
+
+            marketplaceBinding.marketplaceNameTv.text = it.marketplaceName
+            binding.marketPlaceContainerContainer.addView(marketplaceBinding.root)
+
+        }
+
     }
 }
