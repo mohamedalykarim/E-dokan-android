@@ -1,6 +1,7 @@
 package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -11,8 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.model.support_item.SupportItem
@@ -42,19 +43,17 @@ class MainActivity : BaseActivity() {
 
         checkInternetAvailability()
 
-        homeFragment = HomeFragment()
-        cartFragment = CartFragment()
-        accountFragment = AccountFragment()
-        cityFragment = CityFragment()
-
         techSupportMessagesDialog = TechSupportMessagesDialog()
 
         subscribeObservers()
         handleBottomClicks()
 
         if(preferenceHelper.getCityId()!! > 0 ){
+
+            homeFragment = HomeFragment()
             loadFragment(homeFragment)
         }else{
+            cityFragment = CityFragment()
             loadFragment(cityFragment)
             binding.bottom.visibility = View.GONE
         }
@@ -67,14 +66,17 @@ class MainActivity : BaseActivity() {
                 finish()
             }
             CartFragment::class.java.name -> {
+                homeFragment = HomeFragment()
                 loadFragment(homeFragment)
                 homeBottom()
             }
             AccountFragment::class.java.name -> {
+                homeFragment = HomeFragment()
                 loadFragment(homeFragment)
                 homeBottom()
             }
             CityFragment::class.java.name ->{
+                homeFragment = HomeFragment()
                 loadFragment(homeFragment)
                 binding.bottom.visibility = View.VISIBLE
             }
@@ -83,18 +85,23 @@ class MainActivity : BaseActivity() {
     }
 
     fun loadHome() {
+        homeFragment = HomeFragment()
         loadFragment(homeFragment)
     }
 
     fun loadCity() {
         homeBottom()
+        cityFragment = CityFragment()
         loadFragment(cityFragment)
         binding.bottom.visibility = View.GONE
     }
 
     fun loadFragment(fragment : Fragment){
-        viewModel.CURRENT_FRAGMENT = fragment.javaClass.name
+        for (i in 0 until supportFragmentManager.backStackEntryCount) {
+            supportFragmentManager.popBackStack()
+        }
 
+        viewModel.CURRENT_FRAGMENT = fragment.javaClass.name
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace(binding.fragmentContainerView.id, fragment)
@@ -221,7 +228,7 @@ class MainActivity : BaseActivity() {
 
         })
 
-        viewModel.cartProductsObserver.observe(this, Observer {
+        viewModel.cartProductsObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
@@ -233,14 +240,22 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        viewModel.directionObserver.observe(this, Observer {
+        viewModel.directionObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> {
                     Log.d("TAG", "subscribeObservers: loading" )
                 }
                 is DataState.Success -> {
-                    val legsJsonArray = it.data.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray;
-                    cartFragment.routeLegs(legsJsonArray)
+                    val legsJsonArray = it.data.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray
+
+                    val timer = object : CountDownTimer(500,500){
+                        override fun onTick(millisUntilFinished: Long) {}
+                        override fun onFinish() {
+                            cartFragment.routeLegs(legsJsonArray)
+                        }
+                    }
+
+                    timer.start()
 
                 }
                 is DataState.Failure -> {
@@ -254,16 +269,19 @@ class MainActivity : BaseActivity() {
     private fun handleBottomClicks() {
 
         binding.homeIcon.setOnClickListener {
+            homeFragment = HomeFragment()
             loadFragment(homeFragment)
             homeBottom()
         }
 
         binding.cartIcon.setOnClickListener{
+            cartFragment = CartFragment()
             loadFragment(cartFragment)
             cartBottom()
         }
 
         binding.accountContainer.setOnClickListener{
+            accountFragment = AccountFragment()
             loadFragment(accountFragment)
             accountBottom()
         }

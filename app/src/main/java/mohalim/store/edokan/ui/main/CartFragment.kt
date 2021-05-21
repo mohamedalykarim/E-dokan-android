@@ -98,6 +98,9 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
 
     fun updateProducts(data: List<CartProduct>) {
+        Log.d("TAG", "updateProducts: "+data.size)
+        marketPlaces.clear()
+
         binding.marketPlaceContainerContainer.removeAllViews()
         binding.cartProductsContainer.removeAllViews()
 
@@ -115,6 +118,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             cartProductBinding.descriptionTv.text = "$subDescription..."
             cartProductBinding.priceTv.text = (it.productPrice - it.productDiscount).toString()
             cartProductBinding.countTv.text = it.productCount.toString()
+            cartProductBinding.marketplaceTv.text = it.marketPlaceName
 
 
             val product = it
@@ -190,18 +194,13 @@ class CartFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         isGoogleMapReady = true
-        if (isDirectionReady){
-            makeDirection()
-        }
     }
 
     private fun makeDirection() {
         polyline = googleMap.addPolyline(PolylineOptions().color(Color.RED).clickable(true).addAll(path))
-
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userLocation.latitude, userLocation.longitude), 13f))
 
         marketPlaces.forEach {
-
             val height = 50
             val width = 50
             val bitmapDraw = (ContextCompat.getDrawable(mainActivity, R.drawable.market_icon) as BitmapDrawable).bitmap
@@ -209,7 +208,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
             googleMap.addMarker(
                 MarkerOptions().position(LatLng(it.lat,it.lng))
-                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)).title(it.marketplaceName)
             )
         }
 
@@ -229,16 +228,26 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     fun routeLegs(legsJsonArray: JsonArray?) {
         path.clear()
+
         if (this::polyline.isInitialized){
             polyline.remove()
+            googleMap.clear()
         }
+
+        var totalDistance : Float = 0f;
+
         legsJsonArray?.forEach {
             val stepsJson = it.asJsonObject.get("steps").asJsonArray
             stepsJson.forEach {
                 val points = it.asJsonObject.get("polyline").asJsonObject.get("points")
                 path.addAll(LocationUtils.DO.decodePoly(points.asString))
             }
+
+            val distance : Int = it.asJsonObject.get("distance").asJsonObject.get("value").asInt
+            totalDistance = totalDistance + distance
         }
+
+        binding.distanceTv.text = "المسافة حتى توصيل طلبك هي : " + totalDistance/1000 +" كم"
 
         isDirectionReady = true
 
