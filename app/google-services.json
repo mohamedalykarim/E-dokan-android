@@ -14,13 +14,21 @@
       },
       "oauth_client": [
         {
+          "client_id": "720179191689-lnl02seqs8ggnv2vpuksctgig80j6gmt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mohalim.store.edokan",
+            "certificate_hash": "b87e68ce3611663993ef05dfcddec51b86ffa5d9"
+          }
+        },
+        {
           "client_id": "720179191689-jcg71ml6ii5puceru1e3mrmf57pcju8r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCG-VtcaulIhq4XeaVEdyJfrusS2jtG1Bc"
+          "current_key": "AIzaSyD9AcuGnfL7xYjz-EFe30WSqDstGueq0UA"
         }
       ],
       "services": {

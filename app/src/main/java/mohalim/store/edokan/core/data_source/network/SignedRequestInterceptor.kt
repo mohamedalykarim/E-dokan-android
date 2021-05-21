@@ -29,6 +29,7 @@ class SignedRequestInterceptor(val context: Context) : Interceptor {
 
                 val refreshTokenRequest = request.newBuilder()
                     .addHeader("Cookie", "refresh_token="+preferenceHelper.getRefreshToken())
+                    .method("GET", null)
                     .url("$BASE_URL/api/users/refresh-token")
                     .build()
 

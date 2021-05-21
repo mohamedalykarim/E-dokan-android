@@ -96,4 +96,12 @@ class NetworkModule {
             .create(CityInterfaceRetrofit::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideOrderInterfaceRetrofit(retrofit: Retrofit.Builder): OrderInterfaceRetrofit {
+        return retrofit
+            .build()
+            .create(OrderInterfaceRetrofit::class.java)
+    }
+
 }

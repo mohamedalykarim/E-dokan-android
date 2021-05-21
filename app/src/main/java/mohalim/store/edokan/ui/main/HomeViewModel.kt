@@ -1,6 +1,9 @@
 package mohalim.store.edokan.ui.main
 
+import android.location.Location
+import android.util.Log
 import androidx.lifecycle.*
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -23,7 +26,8 @@ class HomeViewModel
     private val productRepository: ProductRepositoryImp,
     private val offerRepository: OfferRepositoryImp,
     private val supportItemRepository : SupportItemRepositoryImp,
-    private val cityRepository : CityRepositoryImp
+    private val cityRepository : CityRepositoryImp,
+    private val orderRepository: OrderRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -69,6 +73,10 @@ class HomeViewModel
 
     private val _cartProductsObserver : MutableLiveData<DataState<List<CartProduct>>> = MutableLiveData()
     val cartProductsObserver : LiveData<DataState<List<CartProduct>>> get() = _cartProductsObserver
+
+    private val _directionObserver : MutableLiveData<DataState<JsonObject>> = MutableLiveData()
+    val directionObserver : LiveData<DataState<JsonObject>> get() = _directionObserver
+
 
 
     fun fetchHomeFragmentData (cityId: Int){
@@ -138,6 +146,14 @@ class HomeViewModel
         viewModelScope.launch {
             productRepository.getAllCartProductFromInternal().collect {
                 _cartProductsObserver.value = it
+            }
+        }
+    }
+
+    fun getOrderPath(origin : Location, destination : Location, locations : MutableList<Location>, fToken: String){
+        viewModelScope.launch {
+            orderRepository.getOrderPath(origin, destination, locations, fToken).collect {
+                _directionObserver.value = it
             }
         }
     }

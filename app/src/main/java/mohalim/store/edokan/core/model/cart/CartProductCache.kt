@@ -23,6 +23,10 @@ data class CartProductCache(
     var marketPlaceId : Int,
     @ColumnInfo(name = "marketplace_name")
     var marketPlaceName : String,
+    @ColumnInfo(name = "marketplace_lat")
+    var marketPlaceLat : Double,
+    @ColumnInfo(name = "marketplace_lan")
+    var marketPlaceLng : Double,
     @ColumnInfo(name = "product_count")
     var productCount: Int,
 )

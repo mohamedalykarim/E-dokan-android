@@ -15,6 +15,8 @@ class CartProductCacheMapper
             productDiscount = entity.productDiscount,
             marketPlaceId = entity.marketPlaceId,
             marketPlaceName = entity.marketPlaceName,
+            marketPlaceLat = entity.marketPlaceLat,
+            marketPlaceLng = entity.marketPlaceLng,
             productCount = entity.productCount
 
         )
@@ -31,6 +33,8 @@ class CartProductCacheMapper
             productDiscount = domainModel.productDiscount,
             marketPlaceId = domainModel.marketPlaceId,
             marketPlaceName = domainModel.marketPlaceName,
+            marketPlaceLat = domainModel.marketPlaceLat,
+            marketPlaceLng = domainModel.marketPlaceLng,
             productCount = domainModel.productCount
         )
     }

@@ -9,5 +9,7 @@ data class CartProduct(
     var productDiscount : Float,
     var marketPlaceId : Int,
     var marketPlaceName : String,
+    var marketPlaceLat : Double,
+    var marketPlaceLng : Double,
     var productCount: Int,
 )

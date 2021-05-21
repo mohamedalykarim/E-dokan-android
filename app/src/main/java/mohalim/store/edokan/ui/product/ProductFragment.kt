@@ -70,6 +70,8 @@ class ProductFragment : Fragment() {
                     product.productDiscount,
                     product.marketPlaceId,
                     product.marketPlaceName,
+                    product.marketPlaceLat,
+                    product.marketPlaceLng,
                     1
                 )
 

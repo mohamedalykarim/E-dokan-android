@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <application
         android:name=".core.di.MyApplication"
@@ -14,7 +16,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Edokan"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.product.ProductActivity"></activity>
+
+        <uses-library android:name="com.google.android.maps" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDR6V-tkThKaaxMGOMRjPzYGhaXsljh_MQ"
+            />
+
+        <activity android:name=".ui.product.ProductActivity">
+
+        </activity>
         <activity android:name=".ui.category.CategoryActivity" />
         <activity
             android:name=".ui.login.LoginActivity"

@@ -233,6 +233,22 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        viewModel.directionObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> {
+                    Log.d("TAG", "subscribeObservers: loading" )
+                }
+                is DataState.Success -> {
+                    val legsJsonArray = it.data.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray;
+                    cartFragment.routeLegs(legsJsonArray)
+
+                }
+                is DataState.Failure -> {
+                    Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                }
+            }
+        })
+
     }
 
     private fun handleBottomClicks() {
@@ -374,6 +390,8 @@ class MainActivity : BaseActivity() {
         techSupportMessagesDialog.supportItem = supportItem
         techSupportMessagesDialog.show(supportFragmentManager, "techSupportMessagesDialog")
     }
+
+
 
 
 

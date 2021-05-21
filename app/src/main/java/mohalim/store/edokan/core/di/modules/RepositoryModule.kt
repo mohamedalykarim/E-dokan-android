@@ -128,4 +128,13 @@ class RepositoryModule {
         return CityRepositoryImp(retrofit, networkMapper, context)
     }
 
+    @Singleton
+    @Provides
+    fun provideOrderRepository(
+        retrofit: OrderInterfaceRetrofit,
+        @ApplicationContext context: Context
+    ) : OrderRepositoryImp{
+        return OrderRepositoryImp(retrofit, context)
+    }
+
 }
