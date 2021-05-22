@@ -63,6 +63,14 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         return preferences?.get(CART_CITY_ID)
     }
 
+    override fun setDefaultAddressId(addressId : Int) {
+        preferences?.set(DEFAULT_ADDRESS_ID, addressId)
+    }
+
+    override fun getDefaultAddressId(): Int? {
+        return preferences?.get(DEFAULT_ADDRESS_ID)
+    }
+
     companion object {
         const val CITY_ID = "city_id"
         const val CITY_NAME = "city_name"
@@ -71,6 +79,7 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         const val REFRESH_TOKEN = "refresh_token"
         const val USER_ID = "user_id"
         const val CART_CITY_ID = "cart_city_id"
+        const val DEFAULT_ADDRESS_ID = "default_address_id"
 
     }
 

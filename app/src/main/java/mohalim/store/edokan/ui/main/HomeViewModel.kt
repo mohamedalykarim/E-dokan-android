@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import mohalim.store.edokan.core.model.address.Address
 import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.city.City
@@ -27,7 +28,8 @@ class HomeViewModel
     private val offerRepository: OfferRepositoryImp,
     private val supportItemRepository : SupportItemRepositoryImp,
     private val cityRepository : CityRepositoryImp,
-    private val orderRepository: OrderRepositoryImp
+    private val orderRepository: OrderRepositoryImp,
+    private val addressRepository: AddressRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -76,6 +78,9 @@ class HomeViewModel
 
     private val _directionObserver : MutableLiveData<DataState<JsonObject>> = MutableLiveData()
     val directionObserver : LiveData<DataState<JsonObject>> get() = _directionObserver
+
+    private val _defaultAddressObserver : MutableLiveData<DataState<Address>> = MutableLiveData()
+    val defaultAddressObserver : LiveData<DataState<Address>> get() = _defaultAddressObserver
 
 
 
@@ -161,6 +166,14 @@ class HomeViewModel
         viewModelScope.launch {
             orderRepository.getOrderPath(origin, destination, locations, productIds, productCounts, fToken).collect {
                 _directionObserver.value = it
+            }
+        }
+    }
+
+    fun getDefaultAddress(addressId : Int, fToken: String) {
+        viewModelScope.launch {
+            addressRepository.getAddress(addressId, fToken).collect {
+                _defaultAddressObserver.value = it
             }
         }
     }

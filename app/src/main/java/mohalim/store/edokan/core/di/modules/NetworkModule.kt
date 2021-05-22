@@ -22,7 +22,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideGsonBuilder() : Gson{
+    fun provideGsonBuilder() : Gson {
         return GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create()
@@ -30,7 +30,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun ProvideRetrofit (gson: Gson, @ApplicationContext context: Context) : Retrofit.Builder{
+    fun provideRetrofit (@ApplicationContext context: Context) : Retrofit.Builder{
         val client = OkHttpClient.Builder()
                 .addInterceptor(SignedRequestInterceptor(context))
                 .build()
@@ -102,6 +102,14 @@ class NetworkModule {
         return retrofit
             .build()
             .create(OrderInterfaceRetrofit::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAddressInterfaceRetrofit(retrofit: Retrofit.Builder): AddressInterfaceRetrofit {
+        return retrofit
+            .build()
+            .create(AddressInterfaceRetrofit::class.java)
     }
 
 }

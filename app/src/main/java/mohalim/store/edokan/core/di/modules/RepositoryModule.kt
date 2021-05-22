@@ -12,6 +12,8 @@ import mohalim.store.edokan.core.data_source.room.*
 import mohalim.store.edokan.core.model.user.UserNetworkMapper
 import mohalim.store.edokan.core.model.user.UserCacheMapper
 import mohalim.store.edokan.core.data_source.room.OfferDao
+import mohalim.store.edokan.core.model.address.AddressCacheMapper
+import mohalim.store.edokan.core.model.address.AddressNetworkMapper
 import mohalim.store.edokan.core.model.cart.CartProductCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
@@ -135,6 +137,18 @@ class RepositoryModule {
         @ApplicationContext context: Context
     ) : OrderRepositoryImp{
         return OrderRepositoryImp(retrofit, context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAddressRepository(
+        retrofit: AddressInterfaceRetrofit,
+        networkMapper : AddressNetworkMapper,
+        addressDao : AddressDao,
+        cacheMapper: AddressCacheMapper,
+        @ApplicationContext context: Context
+    ) : AddressRepositoryImp{
+        return AddressRepositoryImp(retrofit,networkMapper, addressDao, cacheMapper, context)
     }
 
 }

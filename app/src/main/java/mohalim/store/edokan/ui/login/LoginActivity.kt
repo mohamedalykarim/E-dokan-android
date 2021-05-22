@@ -158,6 +158,7 @@ class LoginActivity : BaseActivity() {
 
                     preferenceHelper.setApiToken(it.data.wtoken)
                     preferenceHelper.setUserId(it.data.userId)
+                    preferenceHelper.setDefaultAddressId(it.data.defaultAddressId)
 
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()
@@ -177,7 +178,6 @@ class LoginActivity : BaseActivity() {
                             val error =
                                 ErrorHandler.DO.getResponseMapFromHTTPException(httpException = it.exception)
 
-                            Log.d(TAG, "subscribeObservers: " + error.toString())
 
                             if (error[ErrorHandler.ERROR_ENTRIES.ERROR_NUMBER]?.equals(ErrorHandler.ERRORS.AUTH_FAILED) == true) {
                                 Log.d(

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,10 +21,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.JsonArray
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
+import mohalim.store.edokan.core.model.address.Address
 import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.utils.Constants
+import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.LocationUtils
+import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.FragmentCartBinding
 import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
@@ -33,11 +37,13 @@ import mohalim.store.edokan.ui.product.ProductActivity
 
 @AndroidEntryPoint
 class CartFragment : Fragment(), OnMapReadyCallback {
+
     var directionAndCartDetailsDownloaded: Boolean = false
     var cartProductsFromInternalDownloaded: Boolean = false
 
     private lateinit var polyline: Polyline
     private lateinit var googleMap: GoogleMap
+    private lateinit var defaultAddress: Address
     lateinit var loadingDialog : LoadingDialog
 
     var cartProducts: MutableList<CartProduct> = ArrayList()
@@ -54,6 +60,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
     private val marketPlaces : MutableList<MarketPlace> = ArrayList()
     private val userLocation = Location("userLocation")
 
+    private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -72,9 +79,16 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        mainActivity.viewModel.getAllCartProductFromInternal()
+        firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+            mainActivity.viewModel.getDefaultAddress(preferenceHelper.getDefaultAddressId()!!, it.token!!)
+        }
         binding.map.onResume()
         loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
+
+        if (this::defaultAddress.isInitialized){
+            getDefaultAddress(defaultAddress)
+        }
+
     }
 
     override fun onStart() {
@@ -147,8 +161,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         val distinctMarketplaces = marketPlaces.distinct()
 
         val locations = ArrayList<Location>()
-        userLocation.latitude = 25.843951
-        userLocation.longitude = 32.834984
 
         distinctMarketplaces.forEach {
             val marketplaceBinding : RowCartMarketplaceBinding = DataBindingUtil.inflate(
@@ -277,6 +289,16 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.orderValueTv.text = orderValue.toString()
         binding.deliveryValueTv.text = deliveryValue.toString()
         binding.totalTv.text = (orderValue + deliveryValue).toString()
+
+    }
+
+    fun getDefaultAddress(data: Address) {
+        defaultAddress = data
+        userLocation.latitude = data.addressLat
+        userLocation.longitude = data.addressLng
+        mainActivity.viewModel.getAllCartProductFromInternal()
+
+        binding.addressTV.text = data.addressName + "\n" + data.addressLine1 + "\n" + data.addressLine2 + " "+ data.city
 
     }
 

@@ -24,4 +24,7 @@ interface IPreferenceHelper {
     fun setCartCityId(cityId : Int)
     fun getCartCityId() : Int?
 
+    fun setDefaultAddressId(addressId : Int)
+    fun getDefaultAddressId() : Int?
+
 }

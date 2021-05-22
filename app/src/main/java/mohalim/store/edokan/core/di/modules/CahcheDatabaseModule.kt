@@ -74,4 +74,10 @@ class CahcheDatabaseModule {
     fun provideCartProdcutDao(appCacheDatabase: AppCacheDatabase) : CartProductDao{
         return appCacheDatabase.cartProductDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideAddressDao(appCacheDatabase: AppCacheDatabase) : AddressDao{
+        return appCacheDatabase.addressDao()
+    }
 }

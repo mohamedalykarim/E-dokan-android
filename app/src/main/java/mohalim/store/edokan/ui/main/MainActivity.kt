@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
@@ -322,6 +323,19 @@ class MainActivity : BaseActivity() {
                     }
                 }
             }
+        })
+
+        // Linked to cart fragment
+        viewModel.defaultAddressObserver.observe(this, Observer {
+            when (it) {
+                is DataState.Loading -> { }
+                is DataState.Success -> {
+                    cartFragment.getDefaultAddress(it.data)
+                }
+                is DataState.Failure -> {
+                }
+            }
+
         })
 
     }
