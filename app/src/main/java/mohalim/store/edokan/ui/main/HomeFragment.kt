@@ -12,10 +12,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestListener
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.category.Category
@@ -27,14 +29,21 @@ import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.core.utils.viewpager.ZoomOutPageTransformer
 import mohalim.store.edokan.databinding.*
 import mohalim.store.edokan.ui.category.CategoryActivity
+import mohalim.store.edokan.ui.extra.LoadingDialog
 import mohalim.store.edokan.ui.product.ProductActivity
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
+    public var chosenProductsDownloaded: Boolean = false
+    public var offersComingDownloaded: Boolean = false
+    public var noParentCategoriesDownloaded: Boolean = false
+    
+    
     private lateinit var categoryAdapter : CategoryAdapter
     private lateinit var chosenProductsAdapter: ChosenProductsAdapter
     private lateinit var offersAdapter: HomeFragment.HomeFragmentSliderAdapter
+    lateinit var loadingDialog : LoadingDialog
 
     lateinit var inflater: LayoutInflater
     lateinit var container : ViewGroup
@@ -52,15 +61,21 @@ class HomeFragment : Fragment() {
             this.container = container
         }
 
-        val activity = activity as MainActivity
-        activity.viewModel.fetchHomeFragmentData(preferenceHelper.getCityId()!!)
+        val mainActivity = activity as MainActivity
+        loadingDialog = LoadingDialog()
+        loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
 
-        initCategoryRV(activity)
-        initChosenRV(activity)
-        initSlider(activity,inflater,container)
+
+        mainActivity.viewModel.fetchHomeFragmentData(preferenceHelper.getCityId()!!)
+
+        initCategoryRV(mainActivity)
+        initChosenRV(mainActivity)
+        initSlider(mainActivity,inflater,container)
         initSliderDots(inflater, container, 0)
 
         binding.cityTv.text = preferenceHelper.getCityName()
+
+
 
         return binding.root
     }
@@ -161,6 +176,7 @@ class HomeFragment : Fragment() {
                 Glide.with(binding.root.context)
                         .load(Constants.constants.CATEGORY_IMAGE_BASE_URL + category.categoryImage)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.loading)
                         .into(binding.imageView3)
 
                 binding.root.setOnClickListener{
@@ -203,6 +219,7 @@ class HomeFragment : Fragment() {
                 Glide.with(binding.root.context)
                         .load(Constants.constants.PRODUCT_IMAGE_BASE_URL + product.productImage)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.loading)
                         .into(binding.imageView4)
 
                 binding.root.setOnClickListener{

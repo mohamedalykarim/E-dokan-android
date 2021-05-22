@@ -2,7 +2,6 @@ package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -13,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
 import mohalim.store.edokan.core.model.support_item.SupportItem
@@ -144,30 +142,70 @@ class MainActivity : BaseActivity() {
     }
 
     private fun subscribeObservers() {
+        // linked to home fragment
         viewModel.noParentCategories.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
-                is DataState.Success -> { homeFragment.updateCategoryData(it.data) }
-                is DataState.Failure -> { }
+                is DataState.Success -> {
+                    homeFragment.updateCategoryData(it.data)
+                    homeFragment.noParentCategoriesDownloaded = true
+
+                   if (homeFragment.offersComingDownloaded && homeFragment.chosenProductsDownloaded){
+                       homeFragment.loadingDialog.dismiss()
+                   }
+
+                }
+                is DataState.Failure -> {
+                    homeFragment.noParentCategoriesDownloaded = true
+                    if (homeFragment.offersComingDownloaded && homeFragment.chosenProductsDownloaded){
+                        homeFragment.loadingDialog.dismiss()
+                    }
+                }
             }
         })
 
+        // linked to home fragment
         viewModel.offersComing.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
-                is DataState.Success -> { homeFragment.updateOffersData(it.data) }
-                is DataState.Failure -> { }
+                is DataState.Success -> {
+                    homeFragment.updateOffersData(it.data)
+                    homeFragment.offersComingDownloaded = true
+
+                    if (homeFragment.noParentCategoriesDownloaded && homeFragment.chosenProductsDownloaded){
+                        homeFragment.loadingDialog.dismiss()
+                    }
+
+                }
+                is DataState.Failure -> {
+                    homeFragment.offersComingDownloaded = true
+                    if (homeFragment.noParentCategoriesDownloaded && homeFragment.chosenProductsDownloaded){
+                        homeFragment.loadingDialog.dismiss()
+                    }
+                }
             }
         })
 
+        // linked to home fragment
         viewModel.chosenProducts.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
                     viewModel.PAGE++
                     homeFragment.updateChosenProductsData(it.data)
+                    homeFragment.chosenProductsDownloaded = true
+
+                    if (homeFragment.noParentCategoriesDownloaded && homeFragment.offersComingDownloaded){
+                        homeFragment.loadingDialog.dismiss()
+                    }
                 }
-                is DataState.Failure -> { }
+                is DataState.Failure -> {
+                    homeFragment.chosenProductsDownloaded = true
+                    if (homeFragment.noParentCategoriesDownloaded && homeFragment.offersComingDownloaded){
+                        homeFragment.loadingDialog.dismiss()
+                    }
+
+                }
             }
 
         })
@@ -228,6 +266,7 @@ class MainActivity : BaseActivity() {
 
         })
 
+        // linked to cart fragment
         viewModel.cartProductsObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -235,18 +274,27 @@ class MainActivity : BaseActivity() {
                     cartFragment.cartProducts.clear()
                     cartFragment.cartProducts.addAll(it.data)
                     cartFragment.updateProducts(it.data)
+                    cartFragment.cartProductsFromInternalDownloaded = true
+                    if (cartFragment.directionAndCartDetailsDownloaded){
+                        cartFragment.loadingDialog.dismiss()
+                    }
                 }
-                is DataState.Failure -> { }
+                is DataState.Failure -> {
+                    cartFragment.cartProductsFromInternalDownloaded = true
+                    if (cartFragment.directionAndCartDetailsDownloaded){
+                        cartFragment.loadingDialog.dismiss()
+                    }
+                }
             }
         })
 
+        // linked to cart fragment
         viewModel.directionObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> {
-                    Log.d("TAG", "subscribeObservers: loading" )
                 }
                 is DataState.Success -> {
-                    val legsJsonArray = it.data.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray
+                    val legsJsonArray = it.data.get("directions").asJsonObject.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray
 
                     val timer = object : CountDownTimer(500,500){
                         override fun onTick(millisUntilFinished: Long) {}
@@ -257,9 +305,21 @@ class MainActivity : BaseActivity() {
 
                     timer.start()
 
+                    val orderValue = it.data.get("order_value").asFloat
+                    val deliveryValue = it.data.get("delivery_value").asFloat
+
+                    cartFragment.updateOrderValues(orderValue, deliveryValue)
+                    cartFragment.directionAndCartDetailsDownloaded = true
+                    if (cartFragment.cartProductsFromInternalDownloaded){
+                        cartFragment.loadingDialog.dismiss()
+                    }
+
                 }
                 is DataState.Failure -> {
-                    Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                    cartFragment.directionAndCartDetailsDownloaded = true
+                    if (cartFragment.cartProductsFromInternalDownloaded){
+                        cartFragment.loadingDialog.dismiss()
+                    }
                 }
             }
         })

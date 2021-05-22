@@ -9,5 +9,12 @@ import mohalim.store.edokan.core.model.user.User
 import mohalim.store.edokan.core.utils.DataState
 
 interface OrderRepository {
-    fun getOrderPath(origin : Location, destination : Location, locations : MutableList<Location>, fToken: String) : Flow<DataState<JsonObject>>
+    fun getOrderPath(
+        origin : Location,
+        destination : Location,
+        locations : MutableList<Location>,
+        productIds: List<Int>,
+        counts : List<Int>,
+        fToken: String
+    ) : Flow<DataState<JsonObject>>
 }

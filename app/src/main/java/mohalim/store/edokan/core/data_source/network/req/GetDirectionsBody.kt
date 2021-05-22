@@ -12,4 +12,8 @@ data class GetDirectionsBody(
     var destination : LocationItem,
     @SerializedName("locations")
     var locations : List<LocationItem>,
+    @SerializedName("product_ids")
+    var productIds : List<Int>,
+    @SerializedName("counts")
+    var counts : List<Int>
 )

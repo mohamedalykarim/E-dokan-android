@@ -150,9 +150,16 @@ class HomeViewModel
         }
     }
 
-    fun getOrderPath(origin : Location, destination : Location, locations : MutableList<Location>, fToken: String){
+    fun getOrderPath(
+        origin : Location,
+        destination : Location,
+        locations : MutableList<Location>,
+        productIds : List<Int>,
+        productCounts : List<Int>,
+        fToken: String
+    ){
         viewModelScope.launch {
-            orderRepository.getOrderPath(origin, destination, locations, fToken).collect {
+            orderRepository.getOrderPath(origin, destination, locations, productIds, productCounts, fToken).collect {
                 _directionObserver.value = it
             }
         }

@@ -12,7 +12,7 @@ interface OrderInterfaceRetrofit {
 
     @HTTP(
             method = "POST",
-            path = "/api/orders/get_directions",
+            path = "/api/orders/get-cart-details",
             hasBody = true
     )
     suspend fun getOrderPath(

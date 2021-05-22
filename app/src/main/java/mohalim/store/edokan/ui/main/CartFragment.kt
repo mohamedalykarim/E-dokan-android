@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,21 +24,26 @@ import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.LocationUtils
-import mohalim.store.edokan.core.utils.OtherUtils
 import mohalim.store.edokan.databinding.FragmentCartBinding
 import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
+import mohalim.store.edokan.ui.extra.LoadingDialog
 import mohalim.store.edokan.ui.product.ProductActivity
 
 
 @AndroidEntryPoint
 class CartFragment : Fragment(), OnMapReadyCallback {
+    var directionAndCartDetailsDownloaded: Boolean = false
+    var cartProductsFromInternalDownloaded: Boolean = false
+
     private lateinit var polyline: Polyline
     private lateinit var googleMap: GoogleMap
+    lateinit var loadingDialog : LoadingDialog
+
     var cartProducts: MutableList<CartProduct> = ArrayList()
-    var firebaseAuth = FirebaseAuth.getInstance()
-    var isGoogleMapReady = false
-    var isDirectionReady = false
+    private var firebaseAuth = FirebaseAuth.getInstance()
+    private var isGoogleMapReady = false
+    private var isDirectionReady = false
 
 
     lateinit var binding : FragmentCartBinding
@@ -59,6 +63,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.map.onCreate(savedInstanceState)
         binding.map.getMapAsync(this)
 
+        loadingDialog = LoadingDialog()
+
         return binding.root
     }
 
@@ -68,6 +74,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         super.onResume()
         mainActivity.viewModel.getAllCartProductFromInternal()
         binding.map.onResume()
+        loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
     }
 
     override fun onStart() {
@@ -98,8 +105,10 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
 
     fun updateProducts(data: List<CartProduct>) {
-        Log.d("TAG", "updateProducts: "+data.size)
         marketPlaces.clear()
+
+        val productIds = ArrayList<Int>()
+        val productCounts = ArrayList<Int>()
 
         binding.marketPlaceContainerContainer.removeAllViews()
         binding.cartProductsContainer.removeAllViews()
@@ -115,7 +124,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
             cartProductBinding.productTitle.text = it.productName
             val subDescription = it.productDescription.substring(0,25)
-            cartProductBinding.descriptionTv.text = "$subDescription..."
+            cartProductBinding.descriptionTv.text = subDescription
             cartProductBinding.priceTv.text = (it.productPrice - it.productDiscount).toString()
             cartProductBinding.countTv.text = it.productCount.toString()
             cartProductBinding.marketplaceTv.text = it.marketPlaceName
@@ -131,6 +140,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             binding.cartProductsContainer.addView(cartProductBinding.root)
 
             marketPlaces.add(MarketPlace(it.marketPlaceId, it.marketPlaceName, it.marketPlaceLat, it.marketPlaceLng,0f))
+            productIds.add(it.productId)
+            productCounts.add(it.productCount)
         }
 
         val distinctMarketplaces = marketPlaces.distinct()
@@ -161,18 +172,20 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             it.distanceToUser = location.distanceTo(userLocation)
         }
 
-        if (marketPlaces.size < 1) return
-
-        marketPlaces.forEach {
-            Log.d("TAG", "before: "+it.distanceToUser)
+        if (marketPlaces.size < 1) {
+            updateOrderValues(0f,0f)
+            googleMap.clear()
+            if (this::polyline.isInitialized){
+                polyline.remove()
+            }
+            binding.distanceTv.text = ""
+            return
         }
 
 
         val newMarketPlaces = marketPlaces.sortedWith(compareBy { it.distanceToUser })
 
-        newMarketPlaces.forEach {
-            Log.d("TAG", "after: "+it.distanceToUser)
-        }
+
 
         // origin location
         val originLocation = Location("origin")
@@ -184,6 +197,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                 originLocation,
                 userLocation,
                 locations,
+                productIds,
+                productCounts,
                 it.token + ""
             )
         }
@@ -234,9 +249,9 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             googleMap.clear()
         }
 
-        var totalDistance : Float = 0f;
+        var totalDistance = 0f
 
-        legsJsonArray?.forEach {
+        legsJsonArray?.forEach { it ->
             val stepsJson = it.asJsonObject.get("steps").asJsonArray
             stepsJson.forEach {
                 val points = it.asJsonObject.get("polyline").asJsonObject.get("points")
@@ -244,7 +259,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             }
 
             val distance : Int = it.asJsonObject.get("distance").asJsonObject.get("value").asInt
-            totalDistance = totalDistance + distance
+            totalDistance += distance
         }
 
         binding.distanceTv.text = "المسافة حتى توصيل طلبك هي : " + totalDistance/1000 +" كم"
@@ -255,6 +270,13 @@ class CartFragment : Fragment(), OnMapReadyCallback {
            makeDirection()
         }
 
+
+    }
+
+    fun updateOrderValues(orderValue: Float, deliveryValue: Float) {
+        binding.orderValueTv.text = orderValue.toString()
+        binding.deliveryValueTv.text = deliveryValue.toString()
+        binding.totalTv.text = (orderValue + deliveryValue).toString()
 
     }
 

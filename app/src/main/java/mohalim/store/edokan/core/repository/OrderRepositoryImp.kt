@@ -26,8 +26,14 @@ class OrderRepositoryImp
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(context) }
 
-    override fun getOrderPath(origin : Location, destination : Location, locations : MutableList<Location>, fToken: String )
-    : Flow<DataState<JsonObject>> {
+    override fun getOrderPath(
+        origin : Location,
+        destination : Location,
+        locations : MutableList<Location>,
+        productIds : List<Int>,
+        productCounts : List<Int>,
+        fToken: String
+    ): Flow<DataState<JsonObject>> {
         return flow {
             emit(DataState.Loading)
             try {
@@ -42,7 +48,10 @@ class OrderRepositoryImp
                 val body = GetDirectionsBody(
                     LocationItem(origin.latitude,origin.longitude),
                     LocationItem(destination.latitude,destination.longitude),
-                    waypoints)
+                    waypoints,
+                    productIds,
+                    productCounts
+                )
 
                 val response = retrofit.getOrderPath(
                     body,
