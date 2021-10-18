@@ -1,4 +1,4 @@
-package mohalim.store.edokan.ui.extra
+package mohalim.store.edokan.ui.address
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,7 +13,7 @@ import mohalim.store.edokan.R
 import mohalim.store.edokan.databinding.AlertLoadingBinding
 
 @AndroidEntryPoint
-class LoadingDialog() : DialogFragment() {
+class AddNewAddressDialog() : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,

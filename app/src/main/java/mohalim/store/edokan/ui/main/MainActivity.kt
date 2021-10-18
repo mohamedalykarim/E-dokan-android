@@ -2,6 +2,7 @@ package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -279,6 +280,10 @@ class MainActivity : BaseActivity() {
                     if (cartFragment.directionAndCartDetailsDownloaded){
                         cartFragment.loadingDialog.dismiss()
                     }
+                    if (it.data.isEmpty()){
+                        cartFragment.loadingDialog.dismiss()
+                    }
+
                 }
                 is DataState.Failure -> {
                     cartFragment.cartProductsFromInternalDownloaded = true

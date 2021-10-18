@@ -55,8 +55,13 @@ class ProductFragment : Fragment() {
         productActivity.viewModel.getCartProductFromInternal(productId)
 
         imageClicks()
+        initClicks()
         initSimilarRV()
 
+        return binding.root
+    }
+
+    private fun initClicks() {
         binding.addBtn.setOnClickListener {
             if (preferenceHelper.getCartCityId() == -1 || preferenceHelper.getCartCityId() == preferenceHelper.getCityId() ){
                 preferenceHelper.setCartCityId(preferenceHelper.getCityId()!!)
@@ -88,8 +93,6 @@ class ProductFragment : Fragment() {
         binding.countDownBtn.setOnClickListener {
             productActivity.viewModel.cartProdcutCountDownInternal(productId)
         }
-
-        return binding.root
     }
 
     private fun initSimilarRV() {

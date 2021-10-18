@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -32,6 +33,7 @@ import mohalim.store.edokan.databinding.FragmentCartBinding
 import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
 import mohalim.store.edokan.ui.extra.LoadingDialog
+import mohalim.store.edokan.ui.extra.MessageDialog
 import mohalim.store.edokan.ui.product.ProductActivity
 
 
@@ -45,6 +47,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var defaultAddress: Address
     lateinit var loadingDialog : LoadingDialog
+    lateinit var messagesDialog: MessageDialog
 
     var cartProducts: MutableList<CartProduct> = ArrayList()
     private var firebaseAuth = FirebaseAuth.getInstance()
@@ -71,6 +74,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.map.getMapAsync(this)
 
         loadingDialog = LoadingDialog()
+        messagesDialog = MessageDialog()
 
         return binding.root
     }
@@ -80,10 +84,25 @@ class CartFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-            mainActivity.viewModel.getDefaultAddress(preferenceHelper.getDefaultAddressId()!!, it.token!!)
+            if(preferenceHelper.getDefaultAddressId() == 0){
+                loadingDialog.dismiss()
+
+                messagesDialog.setStyle(Constants.constants.MESSAGE_DIALOG_ADD_ADDRESS_STYLE)
+                if(!messagesDialog.isAdded){
+                    messagesDialog.show(mainActivity.supportFragmentManager, "MessageDialog")
+                }
+
+            }else{
+                mainActivity.viewModel.getDefaultAddress(preferenceHelper.getDefaultAddressId()!!, it.token!!)
+            }
         }
+
+        //resume the map
         binding.map.onResume()
-        loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
+
+        if (!loadingDialog.isAdded){
+            loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
+        }
 
         if (this::defaultAddress.isInitialized){
             getDefaultAddress(defaultAddress)
