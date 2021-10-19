@@ -3,10 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/drawable-v24/rounded_ff_no_border.xml" value="0.2203125" />
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/drawable/rounded_da_border.xml" value="0.2203125" />
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/drawable/rounded_rec.xml" value="0.2203125" />
         <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/activity_address.xml" value="0.20416666666666666" />
         <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/alert_loading.xml" value="0.20416666666666666" />
         <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/alert_message.xml" value="0.25" />
-        <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/row_address.xml" value="0.22" />
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/dialog_add_address.xml" value="0.25" />
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/fragment_account.xml" value="0.20416666666666666" />
+        <entry key="..\:/E-dokan/android-project/app/src/main/res/layout/row_address.xml" value="0.5" />
       </map>
     </option>
   </component>

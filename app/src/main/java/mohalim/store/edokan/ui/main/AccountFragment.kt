@@ -13,6 +13,7 @@ import mohalim.store.edokan.R
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.FragmentAccountBinding
+import mohalim.store.edokan.ui.address.AddressActivity
 import mohalim.store.edokan.ui.splash.SplashActivity
 
 @AndroidEntryPoint
@@ -27,6 +28,12 @@ class AccountFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance();
 
         val mainActivity = activity as MainActivity
+
+
+        binding.myAddressContainer.setOnClickListener {
+            val intent = Intent(activity, AddressActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.supportContainer.setOnClickListener {
             mainActivity.techSupportDialog()

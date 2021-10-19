@@ -9,44 +9,80 @@
         android:elevation="6dp">
 
         <TextView
-            android:id="@+id/textView43"
+            android:id="@+id/defaultTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:text="Higaza, Quse, Qena"
-            android:textColor="@color/primary"
+            android:background="#4CAF50"
+            android:padding="2dp"
+            android:text="Default"
+            android:textColor="#fff"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView45"
-            app:layout_constraintTop_toBottomOf="@+id/textView41" />
+            app:layout_constraintStart_toEndOf="@+id/setDefaultBtn"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine2Tv" />
+
+        <Button
+            android:id="@+id/setDefaultBtn"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Set Default"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView17"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine2Tv" />
 
         <TextView
-            android:id="@+id/textView41"
-            android:layout_width="wrap_content"
+            android:id="@+id/addressLine2Tv"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="3 Al Abdelkarim st. Elzahraa Institute"
+            android:layout_marginEnd="16dp"
+            android:text="Higaza, Quse, Qena"
+            android:textAlignment="viewStart"
             android:textColor="@color/primary"
-            app:layout_constraintStart_toStartOf="@+id/textView45"
-            app:layout_constraintTop_toBottomOf="@+id/textView45" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/addressTitleTv"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine1Tv" />
+
+        <TextView
+            android:id="@+id/addressLine1Tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="3 Al Abdelkarim st. Elzahraa Institute"
+            android:textAlignment="viewStart"
+            android:textColor="@color/primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/addressTitleTv"
+            app:layout_constraintTop_toBottomOf="@+id/addressTitleTv" />
 
         <ImageView
             android:id="@+id/imageView17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_my_address" />
 
         <TextView
-            android:id="@+id/textView45"
-            android:layout_width="wrap_content"
+            android:id="@+id/addressTitleTv"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
             android:text="Mohamed Home"
+            android:textAlignment="viewStart"
             android:textColor="#000"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageView17"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView17"
             app:layout_constraintTop_toTopOf="@+id/imageView17" />
 

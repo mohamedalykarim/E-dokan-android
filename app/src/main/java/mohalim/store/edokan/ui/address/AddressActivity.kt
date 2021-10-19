@@ -1,13 +1,16 @@
 package mohalim.store.edokan.ui.address
 
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,13 +35,27 @@ class AddressActivity : AppCompatActivity() {
 
     lateinit var addressRVAdpter : AddressRecyclerAdapter;
 
+    private lateinit var addAddressDialog : AddAddressDialog;
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_address)
 
+        addAddressDialog = AddAddressDialog();
+
+        click()
+
         initAddressRV()
         subscribeObservers();
+
+    }
+
+    private fun click() {
+        binding.floatingActionButton.setOnClickListener {
+            if (addAddressDialog.isAdded) return@setOnClickListener
+            addAddressDialog.show(supportFragmentManager, "AddAddressDialog")
+        }
     }
 
     override fun onResume() {
@@ -60,6 +77,7 @@ class AddressActivity : AppCompatActivity() {
 
                 }
                 is DataState.Success ->{
+                    addressRVAdpter.addresses.clear()
                     addressRVAdpter.addresses.addAll(it.data)
                     addressRVAdpter.notifyDataSetChanged()
                 }
@@ -72,16 +90,32 @@ class AddressActivity : AppCompatActivity() {
     }
 
     private fun initAddressRV() {
-        addressRVAdpter = AddressRecyclerAdapter(ArrayList())
+        addressRVAdpter = AddressRecyclerAdapter(ArrayList(), preferenceHelper)
         val layoutManager = LinearLayoutManager(this@AddressActivity, LinearLayoutManager.VERTICAL, false)
         binding.addressRV.layoutManager = layoutManager
         binding.addressRV.adapter = addressRVAdpter
+
+        val dividerItemDecoration : DividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
+        binding.addressRV.addItemDecoration(dividerItemDecoration)
     }
 
-    class AddressRecyclerAdapter (var addresses : MutableList<Address>) : RecyclerView.Adapter<AddressRecyclerAdapter.AddressViewHolder>() {
+    class AddressRecyclerAdapter (var addresses : MutableList<Address>, val prefHelper: IPreferenceHelper) : RecyclerView.Adapter<AddressRecyclerAdapter.AddressViewHolder>() {
 
-        class AddressViewHolder (val binding : RowAddressBinding) : RecyclerView.ViewHolder(binding.root) {
+        class AddressViewHolder (val binding : RowAddressBinding, val prefHelper: IPreferenceHelper) : RecyclerView.ViewHolder(binding.root) {
             fun bindItem(address: Address){
+                binding.addressTitleTv.text = address.addressName
+                binding.addressLine1Tv.text = address.addressLine1
+                binding.addressLine2Tv.text = address.addressLine2 + " "+ address.city
+
+
+
+                if (address.addressId == prefHelper.getDefaultAddressId()){
+                    binding.defaultTv.visibility = View.VISIBLE
+                    binding.setDefaultBtn.visibility = View.GONE
+                }else{
+                    binding.defaultTv.visibility = View.GONE
+                    binding.setDefaultBtn.visibility = View.VISIBLE
+                }
 
             }
         }
@@ -94,7 +128,7 @@ class AddressActivity : AppCompatActivity() {
                 false
             )
 
-            return AddressViewHolder(binding)
+            return AddressViewHolder(binding, prefHelper)
         }
 
         override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
