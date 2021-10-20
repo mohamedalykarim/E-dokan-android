@@ -1,5 +1,9 @@
 package mohalim.store.edokan.ui.address
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.pm.PackageManager
 import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,11 +12,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
@@ -23,6 +29,9 @@ import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.ActivityAddressBinding
 import mohalim.store.edokan.databinding.RowAddressBinding
 import mohalim.store.edokan.ui.product.ProductViewModel
+import android.content.Intent
+import com.google.android.gms.location.LocationSettingsStates
+
 
 @AndroidEntryPoint
 class AddressActivity : AppCompatActivity() {
@@ -137,6 +146,51 @@ class AddressActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int {
             return addresses.size
+        }
+    }
+
+
+    @SuppressLint("MissingSuperCall")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        when (requestCode) {
+            addAddressDialog.REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE ->{
+                when{
+                    resultCode == Activity.RESULT_OK ->{
+                        addAddressDialog.updateLocation()
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            addAddressDialog.REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE ->
+                when {
+                    grantResults.isEmpty() -> {
+                        if (!addAddressDialog.isAdded) return
+                        addAddressDialog.showLocationPermissionSnackBar()
+                    }
+
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED ->{
+                        // Permission was granted.
+                        if (!addAddressDialog.isAdded) return
+                        addAddressDialog.updateLocation()
+
+                    }
+                    else -> {
+                        // Permission denied.
+                        if (!addAddressDialog.isAdded) return
+                        addAddressDialog.showLocationPermissionSnackBar()
+                    }
+                }
+
+
         }
     }
 }
