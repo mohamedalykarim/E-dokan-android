@@ -10,5 +10,6 @@ interface AddressRepository {
     fun getAddress(addressId: Int, fToken: String) : Flow<DataState<Address>>
     fun addAddress(address: AddressNetwork, isDefault : Boolean,  fToken: String) : Flow<DataState<Boolean>>
     fun updateAddress(address : Address, fToken: String) : Flow<DataState<Boolean>>
-    fun deleteAddress(addressId: String, fToken: String) : Flow<DataState<Boolean>>
+    fun deleteAddress(addressId: Int, fToken: String) : Flow<DataState<Boolean>>
+    fun setDefault(addressId: Int, fToken: String) : Flow<DataState<Boolean>>
 }

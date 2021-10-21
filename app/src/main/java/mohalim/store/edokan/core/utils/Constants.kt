@@ -19,7 +19,8 @@ class Constants {
 
 
         val MESSAGE_DIALOG_DEFAULT_STYLE: Int = 1
-        val MESSAGE_DIALOG_ADD_ADDRESS_STYLE: Int = 2
+        val MESSAGE_DIALOG_ADD_ADDRESS_STYLE : Int = 2
+        val MESSAGE_DIALOG_DELETE_ADDRESS_STYLE : Int = 3
     }
 
 

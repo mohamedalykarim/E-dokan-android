@@ -61,7 +61,7 @@ class UserRepositoryImp
 
     }
 
-    override fun updateUserData(fToken: String): Flow<DataState<User>> {
+    override fun updateUserData(fToken: String): Flow<DataState<Boolean>> {
         return flow {
             emit(DataState.Loading)
 
@@ -73,6 +73,7 @@ class UserRepositoryImp
 
                 preferenceHelper.setDefaultAddressId(userData.defaultAddressId)
 
+                emit(DataState.Success(true))
 
             }catch (e : java.lang.Exception){
                 Log.d("TAG", "updateUserData: "+e.message)

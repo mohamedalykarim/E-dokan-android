@@ -23,6 +23,16 @@ class AddressViewModel @Inject constructor(private val addressRepositoryImp: Add
     private val _addAddressObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
     val addAddressObserver : LiveData<DataState<Boolean>> get() = _addAddressObserver
 
+    private val _setDefaultObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val setDefaultObserver : LiveData<DataState<Boolean>> get() = _setDefaultObserver
+
+    private val _updateDataObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val updateDataObserver : LiveData<DataState<Boolean>> get() = _updateDataObserver
+
+    private val _deleteAddressObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val deleteAddressObserver : LiveData<DataState<Boolean>> get() = _deleteAddressObserver
+
+
 
     fun getAddressForUser(userId: String, token: String) {
         viewModelScope.launch {
@@ -42,7 +52,25 @@ class AddressViewModel @Inject constructor(private val addressRepositoryImp: Add
 
     fun updateUserData(fToken: String) {
         viewModelScope.launch {
-            userRepositoryImp.updateUserData(fToken).collect {}
+            userRepositoryImp.updateUserData(fToken).collect {
+                _updateDataObserver.value = it
+            }
+        }
+    }
+
+    fun setDefault(addressId: Int, fToken: String) {
+        viewModelScope.launch {
+            addressRepositoryImp.setDefault(addressId, fToken).collect {
+                _setDefaultObserver.value = it
+            }
+        }
+    }
+
+    fun deleteAddress(addressId: Int, fToken: String) {
+        viewModelScope.launch {
+            addressRepositoryImp.deleteAddress(addressId , fToken).collect {
+                _deleteAddressObserver.value = it
+            }
         }
     }
 

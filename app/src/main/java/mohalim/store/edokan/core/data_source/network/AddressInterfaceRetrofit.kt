@@ -26,6 +26,17 @@ interface AddressInterfaceRetrofit {
         @Header("authorization") tokens: String
     ): AddressNetwork
 
+    @HTTP(method = "GET", path = "/api/address/default/{address_id}")
+    suspend fun setDefault(
+        @Path("address_id") addressId: Int,
+        @Header("authorization") tokens: String
+    ) : AddressNetwork
+
+    @HTTP(method = "DELETE", path = "/api/address/{address_id}")
+    suspend fun deleteAddress(
+        @Path("address_id") addressId: Int,
+        @Header("authorization") tokens: String
+    ) : AddressNetwork
 
 
 }

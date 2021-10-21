@@ -8,16 +8,44 @@
         android:layout_height="wrap_content"
         android:elevation="6dp">
 
+        <Button
+            android:id="@+id/deleteBtn"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Delete"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/defaultTv"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine2Tv" />
+
+        <Button
+            android:id="@+id/editBtn"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:backgroundTint="#03A9F4"
+            android:text="Edit"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView17"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine2Tv" />
+
         <TextView
             android:id="@+id/defaultTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_width="100dp"
+            android:layout_height="28dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="#4CAF50"
-            android:padding="2dp"
+            android:padding="4dp"
             android:text="Default"
+            android:textAlignment="center"
             android:textColor="#fff"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -28,13 +56,14 @@
             android:id="@+id/setDefaultBtn"
             style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:text="Set Default"
+            android:textSize="12sp"
+            app:backgroundTint="@color/teal_200"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView17"
+            app:layout_constraintStart_toEndOf="@+id/editBtn"
             app:layout_constraintTop_toBottomOf="@+id/addressLine2Tv" />
 
         <TextView

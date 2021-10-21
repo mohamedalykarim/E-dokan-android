@@ -4,27 +4,26 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.databinding.AlertMessageBinding
 import mohalim.store.edokan.ui.address.AddressActivity
-import mohalim.store.edokan.ui.main.MainActivity
-import kotlin.math.log
 
 @AndroidEntryPoint
 class MessageDialog() : DialogFragment() {
     private var style: Int = Constants.constants.MESSAGE_DIALOG_DEFAULT_STYLE
     lateinit var binding : AlertMessageBinding
+    lateinit var addressActivity: AddressActivity
+    var addressId = 0
 
-    lateinit var mainActivity: MainActivity
-
+    var firebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +42,14 @@ class MessageDialog() : DialogFragment() {
                 startActivity(intent)
 
             }
+        }else if (style == Constants.constants.MESSAGE_DIALOG_DELETE_ADDRESS_STYLE){
+            binding.messageTextTv.text = "Are you sure you want to delete this address ?"
+            binding.btn.text = "Delete"
+            binding.btn.setOnClickListener {
+                firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                    addressActivity.viewModel.deleteAddress(addressId, it.token.toString())
+                }
+            }
         }
 
         return binding.root
@@ -60,6 +67,7 @@ class MessageDialog() : DialogFragment() {
     fun setStyle( style : Int) {
         this.style = style
     }
+
 
 
 }

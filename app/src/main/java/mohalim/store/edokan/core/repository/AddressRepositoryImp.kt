@@ -100,8 +100,38 @@ class AddressRepositoryImp
         TODO("Not yet implemented")
     }
 
-    override fun deleteAddress(addressId: String, fToken: String): Flow<DataState<Boolean>> {
-        TODO("Not yet implemented")
+    override fun deleteAddress(addressId: Int, fToken: String): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+
+            try {
+                val response  = retrofit.deleteAddress(addressId, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+                Log.d("TAG", "deleteAddress: updated")
+                emit(DataState.Success(true))
+
+            }catch (e : Exception){
+                Log.d("TAG", "deleteAddress: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun setDefault(addressId: Int, fToken : String): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+
+            try {
+                val response  = retrofit.setDefault(addressId, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+                Log.d("TAG", "setDefault: updated")
+                emit(DataState.Success(true))
+
+            }catch (e : Exception){
+                Log.d("TAG", "setDefault: "+ e.message)
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
     }
 
 }

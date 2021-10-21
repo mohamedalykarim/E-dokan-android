@@ -25,7 +25,11 @@ import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.ActivityAddressBinding
 import mohalim.store.edokan.databinding.RowAddressBinding
 import android.content.Intent
+import android.widget.Toast
 import mohalim.store.edokan.core.model.address.AddressNetwork
+import mohalim.store.edokan.core.utils.Constants
+import mohalim.store.edokan.ui.extra.LoadingDialog
+import mohalim.store.edokan.ui.extra.MessageDialog
 
 
 @AndroidEntryPoint
@@ -36,17 +40,20 @@ class AddressActivity : AppCompatActivity() {
 
     private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance()
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(this) }
-
     lateinit var addressRVAdpter : AddressRecyclerAdapter;
-
     private lateinit var addAddressDialog : AddAddressDialog;
+
+    lateinit var loadingDialog: LoadingDialog
+    lateinit var messagesDialog : MessageDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_address)
+        loadingDialog = LoadingDialog()
 
         addAddressDialog = AddAddressDialog();
+        messagesDialog = MessageDialog()
 
         click()
 
@@ -78,16 +85,18 @@ class AddressActivity : AppCompatActivity() {
         viewModel.addresses.observe(this, Observer {
             when(it){
                 is DataState.Loading ->{
-
+                    if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
                 }
                 is DataState.Success ->{
                     addressRVAdpter.addresses.clear()
                     addressRVAdpter.addresses.addAll(it.data)
                     addressRVAdpter.notifyDataSetChanged()
+                    loadingDialog.dismiss()
                 }
 
                 is DataState.Failure->{
                     Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                    loadingDialog.dismiss()
                 }
             }
         })
@@ -116,10 +125,76 @@ class AddressActivity : AppCompatActivity() {
             }
 
         })
+
+        viewModel.deleteAddressObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{
+                    if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
+                }
+                is DataState.Success ->{
+
+                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                        viewModel.getAddressForUser(
+                            preferenceHelper.getUserId() + "",
+                            it.token + ""
+                        );
+                    }
+
+                    messagesDialog.dismiss()
+                    loadingDialog.dismiss()
+
+                }
+
+                is DataState.Failure->{
+                    Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                    messagesDialog.dismiss()
+                    loadingDialog.dismiss()
+                }
+            }
+        })
+
+        viewModel.updateDataObserver.observe(this, {
+            when(it){
+                is DataState.Loading ->{
+                }
+                is DataState.Success ->{
+                    addressRVAdpter.notifyDataSetChanged()
+                }
+
+                is DataState.Failure->{
+                }
+            }
+        })
+
+        viewModel.setDefaultObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{
+                    if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
+                }
+                is DataState.Success ->{
+                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                        viewModel.updateUserData( it.token + "");
+                    }
+                    loadingDialog.dismiss()
+                }
+
+                is DataState.Failure->{
+                    Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                    loadingDialog.dismiss()
+                }
+            }
+        })
     }
 
     private fun initAddressRV() {
-        addressRVAdpter = AddressRecyclerAdapter(ArrayList(), preferenceHelper)
+        addressRVAdpter = AddressRecyclerAdapter(
+            viewModel,
+            ArrayList(),
+            preferenceHelper,
+            firebaseAuth,
+            messagesDialog,
+            this@AddressActivity
+        )
         val layoutManager = LinearLayoutManager(this@AddressActivity, LinearLayoutManager.VERTICAL, false)
         binding.addressRV.layoutManager = layoutManager
         binding.addressRV.adapter = addressRVAdpter
@@ -128,46 +203,7 @@ class AddressActivity : AppCompatActivity() {
         binding.addressRV.addItemDecoration(dividerItemDecoration)
     }
 
-    class AddressRecyclerAdapter (var addresses : MutableList<Address>, val prefHelper: IPreferenceHelper) : RecyclerView.Adapter<AddressRecyclerAdapter.AddressViewHolder>() {
 
-        class AddressViewHolder (val binding : RowAddressBinding, val prefHelper: IPreferenceHelper) : RecyclerView.ViewHolder(binding.root) {
-            fun bindItem(address: Address){
-                binding.addressTitleTv.text = address.addressName
-                binding.addressLine1Tv.text = address.addressLine1
-                binding.addressLine2Tv.text = address.addressLine2 + " "+ address.city
-
-
-
-                if (address.addressId == prefHelper.getDefaultAddressId()){
-                    binding.defaultTv.visibility = View.VISIBLE
-                    binding.setDefaultBtn.visibility = View.GONE
-                }else{
-                    binding.defaultTv.visibility = View.GONE
-                    binding.setDefaultBtn.visibility = View.VISIBLE
-                }
-
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
-            val binding : RowAddressBinding = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.context),
-                R.layout.row_address,
-                parent,
-                false
-            )
-
-            return AddressViewHolder(binding, prefHelper)
-        }
-
-        override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
-            holder.bindItem(addresses[position])
-        }
-
-        override fun getItemCount(): Int {
-            return addresses.size
-        }
-    }
 
 
     @SuppressLint("MissingSuperCall")
@@ -221,5 +257,88 @@ class AddressActivity : AppCompatActivity() {
         }
     }
 
+
+    class AddressRecyclerAdapter (
+        val viewmodel : AddressViewModel,
+        var addresses : MutableList<Address>,
+        val prefHelper: IPreferenceHelper,
+        val firebaseAuth: FirebaseAuth,
+        val messageDialog: MessageDialog,
+        val addressActivity: AddressActivity
+
+        ) : RecyclerView.Adapter<AddressRecyclerAdapter.AddressViewHolder>() {
+
+        class AddressViewHolder (
+            val viewmodel : AddressViewModel,
+            val binding : RowAddressBinding,
+            val prefHelper: IPreferenceHelper,
+            val firebaseAuth: FirebaseAuth,
+            val messageDialog: MessageDialog,
+            val addressActivity: AddressActivity
+
+            ) : RecyclerView.ViewHolder(binding.root) {
+            fun bindItem(address: Address, messageDialog: MessageDialog){
+                binding.addressTitleTv.text = address.addressName
+                binding.addressLine1Tv.text = address.addressLine1
+                binding.addressLine2Tv.text = address.addressLine2 + " "+ address.city
+
+
+
+                if (address.addressId == prefHelper.getDefaultAddressId()){
+                    binding.defaultTv.visibility = View.VISIBLE
+                    binding.setDefaultBtn.visibility = View.GONE
+                }else{
+                    binding.defaultTv.visibility = View.GONE
+                    binding.setDefaultBtn.visibility = View.VISIBLE
+                }
+
+                binding.setDefaultBtn.setOnClickListener {
+                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                        viewmodel.setDefault(address.addressId, it.token.toString())
+                    }
+                }
+
+                binding.deleteBtn.setOnClickListener {
+                    if (address.addressId == prefHelper.getDefaultAddressId()) {
+                        Toast.makeText(addressActivity, "You can not delete default address", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    messageDialog.setStyle(Constants.constants.MESSAGE_DIALOG_DELETE_ADDRESS_STYLE)
+                    messageDialog.addressActivity = addressActivity
+                    messageDialog.addressId = address.addressId
+
+                    if(!messageDialog.isAdded){
+                        messageDialog.show(addressActivity.supportFragmentManager, "MessageDialog")
+                    }
+                }
+
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
+            val binding : RowAddressBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.row_address,
+                parent,
+                false
+            )
+
+            return AddressViewHolder(
+                viewmodel,
+                binding,
+                prefHelper,
+                firebaseAuth,
+                messageDialog,
+                addressActivity)
+        }
+
+        override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
+            holder.bindItem(addresses[position], messageDialog)
+        }
+
+        override fun getItemCount(): Int {
+            return addresses.size
+        }
+    }
 
 }
