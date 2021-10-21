@@ -1,5 +1,6 @@
 package mohalim.store.edokan.core.data_source.network
 
+import mohalim.store.edokan.core.data_source.network.req.AddAddressBody
 import mohalim.store.edokan.core.model.address.AddressNetwork
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.offer.OfferNetwork
@@ -13,13 +14,15 @@ interface AddressInterfaceRetrofit {
     ): List<AddressNetwork>
 
     @HTTP(method = "GET", path = "/api/address/{address_id}")
-    suspend fun getAddress(@Path("address_id")addressId : Int, @Header("authorization") tokens: String
+    suspend fun getAddress(
+        @Path("address_id")addressId : Int,
+        @Header("authorization") tokens: String
     ): AddressNetwork
 
-    @HTTP(method = "POST", path = "/api/address/user/{user_id}")
+    @HTTP(method = "POST", path = "/api/address/user/{user_id}", hasBody = true)
     suspend fun addAddress(
         @Path("user_id")userId: String,
-        @Body address : AddressNetwork,
+        @Body address : AddAddressBody,
         @Header("authorization") tokens: String
     ): AddressNetwork
 

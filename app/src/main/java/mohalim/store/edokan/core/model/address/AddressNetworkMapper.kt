@@ -14,6 +14,7 @@ class AddressNetworkMapper
             addressName = entity.addressName,
             addressLine1 = entity.addressLine1,
             addressLine2 = entity.addressLine2,
+            city_id = entity.city_id,
             city = entity.city,
             addressLat = entity.addressLat,
             addressLng = entity.addressLng
@@ -27,6 +28,7 @@ class AddressNetworkMapper
             addressName = domainModel.addressName,
             addressLine1 = domainModel.addressLine1,
             addressLine2 = domainModel.addressLine2,
+            city_id = domainModel.city_id,
             city = domainModel.city,
             addressLat = domainModel.addressLat,
             addressLng = domainModel.addressLng

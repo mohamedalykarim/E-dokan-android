@@ -61,7 +61,28 @@ class UserRepositoryImp
 
     }
 
+    override fun updateUserData(fToken: String): Flow<DataState<User>> {
+        return flow {
+            emit(DataState.Loading)
 
+            try {
+                val userData = retrofit.updateUserData(
+                    preferenceHelper.getUserId().toString(),
+                    "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken()
+                )
+
+                preferenceHelper.setDefaultAddressId(userData.defaultAddressId)
+
+
+            }catch (e : java.lang.Exception){
+                Log.d("TAG", "updateUserData: "+e.message)
+                emit(DataState.Failure(e))
+            }
+
+        }.flowOn(Dispatchers.IO)
+
+
+    }
 
 
 }

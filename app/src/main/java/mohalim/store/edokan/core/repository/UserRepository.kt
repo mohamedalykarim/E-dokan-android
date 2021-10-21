@@ -7,4 +7,5 @@ import mohalim.store.edokan.core.utils.DataState
 
 interface UserRepository {
     fun loginUserAfterPhone(user: FirebaseUser?, password: String) : Flow<DataState<User>>
+    fun updateUserData(ftoken : String) : Flow<DataState<User>>
 }

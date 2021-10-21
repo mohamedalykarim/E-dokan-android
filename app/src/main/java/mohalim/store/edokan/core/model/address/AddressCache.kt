@@ -19,6 +19,8 @@ data class AddressCache(
     var addressLine1 : String,
     @ColumnInfo(name = "address_line2")
     var addressLine2: String,
+    @ColumnInfo(name = "address_city_id")
+    var city_id: Int,
     @ColumnInfo(name = "address_city")
     var city: String,
     @ColumnInfo(name = "address_lat")

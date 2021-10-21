@@ -1,10 +1,8 @@
 package mohalim.store.edokan.ui.address
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,13 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
@@ -28,9 +24,8 @@ import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.ActivityAddressBinding
 import mohalim.store.edokan.databinding.RowAddressBinding
-import mohalim.store.edokan.ui.product.ProductViewModel
 import android.content.Intent
-import com.google.android.gms.location.LocationSettingsStates
+import mohalim.store.edokan.core.model.address.AddressNetwork
 
 
 @AndroidEntryPoint
@@ -95,6 +90,31 @@ class AddressActivity : AppCompatActivity() {
                     Log.d("TAG", "subscribeObservers: "+ it.exception.message)
                 }
             }
+        })
+
+
+        viewModel.addAddressObserver.observe(this, {
+            when(it){
+                is DataState.Loading ->{
+                    if (!addAddressDialog.isAdded) return@observe
+                    addAddressDialog.showLoading()
+                }
+                is DataState.Success ->{
+                    if (!addAddressDialog.isAdded) return@observe
+                    addAddressDialog.hideLoading()
+                    addAddressDialog.emptyForm()
+                    addAddressDialog.dismiss()
+
+                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                        viewModel.updateUserData( it.token + "");
+                    }
+                }
+
+                is DataState.Failure->{
+                    Log.d("TAG", "subscribeObservers: "+ it.exception.message)
+                }
+            }
+
         })
     }
 
@@ -193,4 +213,13 @@ class AddressActivity : AppCompatActivity() {
 
         }
     }
+
+    fun addAddress(address: AddressNetwork, isDefault: Boolean) {
+        firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+            Log.d("TAG", "addAddress: get fToken")
+            viewModel.addAddress(address, isDefault, it.token.toString())
+        }
+    }
+
+
 }

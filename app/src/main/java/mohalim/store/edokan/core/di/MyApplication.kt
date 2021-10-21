@@ -2,6 +2,7 @@ package mohalim.store.edokan.core.di
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import mohalim.store.edokan.R
 import mohalim.store.edokan.core.utils.NetworkMonitor
 import mohalim.store.edokan.core.utils.TypefaceUtil
 
@@ -12,10 +13,10 @@ class MyApplication : Application() {
         super.onCreate()
 
         NetworkMonitor(this).startNetworkCallback()
-        TypefaceUtil.font.setDefaultFont(applicationContext, "DEFAULT", "font/ge_ss_two_light.otf")
-        TypefaceUtil.font.setDefaultFont(applicationContext, "MONOSPACE", "font/ge_ss_two_light.otf")
-        TypefaceUtil.font.setDefaultFont(applicationContext, "SERIF", "font/ge_ss_two_light.otf")
-        TypefaceUtil.font.setDefaultFont(applicationContext, "SANS_SERIF", "font/ge_ss_two_light.otf")
+        TypefaceUtil.font.setDefaultFont(applicationContext, "DEFAULT", "font/"+resources.getString(R.string.font))
+        TypefaceUtil.font.setDefaultFont(applicationContext, "MONOSPACE", "font/"+resources.getString(R.string.font))
+        TypefaceUtil.font.setDefaultFont(applicationContext, "SERIF", "font/"+resources.getString(R.string.font))
+        TypefaceUtil.font.setDefaultFont(applicationContext, "SANS_SERIF", "font/"+resources.getString(R.string.font))
     }
 
     override fun onTerminate() {

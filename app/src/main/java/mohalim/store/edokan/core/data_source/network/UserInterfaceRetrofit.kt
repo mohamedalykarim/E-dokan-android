@@ -18,4 +18,11 @@ interface UserInterfaceRetrofit {
             @Body body : GetUserBody,
             @Header("Authorization") token: String
     ) : retrofit2.Response<UserNetwork>
+
+
+    @HTTP(method = "GET", path = "/api/users/{user_id}")
+    suspend fun updateUserData(
+        @Path("user_id")userId: String,
+        @Header("authorization") tokens: String
+        ): UserNetwork
 }
