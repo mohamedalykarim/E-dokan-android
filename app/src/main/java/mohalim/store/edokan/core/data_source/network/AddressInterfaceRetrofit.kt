@@ -38,5 +38,12 @@ interface AddressInterfaceRetrofit {
         @Header("authorization") tokens: String
     ) : AddressNetwork
 
+    @HTTP(method = "PUT", path = "/api/address/{address_id}", hasBody = true)
+    suspend fun updateAddress(
+        @Path("address_id") addressId: Int,
+        @Body addressBody: AddAddressBody,
+        @Header("authorization") tokens: String
+    ): Any
+
 
 }

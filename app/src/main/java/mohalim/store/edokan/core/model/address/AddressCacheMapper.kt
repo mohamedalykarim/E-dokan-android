@@ -12,8 +12,8 @@ class AddressCacheMapper
             addressName = entity.addressName,
             addressLine1 = entity.addressLine1,
             addressLine2 = entity.addressLine2,
-            city_id = entity.city_id,
-            city = entity.city,
+            address_city = entity.address_city,
+            city_name = entity.city_name,
             addressLat = entity.addressLat,
             addressLng = entity.addressLng
         )
@@ -27,8 +27,8 @@ class AddressCacheMapper
             addressName = domainModel.addressName,
             addressLine1 = domainModel.addressLine1,
             addressLine2 = domainModel.addressLine2,
-            city_id = domainModel.city_id,
-            city = domainModel.city,
+            address_city = domainModel.address_city,
+            city_name = domainModel.city_name,
             addressLat = domainModel.addressLat,
             addressLng = domainModel.addressLng
         )

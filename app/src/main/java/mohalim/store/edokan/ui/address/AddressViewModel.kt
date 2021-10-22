@@ -23,6 +23,10 @@ class AddressViewModel @Inject constructor(private val addressRepositoryImp: Add
     private val _addAddressObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
     val addAddressObserver : LiveData<DataState<Boolean>> get() = _addAddressObserver
 
+    private val _updateAddressObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val updateAddressObserver : LiveData<DataState<Boolean>> get() = _updateAddressObserver
+
+
     private val _setDefaultObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
     val setDefaultObserver : LiveData<DataState<Boolean>> get() = _setDefaultObserver
 
@@ -73,6 +77,16 @@ class AddressViewModel @Inject constructor(private val addressRepositoryImp: Add
             }
         }
     }
+
+    fun updateAddress(address: AddressNetwork?, fToken: String) {
+        viewModelScope.launch {
+            addressRepositoryImp.updateAddress(address!!, fToken).collect {
+                _updateAddressObserver.value = it
+            }
+        }
+    }
+
+
 
 
 }

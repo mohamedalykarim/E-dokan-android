@@ -19,10 +19,10 @@ data class AddressCache(
     var addressLine1 : String,
     @ColumnInfo(name = "address_line2")
     var addressLine2: String,
-    @ColumnInfo(name = "address_city_id")
-    var city_id: Int,
     @ColumnInfo(name = "address_city")
-    var city: String,
+    var address_city: Int,
+    @ColumnInfo(name = "city_name")
+    var city_name: String,
     @ColumnInfo(name = "address_lat")
     var addressLat : Double,
     @ColumnInfo(name = "address_lng")

@@ -6,8 +6,8 @@ data class Address(
     var addressName : String,
     var addressLine1 : String,
     var addressLine2: String,
-    var city_id: Int,
-    var city: String,
+    var address_city: Int,
+    var city_name: String,
     var addressLat : Double,
     var addressLng : Double
 )

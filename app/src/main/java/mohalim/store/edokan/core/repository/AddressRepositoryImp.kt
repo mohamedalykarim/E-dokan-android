@@ -7,17 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.AddressInterfaceRetrofit
-import mohalim.store.edokan.core.data_source.network.OfferInterfaceRetrofit
 import mohalim.store.edokan.core.data_source.network.req.AddAddressBody
 import mohalim.store.edokan.core.data_source.room.AddressDao
-import mohalim.store.edokan.core.data_source.room.OfferDao
 import mohalim.store.edokan.core.model.address.Address
 import mohalim.store.edokan.core.model.address.AddressCacheMapper
 import mohalim.store.edokan.core.model.address.AddressNetwork
 import mohalim.store.edokan.core.model.address.AddressNetworkMapper
-import mohalim.store.edokan.core.model.offer.Offer
-import mohalim.store.edokan.core.model.offer.OfferCacheMapper
-import mohalim.store.edokan.core.model.offer.OfferNetworkMapper
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -72,10 +67,11 @@ class AddressRepositoryImp
             emit(DataState.Loading)
 
             val addressBody = AddAddressBody(
+                preferenceHelper.getUserId().toString(),
                 address.addressName,
                 address.addressLine1,
                 address.addressLine2,
-                address.city_id,
+                address.address_city,
                 address.addressLat,
                 address.addressLng,
                 isDeafault
@@ -96,9 +92,34 @@ class AddressRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun updateAddress(address: Address, fToken: String): Flow<DataState<Boolean>> {
-        TODO("Not yet implemented")
-    }
+    override fun updateAddress(address: AddressNetwork, fToken: String): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+
+            val addressBody = AddAddressBody(
+                preferenceHelper.getUserId().toString(),
+                address.addressName,
+                address.addressLine1,
+                address.addressLine2,
+                address.address_city,
+                address.addressLat,
+                address.addressLng,
+                false
+            )
+            try {
+                val insertedAddress = retrofit.updateAddress(
+                    address.addressId,
+                    addressBody,
+                    "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken()
+                )
+
+                emit(DataState.Success(true))
+
+            }catch (e : Exception){
+                Log.d("TAG", "addAddress: "+e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)    }
 
     override fun deleteAddress(addressId: Int, fToken: String): Flow<DataState<Boolean>> {
         return flow {

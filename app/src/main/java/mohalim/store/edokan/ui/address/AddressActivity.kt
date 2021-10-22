@@ -41,7 +41,9 @@ class AddressActivity : AppCompatActivity() {
     private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance()
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(this) }
     lateinit var addressRVAdpter : AddressRecyclerAdapter;
+
     private lateinit var addAddressDialog : AddAddressDialog;
+    private lateinit var updateAddressDialog: UpdateAddressDialog
 
     lateinit var loadingDialog: LoadingDialog
     lateinit var messagesDialog : MessageDialog
@@ -50,10 +52,11 @@ class AddressActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_address)
-        loadingDialog = LoadingDialog()
 
+        updateAddressDialog = UpdateAddressDialog()
         addAddressDialog = AddAddressDialog();
         messagesDialog = MessageDialog()
+        loadingDialog = LoadingDialog()
 
         click()
 
@@ -67,6 +70,7 @@ class AddressActivity : AppCompatActivity() {
             if (addAddressDialog.isAdded) return@setOnClickListener
             addAddressDialog.show(supportFragmentManager, "AddAddressDialog")
         }
+
     }
 
     override fun onResume() {
@@ -81,7 +85,13 @@ class AddressActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Subscribe the observers from Viewmodel
+     */
     private fun subscribeObservers() {
+        /**
+         * Get all addresses observer
+         */
         viewModel.addresses.observe(this, Observer {
             when(it){
                 is DataState.Loading ->{
@@ -101,7 +111,9 @@ class AddressActivity : AppCompatActivity() {
             }
         })
 
-
+        /**
+         * Add address Observer
+         */
         viewModel.addAddressObserver.observe(this, {
             when(it){
                 is DataState.Loading ->{
@@ -126,6 +138,31 @@ class AddressActivity : AppCompatActivity() {
 
         })
 
+        /**
+         * Update Address Observer
+         */
+
+        viewModel.updateAddressObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{
+                    if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
+                }
+
+                is DataState.Success ->{
+                    if (loadingDialog.isAdded) loadingDialog.dismiss()
+                    if (updateAddressDialog.isAdded) updateAddressDialog.dismiss()
+                }
+
+                is DataState.Failure ->{
+                    Log.d("TAG", "subscribeObservers: "+it.exception.message)
+                    if (loadingDialog.isAdded) loadingDialog.dismiss()
+                }
+            }
+        })
+
+        /**
+         *  Delete Address Observer
+         */
         viewModel.deleteAddressObserver.observe(this, Observer {
             when(it){
                 is DataState.Loading ->{
@@ -153,6 +190,9 @@ class AddressActivity : AppCompatActivity() {
             }
         })
 
+        /**
+         * Update Address Observer
+         */
         viewModel.updateDataObserver.observe(this, {
             when(it){
                 is DataState.Loading ->{
@@ -166,6 +206,9 @@ class AddressActivity : AppCompatActivity() {
             }
         })
 
+        /**
+         * Set Address default Observer
+         */
         viewModel.setDefaultObserver.observe(this, Observer {
             when(it){
                 is DataState.Loading ->{
@@ -193,6 +236,7 @@ class AddressActivity : AppCompatActivity() {
             preferenceHelper,
             firebaseAuth,
             messagesDialog,
+            updateAddressDialog,
             this@AddressActivity
         )
         val layoutManager = LinearLayoutManager(this@AddressActivity, LinearLayoutManager.VERTICAL, false)
@@ -264,6 +308,7 @@ class AddressActivity : AppCompatActivity() {
         val prefHelper: IPreferenceHelper,
         val firebaseAuth: FirebaseAuth,
         val messageDialog: MessageDialog,
+        val updateAddressDialog: UpdateAddressDialog,
         val addressActivity: AddressActivity
 
         ) : RecyclerView.Adapter<AddressRecyclerAdapter.AddressViewHolder>() {
@@ -274,15 +319,15 @@ class AddressActivity : AppCompatActivity() {
             val prefHelper: IPreferenceHelper,
             val firebaseAuth: FirebaseAuth,
             val messageDialog: MessageDialog,
+            val updateAddressDialog: UpdateAddressDialog,
             val addressActivity: AddressActivity
 
             ) : RecyclerView.ViewHolder(binding.root) {
-            fun bindItem(address: Address, messageDialog: MessageDialog){
+
+            fun bindItem(address: AddressNetwork, messageDialog: MessageDialog){
                 binding.addressTitleTv.text = address.addressName
                 binding.addressLine1Tv.text = address.addressLine1
-                binding.addressLine2Tv.text = address.addressLine2 + " "+ address.city
-
-
+                binding.addressLine2Tv.text = address.addressLine2 + " "+ address.city_name
 
                 if (address.addressId == prefHelper.getDefaultAddressId()){
                     binding.defaultTv.visibility = View.VISIBLE
@@ -290,6 +335,12 @@ class AddressActivity : AppCompatActivity() {
                 }else{
                     binding.defaultTv.visibility = View.GONE
                     binding.setDefaultBtn.visibility = View.VISIBLE
+                }
+
+                binding.editBtn.setOnClickListener {
+                    if (!updateAddressDialog.isAdded)
+                        updateAddressDialog.setAddress(address)
+                        updateAddressDialog.show(addressActivity.supportFragmentManager, "UpdateAddressDialog")
                 }
 
                 binding.setDefaultBtn.setOnClickListener {
@@ -329,11 +380,24 @@ class AddressActivity : AppCompatActivity() {
                 prefHelper,
                 firebaseAuth,
                 messageDialog,
+                updateAddressDialog,
                 addressActivity)
         }
 
         override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
-            holder.bindItem(addresses[position], messageDialog)
+            holder.bindItem(
+                AddressNetwork(
+                    addresses[position].addressId,
+                    addresses[position].userId,
+                    addresses[position].addressName,
+                    addresses[position].addressLine1,
+                    addresses[position].addressLine2,
+                    addresses[position].address_city,
+                    addresses[position].city_name,
+                    addresses[position].addressLat,
+                    addresses[position].addressLng
+                )
+                , messageDialog)
         }
 
         override fun getItemCount(): Int {

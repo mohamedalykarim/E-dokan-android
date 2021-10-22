@@ -317,8 +317,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         userLocation.longitude = data.addressLng
         mainActivity.viewModel.getAllCartProductFromInternal()
 
-        binding.addressTV.text = data.addressName + "\n" + data.addressLine1 + "\n" + data.addressLine2 + " "+ data.city
-
+        binding.addressTV.text = data.addressName + "\n" + data.addressLine1 + "\n" + data.addressLine2 + " "+ data.city_name
     }
 
 
