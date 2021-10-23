@@ -36,6 +36,7 @@ import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
 import mohalim.store.edokan.ui.extra.LoadingDialog
 import mohalim.store.edokan.ui.extra.MessageDialog
+import mohalim.store.edokan.ui.order_details.OrderDetailsActivity
 import mohalim.store.edokan.ui.product.ProductActivity
 
 
@@ -185,6 +186,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             }
 
             val order = Order(
+                0,
                 preferenceHelper.getUserId().toString(),
                 defaultAddress.addressName,
                 defaultAddress.addressLine1,
@@ -451,5 +453,32 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.addressTV.text = data.addressName + "\n" + data.addressLine1 + "\n" + data.addressLine2 + " "+ data.city_name
     }
 
+    fun showLoading() {
+        if (!loadingDialog.isAdded) loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
+    }
+
+    fun hideLoading(){
+        loadingDialog.dismiss()
+    }
+
+    fun finishingAndStartOrder(orderId : Int) {
+        mainActivity.viewModel.removeInternalCartProducts()
+        mainActivity.loadHome()
+
+        val intent = Intent(mainActivity, OrderDetailsActivity::class.java)
+        intent.putExtra(Constants.constants.ORDER_ID, orderId)
+        startActivity(intent)
+    }
+
+    fun showNoProducts(isEmpty: Boolean) {
+        Log.d("TAG", "showNoProducts: "+isEmpty)
+        if (isEmpty){
+            binding.emptyContainer.visibility = View.VISIBLE
+            binding.cartAllContainer.visibility = View.GONE
+        }else{
+            binding.emptyContainer.visibility = View.GONE
+            binding.cartAllContainer.visibility = View.VISIBLE
+        }
+    }
 
 }

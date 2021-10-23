@@ -89,7 +89,9 @@ class OrderRepositoryImp
                     order.order_marketplaces
                 )
 
-                retrofit.addOrder(orderBody, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+                val order = retrofit.addOrder(orderBody, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+
+                emit(DataState.Success(order))
 
             }catch (e : Exception){
                 Log.d("TAG", "addOrder: "+e.message)

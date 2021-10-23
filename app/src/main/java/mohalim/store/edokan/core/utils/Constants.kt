@@ -4,8 +4,6 @@ class Constants {
     object constants {
 
 
-
-
         val BASE_URL: String = "http://192.168.1.105:3001"
 //        val BASE_URL: String = "https://e-dokan-93b7c.uc.r.appspot.com"
 
@@ -16,6 +14,7 @@ class Constants {
 
         const val CATEGORY_ID : String = "category_id"
         const val PRODUCT_ID : String = "product_id"
+        const val ORDER_ID : String = "order_id"
 
 
         val MESSAGE_DIALOG_DEFAULT_STYLE: Int = 1

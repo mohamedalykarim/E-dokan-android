@@ -1,6 +1,7 @@
 package mohalim.store.edokan.core.model.order
 
 data class Order(
+    var order_id : Int,
     var user_id : String,
     var address_name : String,
     var address_line1 : String,

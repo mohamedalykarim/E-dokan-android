@@ -5,6 +5,7 @@ import mohalim.store.edokan.core.data_source.network.req.AddOrderBody
 import mohalim.store.edokan.core.data_source.network.req.GetDirectionsBody
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.offer.OfferNetwork
+import mohalim.store.edokan.core.model.order.Order
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -26,6 +27,6 @@ interface OrderInterfaceRetrofit {
     suspend fun addOrder(
         @Body orderBody : AddOrderBody,
         @Header("authorization") tokens: String
-    )
+    ) : Order
 
 }

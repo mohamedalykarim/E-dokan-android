@@ -93,6 +93,7 @@ class MainActivity : BaseActivity() {
     fun loadHome() {
         homeFragment = HomeFragment()
         loadFragment(homeFragment)
+        homeBottom()
     }
 
     /**
@@ -325,8 +326,13 @@ class MainActivity : BaseActivity() {
                         cartFragment.loadingDialog.dismiss()
                     }
                     if (it.data.isEmpty()){
+                        cartFragment.showNoProducts(true)
                         cartFragment.loadingDialog.dismiss()
+                    }else{
+                        cartFragment.showNoProducts(false)
                     }
+
+
 
                 }
                 is DataState.Failure -> {
@@ -334,6 +340,9 @@ class MainActivity : BaseActivity() {
                     if (cartFragment.directionAndCartDetailsDownloaded){
                         cartFragment.loadingDialog.dismiss()
                     }
+
+                    cartFragment.showNoProducts(true)
+
                 }
             }
         })
@@ -405,6 +414,27 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+        })
+
+        /**
+         * After hit add order button Observe the adding process
+         */
+
+        viewModel.addOrderObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{
+                    cartFragment.showLoading()
+                }
+
+                is DataState.Success ->{
+                    cartFragment.hideLoading()
+                    cartFragment.finishingAndStartOrder(it.data.order_id)
+                }
+
+                is DataState.Failure ->{
+                    cartFragment.hideLoading()
+                }
+            }
         })
 
     }
@@ -508,7 +538,7 @@ class MainActivity : BaseActivity() {
         binding.accountIconTv.visibility = View.GONE
     }
 
-    private fun homeBottom() {
+    fun homeBottom() {
         val params1 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
         val params2 : LinearLayout.LayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 

@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Edokan"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.address.AddressActivity"></activity>
+        <activity
+            android:name=".ui.order_details.OrderDetailsActivity"
+            android:exported="false" />
+        <activity android:name=".ui.address.AddressActivity" />
 
         <uses-library android:name="com.google.android.maps" />
 
@@ -23,7 +26,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDR6V-tkThKaaxMGOMRjPzYGhaXsljh_MQ" />
 
-        <activity android:name=".ui.product.ProductActivity"></activity>
+        <activity android:name=".ui.product.ProductActivity" />
         <activity android:name=".ui.category.CategoryActivity" />
         <activity
             android:name=".ui.login.LoginActivity"

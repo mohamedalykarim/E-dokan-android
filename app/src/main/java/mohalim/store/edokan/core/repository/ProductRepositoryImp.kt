@@ -149,6 +149,19 @@ class ProductRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
+    override suspend fun removeProductsfromCart(): Flow<DataState<Boolean>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                val inserted = cartProductDao.removeAll()
+                emit(DataState.Success(true))
+
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun getCartProductFromInternal(productId: Int): Flow<DataState<CartProduct>> {
         return flow {
             emit(DataState.Loading)

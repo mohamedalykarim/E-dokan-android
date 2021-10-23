@@ -84,6 +84,10 @@ class HomeViewModel
     val defaultAddressObserver : LiveData<DataState<Address>> get() = _defaultAddressObserver
 
 
+    private val _addOrderObserver : MutableLiveData<DataState<Order>> = MutableLiveData()
+    val addOrderObserver : LiveData<DataState<Order>> get() = _addOrderObserver
+
+
 
     fun fetchHomeFragmentData (cityId: Int){
         getNoParentCategories()
@@ -181,10 +185,15 @@ class HomeViewModel
 
     fun addOrder(order: Order, fToken: String) {
         viewModelScope.launch{
-
             orderRepository.addOrder(order, fToken).collect {
-
+                _addOrderObserver.value = it
             }
+        }
+    }
+
+    fun removeInternalCartProducts() {
+        viewModelScope.launch {
+            productRepository.removeProductsfromCart().collect {  }
         }
     }
 
