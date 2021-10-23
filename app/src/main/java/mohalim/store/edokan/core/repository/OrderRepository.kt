@@ -8,6 +8,7 @@ import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.user.User
 import mohalim.store.edokan.core.utils.DataState
+import okhttp3.Response
 
 interface OrderRepository {
     fun getOrderPath(
@@ -20,4 +21,6 @@ interface OrderRepository {
     ) : Flow<DataState<JsonObject>>
 
     fun addOrder(order : Order, fToken: String) : Flow<DataState<Order>>
+    fun getOrderDetails(orderId: Int, fToken: String) : Flow<DataState<Response>>
+    fun getOrders(limit: Int, offset: Int, fToken: String): Flow<DataState<List<Order>>>
 }

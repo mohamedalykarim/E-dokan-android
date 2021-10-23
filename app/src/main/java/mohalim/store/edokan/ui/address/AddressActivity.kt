@@ -243,7 +243,7 @@ class AddressActivity : AppCompatActivity() {
         binding.addressRV.layoutManager = layoutManager
         binding.addressRV.adapter = addressRVAdpter
 
-        val dividerItemDecoration : DividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
+        val dividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding.addressRV.addItemDecoration(dividerItemDecoration)
     }
 

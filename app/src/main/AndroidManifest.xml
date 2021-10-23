@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Edokan"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.orders.OrdersActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.order_details.OrderDetailsActivity"
             android:exported="false" />
         <activity android:name=".ui.address.AddressActivity" />

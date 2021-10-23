@@ -17,9 +17,19 @@ class Constants {
         const val ORDER_ID : String = "order_id"
 
 
-        val MESSAGE_DIALOG_DEFAULT_STYLE: Int = 1
-        val MESSAGE_DIALOG_ADD_ADDRESS_STYLE : Int = 2
-        val MESSAGE_DIALOG_DELETE_ADDRESS_STYLE : Int = 3
+        const val MESSAGE_DIALOG_DEFAULT_STYLE: Int = 1
+        const val MESSAGE_DIALOG_ADD_ADDRESS_STYLE : Int = 2
+        const val MESSAGE_DIALOG_DELETE_ADDRESS_STYLE : Int = 3
+
+
+        const val ORDER_STATUS_PENDING = 100
+        const val ORDER_STATUS_RECEIVED = 200
+        const val ORDER_STATUS_PROCESSING = 300
+        const val ORDER_STATUS_DELIVERING = 400
+        const val ORDER_STATUS_COMPLETED = 500
+
+
+
     }
 
 

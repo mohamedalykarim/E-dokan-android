@@ -14,6 +14,7 @@ import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import mohalim.store.edokan.databinding.FragmentAccountBinding
 import mohalim.store.edokan.ui.address.AddressActivity
+import mohalim.store.edokan.ui.orders.OrdersActivity
 import mohalim.store.edokan.ui.splash.SplashActivity
 
 @AndroidEntryPoint
@@ -29,6 +30,10 @@ class AccountFragment : Fragment() {
 
         val mainActivity = activity as MainActivity
 
+        binding.myOrderContainer.setOnClickListener {
+            val intent = Intent(activity, OrdersActivity::class.java)
+            startActivity(intent)
+        }
 
         binding.myAddressContainer.setOnClickListener {
             val intent = Intent(activity, AddressActivity::class.java)
