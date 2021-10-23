@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mohalim.store.edokan.core.data_source.network.OrderInterfaceRetrofit
+import mohalim.store.edokan.core.data_source.network.req.AddOrderBody
 import mohalim.store.edokan.core.data_source.network.req.GetDirectionsBody
 import mohalim.store.edokan.core.model.location.LocationItem
+import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -64,6 +66,33 @@ class OrderRepositoryImp
                 emit(DataState.Success(response))
 
             }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun addOrder(order: Order, fToken: String): Flow<DataState<Order>> {
+        return flow {
+            emit(DataState.Loading)
+
+            try{
+
+                val orderBody = AddOrderBody(
+                    order.user_id,
+                    order.address_name,
+                    order.address_line1,
+                    order.address_line2,
+                    order.city_id,
+                    order.address_lat,
+                    order.address_lng,
+                    order.order_products,
+                    order.order_marketplaces
+                )
+
+                retrofit.addOrder(orderBody, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+
+            }catch (e : Exception){
+                Log.d("TAG", "addOrder: "+e.message)
                 emit(DataState.Failure(e))
             }
         }.flowOn(Dispatchers.IO)

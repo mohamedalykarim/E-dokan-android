@@ -1,6 +1,7 @@
 package mohalim.store.edokan.core.data_source.network
 
 import com.google.gson.JsonObject
+import mohalim.store.edokan.core.data_source.network.req.AddOrderBody
 import mohalim.store.edokan.core.data_source.network.req.GetDirectionsBody
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.offer.OfferNetwork
@@ -19,5 +20,12 @@ interface OrderInterfaceRetrofit {
         @Body directionsBody: GetDirectionsBody,
         @Header("authorization") tokens: String
     ): JsonObject
+
+
+    @HTTP(method = "POST", path="/api/orders/", hasBody = true)
+    suspend fun addOrder(
+        @Body orderBody : AddOrderBody,
+        @Header("authorization") tokens: String
+    )
 
 }

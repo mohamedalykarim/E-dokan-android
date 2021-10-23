@@ -54,8 +54,10 @@ class AddressRepositoryImp
                     addressId,
                     "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken()
                 )
+                Log.d("TAG", "getAddress: "+networkAddress)
                 emit(DataState.Success(networkMapper.mapFromEntity(networkAddress)))
             }catch (e : Exception){
+
                 emit(DataState.Failure(e))
             }
         }.flowOn(Dispatchers.IO)

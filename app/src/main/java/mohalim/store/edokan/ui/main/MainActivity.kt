@@ -60,6 +60,9 @@ class MainActivity : BaseActivity() {
 
     }
 
+    /**
+     * Handle Back Button press
+     */
     override fun onBackPressed() {
         when (viewModel.CURRENT_FRAGMENT) {
             HomeFragment::class.java.name -> {
@@ -84,11 +87,17 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Load Home Fragment
+     */
     fun loadHome() {
         homeFragment = HomeFragment()
         loadFragment(homeFragment)
     }
 
+    /**
+     * Load City Fragment
+     */
     fun loadCity() {
         homeBottom()
         cityFragment = CityFragment()
@@ -111,6 +120,9 @@ class MainActivity : BaseActivity() {
         binding.bottom.visibility = View.VISIBLE
     }
 
+    /**
+     * Check Internet Availability
+     */
     private fun checkInternetAvailability() {
         //first check
         if (NetworkVariables.isNetworkConnected){
@@ -143,8 +155,13 @@ class MainActivity : BaseActivity() {
         })
     }
 
+    /**
+     * Subscribe Observers
+     */
     private fun subscribeObservers() {
-        // linked to home fragment
+        /**
+         * Observe Main Categories
+         */
         viewModel.noParentCategories.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -166,7 +183,10 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        // linked to home fragment
+        /**
+         * Observe Offers
+         * Home Fragment
+         */
         viewModel.offersComing.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -188,7 +208,10 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        // linked to home fragment
+        /**
+         * Observe Chosen Products
+         * Home Fragment
+         */
         viewModel.chosenProducts.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -212,6 +235,10 @@ class MainActivity : BaseActivity() {
 
         })
 
+        /**
+         * Observe Support Items
+         * Support Item Fragment
+         */
         viewModel.supportItemObserver.observe(this,  {
             when (it) {
                 is DataState.Loading -> {
@@ -228,6 +255,11 @@ class MainActivity : BaseActivity() {
             }
         })
 
+
+        /**
+         * Observe Adding Support Item
+         * Support Item Fragment
+         */
         viewModel.addSupportItemObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> {
@@ -246,6 +278,10 @@ class MainActivity : BaseActivity() {
 
         })
 
+        /**
+         * Observe Support Tech Item Message
+         * Tech Support Message Fragment
+         */
         viewModel.supportItemMessageObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -257,6 +293,9 @@ class MainActivity : BaseActivity() {
 
         })
 
+        /**
+         * Observe cities and it them to city fragments
+         */
         viewModel.citiesObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -268,7 +307,12 @@ class MainActivity : BaseActivity() {
 
         })
 
-        // linked to cart fragment
+        /**
+         * After getting the default address in cart fragment and request cart products :
+         * Observe Cart products and add them to cart fragment
+         * Update products in cart fragment
+         * Step two of cart fragment
+         */
         viewModel.cartProductsObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
@@ -294,7 +338,15 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        // linked to cart fragment
+        /**
+         * CART FRAGMENT
+         * First step : Get default address in Cartfragment.class
+         * Second step : Observe default address in MainActivity.class
+         * Three step : Update Products of cart in cart fragment
+         * Four Step: Ask for Order path in cart fragment at @updateProducts() function
+         * Then Observe path direction
+         */
+
         viewModel.directionObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> {
@@ -305,6 +357,15 @@ class MainActivity : BaseActivity() {
                     val timer = object : CountDownTimer(500,500){
                         override fun onTick(millisUntilFinished: Long) {}
                         override fun onFinish() {
+                            /**
+                             * CART FRAGMENT
+                             * First step : Get default address in Cartfragment.class
+                             * Second step : Observe default address in MainActivity.class
+                             * Three step : Update Products of cart in cart fragment
+                             * Four Step : Ask for Order path in cart fragment at @updateProducts() function
+                             * Five step :  Observe path direction
+                             * Then Send direction legs to cart fragment
+                             */
                             cartFragment.routeLegs(legsJsonArray)
                         }
                     }
@@ -330,14 +391,17 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        // Linked to cart fragment
+        /**
+         * Observe Default address
+         */
         viewModel.defaultAddressObserver.observe(this, Observer {
             when (it) {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
-                    cartFragment.getDefaultAddress(it.data)
+                    cartFragment.updateCartAddressUIandStartGetCartProducts(it.data)
                 }
                 is DataState.Failure -> {
+                    Log.d("TAG", "subscribeObservers: "+it.exception.message)
                 }
             }
 

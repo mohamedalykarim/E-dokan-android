@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import mohalim.store.edokan.core.model.offer.Offer
+import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.user.User
 import mohalim.store.edokan.core.utils.DataState
 
@@ -17,4 +18,6 @@ interface OrderRepository {
         counts : List<Int>,
         fToken: String
     ) : Flow<DataState<JsonObject>>
+
+    fun addOrder(order : Order, fToken: String) : Flow<DataState<Order>>
 }

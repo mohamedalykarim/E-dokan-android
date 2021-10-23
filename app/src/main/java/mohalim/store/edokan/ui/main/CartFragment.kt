@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,6 +24,9 @@ import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.address.Address
 import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.marketplace.MarketPlace
+import mohalim.store.edokan.core.model.order.Order
+import mohalim.store.edokan.core.model.order.OrderMarketplace
+import mohalim.store.edokan.core.model.order.OrderProduct
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.LocationUtils
@@ -40,6 +42,8 @@ import mohalim.store.edokan.ui.product.ProductActivity
 @AndroidEntryPoint
 class CartFragment : Fragment(), OnMapReadyCallback {
 
+    private var deliveryValue: Float = 0f
+    private var orderValue: Float = 0f
     var directionAndCartDetailsDownloaded: Boolean = false
     var cartProductsFromInternalDownloaded: Boolean = false
 
@@ -65,9 +69,12 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
 
+    var totalDistance = 0f
+
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cart, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cart, container, false)
         mainActivity = activity as MainActivity
 
         binding.map.onCreate(savedInstanceState)
@@ -75,14 +82,21 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
         loadingDialog = LoadingDialog()
         messagesDialog = MessageDialog()
+        
+        click()
 
         return binding.root
     }
 
-
-
     override fun onResume() {
         super.onResume()
+
+        //resume the map
+        binding.map.onResume()
+
+        /**
+         * Handle address
+         */
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
             if(preferenceHelper.getDefaultAddressId() == 0){
                 loadingDialog.dismiss()
@@ -93,19 +107,18 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                 }
 
             }else{
+                // start request default address from the api
                 mainActivity.viewModel.getDefaultAddress(preferenceHelper.getDefaultAddressId()!!, it.token!!)
+                
             }
         }
-
-        //resume the map
-        binding.map.onResume()
 
         if (!loadingDialog.isAdded){
             loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
         }
 
         if (this::defaultAddress.isInitialized){
-            getDefaultAddress(defaultAddress)
+            updateCartAddressUIandStartGetCartProducts(defaultAddress)
         }
 
     }
@@ -136,8 +149,85 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.map.onLowMemory()
     }
 
+    private fun click() {
 
+
+
+        binding.addOrderBtn.setOnClickListener {
+
+            val productForOrder = ArrayList<OrderProduct>()
+            val marketplacesForOrder = ArrayList<OrderMarketplace>()
+
+            cartProducts.forEach{
+                productForOrder.add(
+                    OrderProduct(
+                        1,
+                        1,
+                        it.productId,
+                        it.productCount,
+                        it.productPrice.toDouble(),
+                        0.0
+                    )
+                )
+            }
+
+
+            marketPlaces.forEach{
+                marketplacesForOrder.add(
+                    OrderMarketplace(
+                        1,
+                        1,
+                        it.marketplaceId,
+                        it.lat,
+                        it.lng
+                    )
+                )
+            }
+
+            val order = Order(
+                preferenceHelper.getUserId().toString(),
+                defaultAddress.addressName,
+                defaultAddress.addressLine1,
+                defaultAddress.addressLine2,
+                preferenceHelper.getCityId()!!,
+                preferenceHelper.getCityName()!!,
+                defaultAddress.addressLat, 
+                defaultAddress.addressLng,
+                1,
+                0.0,
+                0.0,
+                1,
+                1.0,
+                1,
+                orderValue.toDouble(),
+                deliveryValue.toDouble(),
+                0.0,
+                productForOrder,
+                marketplacesForOrder
+            )
+
+
+            firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                Log.d("TAG", "click: the button")
+                mainActivity.viewModel.addOrder(order, it.token.toString())
+            }
+        }
+
+
+
+    }
+
+
+    /**
+     * First step : get default address
+     * Second step : Observe default address in MainActivity.class
+     * Then : Update Products of cart
+     * Step three of Cart Fragment
+     */
     fun updateProducts(data: List<CartProduct>) {
+        this.cartProducts.clear()
+        this.cartProducts.addAll(data)
+
         marketPlaces.clear()
 
         val productIds = ArrayList<Int>()
@@ -148,6 +238,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
 
         data.forEach {
+
+            // Product UI Inflating
             val cartProductBinding : RowCartProductBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(context),
                 R.layout.row_cart_product,
@@ -155,6 +247,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                 false
             )
 
+            // Update every item ui in product cart
             cartProductBinding.productTitle.text = it.productName
             val subDescription = it.productDescription.substring(0,25)
             cartProductBinding.descriptionTv.text = subDescription
@@ -176,6 +269,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             productIds.add(it.productId)
             productCounts.add(it.productCount)
         }
+
+        Log.d("TAG", "updateProducts: "+marketPlaces.size)
 
         val distinctMarketplaces = marketPlaces.distinct()
 
@@ -224,6 +319,13 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         originLocation.longitude = newMarketPlaces[newMarketPlaces.size - 1].lng
 
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+            /**
+             * First step : get default address
+             * Second step : Observe default address in MainActivity.class
+             * Three step : Update Products of cart in cart fragment
+             * Then ask for Order path in cart fragment at @updateProducts() function
+             */
+
             mainActivity.viewModel.getOrderPath(
                 originLocation,
                 userLocation,
@@ -242,6 +344,9 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         isGoogleMapReady = true
     }
 
+    /**
+     * Make Directions on the map
+     */
     private fun makeDirection() {
         polyline = googleMap.addPolyline(PolylineOptions().color(Color.RED).clickable(true).addAll(path))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userLocation.latitude, userLocation.longitude), 13f))
@@ -272,6 +377,15 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    /**
+     * CART FRAGMENT
+     * First step : Get default address in Cartfragment.class
+     * Second step : Observe default address in MainActivity.class
+     * Three step : Update Products of cart in cart fragment
+     * Four Step : Ask for Order path in cart fragment at @updateProducts() function
+     * Five step :  Observe path direction
+     * Then Send direction legs to cart fragment
+     */
     fun routeLegs(legsJsonArray: JsonArray?) {
         path.clear()
 
@@ -280,7 +394,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             googleMap.clear()
         }
 
-        var totalDistance = 0f
 
         legsJsonArray?.forEach { it ->
             val stepsJson = it.asJsonObject.get("steps").asJsonArray
@@ -298,6 +411,16 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         isDirectionReady = true
 
         if (isGoogleMapReady){
+            /**
+             * CART FRAGMENT
+             * First step : Get default address in Cartfragment.class
+             * Second step : Observe default address in MainActivity.class
+             * Three step : Update Products of cart in cart fragment
+             * Four Step : Ask for Order path in cart fragment at @updateProducts() function
+             * Five step :  Observe path direction
+             * Six step : Send direction legs to cart fragment
+             * Then make the direction
+             */
            makeDirection()
         }
 
@@ -308,10 +431,18 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         binding.orderValueTv.text = orderValue.toString()
         binding.deliveryValueTv.text = deliveryValue.toString()
         binding.totalTv.text = (orderValue + deliveryValue).toString()
+        
+        this.orderValue = orderValue
 
+        this.deliveryValue = deliveryValue
     }
 
-    fun getDefaultAddress(data: Address) {
+    /**
+     * Update cart Address UI
+     * Start get All cart products
+     * Step one of the cart
+     */
+    fun updateCartAddressUIandStartGetCartProducts(data: Address) {
         defaultAddress = data
         userLocation.latitude = data.addressLat
         userLocation.longitude = data.addressLng

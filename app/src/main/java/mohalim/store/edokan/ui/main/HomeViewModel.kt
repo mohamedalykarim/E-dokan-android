@@ -12,6 +12,7 @@ import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.city.City
 import mohalim.store.edokan.core.model.offer.Offer
+import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.model.support_item.SupportItem
 import mohalim.store.edokan.core.model.support_item_messsage.SupportItemMessage
@@ -170,10 +171,19 @@ class HomeViewModel
         }
     }
 
-    fun getDefaultAddress(addressId : Int, fToken: String) {
+    fun  getDefaultAddress(addressId : Int, fToken: String) {
         viewModelScope.launch {
             addressRepository.getAddress(addressId, fToken).collect {
                 _defaultAddressObserver.value = it
+            }
+        }
+    }
+
+    fun addOrder(order: Order, fToken: String) {
+        viewModelScope.launch{
+
+            orderRepository.addOrder(order, fToken).collect {
+
             }
         }
     }
