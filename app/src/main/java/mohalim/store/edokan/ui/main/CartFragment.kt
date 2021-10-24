@@ -205,7 +205,8 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                 deliveryValue.toDouble(),
                 0.0,
                 productForOrder,
-                marketplacesForOrder
+                marketplacesForOrder,
+                (0).toBigInteger()
             )
 
 
@@ -390,6 +391,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
      */
     fun routeLegs(legsJsonArray: JsonArray?) {
         path.clear()
+        totalDistance = 0f
 
         if (this::polyline.isInitialized){
             polyline.remove()

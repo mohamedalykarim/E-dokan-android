@@ -2,6 +2,7 @@ package mohalim.store.edokan.ui.orders
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.viewModels
@@ -56,8 +57,12 @@ class OrdersActivity : AppCompatActivity() {
                     adapterRV.orders.clear()
                     adapterRV.orders.addAll(it.data)
                     adapterRV.notifyDataSetChanged()
+
+                    Log.d("TAG", "subscribeObserver: "+adapterRV.orders.size)
                 }
-                is DataState.Failure ->{}
+                is DataState.Failure ->{
+                    Log.d("TAG", "subscribeObserver: "+ it.exception.message)
+                }
             }
         })
     }
@@ -81,7 +86,11 @@ class OrdersActivity : AppCompatActivity() {
         class OrderViewHolder(val binding : RowOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
             fun bindItem(order : Order){
-
+                binding.orderNumberTv.setText(order.order_id.toString())
+                binding.orderValueTv.text = String.format("%.2f", order.value)
+                binding.deliveryFeesTv.text = String.format("%.2f", order.delivery_value)
+                binding.addressTv.text = order.address_line1 + ", "+ order.address_line2
+                binding.totalTv.text = String.format("%.2f", (order.value + order.delivery_value))
             }
         }
 

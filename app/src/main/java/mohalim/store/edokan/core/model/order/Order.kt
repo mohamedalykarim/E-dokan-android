@@ -1,5 +1,7 @@
 package mohalim.store.edokan.core.model.order
 
+import java.math.BigInteger
+
 data class Order(
     var order_id : Int,
     var user_id : String,
@@ -20,5 +22,6 @@ data class Order(
     var delivery_value : Double,
     var discount : Double,
     var order_products : List<OrderProduct>,
-    var order_marketplaces : List<OrderMarketplace>
+    var order_marketplaces : List<OrderMarketplace>,
+    var created_at : BigInteger
 )
