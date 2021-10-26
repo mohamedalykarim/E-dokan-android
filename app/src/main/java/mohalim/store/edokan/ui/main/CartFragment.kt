@@ -118,10 +118,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
             loadingDialog.show(mainActivity.supportFragmentManager, "LoadingDialog")
         }
 
-        if (this::defaultAddress.isInitialized){
-            updateCartAddressUIandStartGetCartProducts(defaultAddress)
-        }
-
     }
 
     override fun onStart() {

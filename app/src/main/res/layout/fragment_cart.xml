@@ -44,7 +44,6 @@
                         android:text="Sorry there is no products at cart"
                         android:textAlignment="center"
                         android:textColor="@color/primary"
-                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageView14" />
