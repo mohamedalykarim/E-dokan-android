@@ -27,4 +27,7 @@ interface IPreferenceHelper {
     fun setDefaultAddressId(addressId : Int)
     fun getDefaultAddressId() : Int?
 
+    fun setRefreshTokenAttemptTime(time : Long)
+    fun getRefreshTokenAttemptTime() : Long?
+
 }

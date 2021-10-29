@@ -101,13 +101,13 @@ class OrderRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getOrderDetails(orderId: Int, fToken: String): Flow<DataState<Response>> {
+    override fun getOrderDetails(orderId: Int, fToken: String): Flow<DataState<Order>> {
         return flow {
             emit(DataState.Loading)
 
             try {
-                val response = retrofit.getOrderDetails(orderId, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
-                Log.d("TAG", "getOrderDetails: "+ response)
+                val order = retrofit.getOrderDetails(orderId, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+                emit(DataState.Success(order))
 
             }catch (e :Exception){
                 Log.d("TAG", "getOrderDetails: "+e.message)

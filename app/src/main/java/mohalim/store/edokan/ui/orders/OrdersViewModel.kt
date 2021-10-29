@@ -16,6 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class OrdersViewModel @Inject constructor(val orderRepository : OrderRepositoryImp) : ViewModel() {
 
+    var limit = 10
+    var offset = 0
+
+
     private val _ordersObserver : MutableLiveData<DataState<List<Order>>> = MutableLiveData()
     val ordersObserver : LiveData<DataState<List<Order>>> get() = _ordersObserver
 

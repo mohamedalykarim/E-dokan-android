@@ -16,5 +16,11 @@ interface ProductDao {
     suspend fun getAll() : List<ProductCache>
 
     @Query("SELECT * FROM product WHERE product_id = :productId")
-    suspend fun getProductById(productId : Int) : ProductCache
+    suspend fun getProductById(productId: String) : ProductCache
+
+
+    @Query("SELECT * FROM product WHERE product_id IN(:productIds)")
+    suspend fun getProducts(productIds: List<String>) : MutableList<ProductCache>
+
+
 }

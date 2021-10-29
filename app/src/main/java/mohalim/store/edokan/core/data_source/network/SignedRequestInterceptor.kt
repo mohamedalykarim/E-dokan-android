@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
+import android.util.TimeUtils
 import com.google.firebase.auth.FirebaseAuth
 import mohalim.store.edokan.core.utils.Constants.constants.BASE_URL
 import mohalim.store.edokan.core.utils.IPreferenceHelper
@@ -12,12 +13,14 @@ import mohalim.store.edokan.ui.splash.SplashActivity
 import okhttp3.*
 import org.json.JSONObject
 import java.lang.Exception
+import java.util.*
 
 
 class SignedRequestInterceptor(val context: Context) : Interceptor {
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(context) }
     private val firebaseAuth : FirebaseAuth = FirebaseAuth.getInstance()
+
 
     override fun intercept(chain: Interceptor.Chain): Response  {
         val request : Request = chain.request()
@@ -33,50 +36,67 @@ class SignedRequestInterceptor(val context: Context) : Interceptor {
                     .url("$BASE_URL/api/users/refresh-token")
                     .build()
 
-                val refreshTokenResponse = chain.proceed(refreshTokenRequest)
+                val nowMillisecond = Calendar.getInstance().time.time
 
-                if (refreshTokenResponse.code() == 200){
+                Log.d("TAG", "intercept:  nowMillisecond - attempTime = "+ (nowMillisecond - preferenceHelper.getRefreshTokenAttemptTime()!!))
+                Log.d("TAG", "intercept:  attempTime = "+ (preferenceHelper.getRefreshTokenAttemptTime()!!))
+                Log.d("TAG", "intercept:  now - attempTime = "+ (nowMillisecond))
 
-                    val cookieList = refreshTokenResponse.headers().values("Set-Cookie")
-                    val refreshToken : String = cookieList[0].split(";")[0].substring(14)
-                    val body = JSONObject(refreshTokenResponse.body()?.string().toString())
-                    preferenceHelper.setRefreshToken(refreshToken)
-                    preferenceHelper.setApiToken("" + body.get("wtoken"))
+               if (nowMillisecond - preferenceHelper.getRefreshTokenAttemptTime()!! > 10000){
+                   preferenceHelper.setRefreshTokenAttemptTime(nowMillisecond)
 
-                    refreshTokenResponse.close()
+                   val refreshTokenResponse = chain.proceed(refreshTokenRequest)
 
-                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-                        it.token?.let { it1 -> preferenceHelper.setFirebaseToken(it1) }
-                    }
+                   if (refreshTokenResponse.code() == 200){
 
-                    SystemClock.sleep(500)
-                    val newRequest = request.newBuilder()
-                        .url(request.url())
-                        .method(request.method(), request.body())
-                        .removeHeader("authorization")
-                        .addHeader("authorization",
-                            "Bearer "+
-                                    preferenceHelper.getFirebaseToken()+
-                                    "///"+
-                                    preferenceHelper.getApiToken()
-                        )
-                        .build()
+                       val cookieList = refreshTokenResponse.headers().values("Set-Cookie")
+                       val refreshToken : String = cookieList[0].split(";")[0].substring(14)
+                       val body = JSONObject(refreshTokenResponse.body()?.string().toString())
+                       preferenceHelper.setRefreshToken(refreshToken)
+                       preferenceHelper.setApiToken("" + body.get("wtoken"))
 
-                    return chain.proceed(newRequest)
+                       refreshTokenResponse.close()
 
-                }else{
-                    Log.d("TAG", "intercept: headers : "+ refreshTokenRequest.headers())
-                    preferenceHelper.setRefreshToken("")
-                    preferenceHelper.setApiToken("")
-                    firebaseAuth.signOut()
+                       firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                           it.token?.let { it1 -> preferenceHelper.setFirebaseToken(it1) }
+                       }
 
-                    val intent = Intent(context, SplashActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    context.startActivity(intent)
-                    return response
-                }
+                       SystemClock.sleep(500)
+                       val newRequest = request.newBuilder()
+                           .url(request.url())
+                           .method(request.method(), request.body())
+                           .removeHeader("authorization")
+                           .addHeader("authorization",
+                               "Bearer "+
+                                       preferenceHelper.getFirebaseToken()+
+                                       "///"+
+                                       preferenceHelper.getApiToken()
+                           )
+                           .build()
+
+                       return chain.proceed(newRequest)
+
+                   }else{
+                       Log.d("TAG", "intercept: headers : "+ refreshTokenRequest.headers())
+                       preferenceHelper.setRefreshToken("")
+                       preferenceHelper.setApiToken("")
+                       firebaseAuth.signOut()
+
+                       val intent = Intent(context, SplashActivity::class.java)
+                       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                       context.startActivity(intent)
+                       return response
+                   }
+               }else{
+                   return response
+               }
+
+
+
+
 
             }else{
+                preferenceHelper.setRefreshTokenAttemptTime(0)
                 return response
             }
         }catch (e : Exception){

@@ -15,7 +15,9 @@ import mohalim.store.edokan.core.data_source.room.ProductDao
 import mohalim.store.edokan.core.data_source.room.ProductImageDao
 import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.cart.CartProductCacheMapper
+import mohalim.store.edokan.core.model.order.OrderProduct
 import mohalim.store.edokan.core.model.product.Product
+import mohalim.store.edokan.core.model.product.ProductCache
 import mohalim.store.edokan.core.model.product.ProductCacheMapper
 import mohalim.store.edokan.core.model.product.ProductNetworkMapper
 import mohalim.store.edokan.core.model.product_image.ProductImage
@@ -27,7 +29,6 @@ import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
 import java.lang.Exception
-import java.security.spec.ECField
 import javax.inject.Inject
 
 class ProductRepositoryImp
@@ -100,7 +101,7 @@ class ProductRepositoryImp
         return flow {
             emit(DataState.Loading)
             try {
-                val productsCache = productDao.getProductById(productId)
+                val productsCache = productDao.getProductById(productId.toString())
                 emit(DataState.Success(productCacheMapper.mapFromEntity(productsCache)))
             }catch (e : Exception){
                 emit(DataState.Failure(e))
@@ -203,5 +204,26 @@ class ProductRepositoryImp
             }
         }.flowOn(Dispatchers.IO)
     }
+
+    override suspend fun getProductsFromInternal(productsIds: MutableList<String>): Flow<DataState<List<Product>>> {
+        return flow {
+            emit(DataState.Loading)
+            try {
+                var productsCache: MutableList<ProductCache> = ArrayList()
+                if (productsIds.size > 1){
+                    productsCache = productDao.getProducts(productsIds)
+
+                }else if (productsIds.size == 1){
+                    val product = productDao.getProductById(productsIds[0])
+                    productsCache.add(product)
+                }
+                emit(DataState.Success(productCacheMapper.mapFromEntityList(productsCache)))
+
+            }catch (e : Exception){
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
 
 }

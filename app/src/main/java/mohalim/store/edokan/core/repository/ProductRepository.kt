@@ -21,5 +21,6 @@ interface ProductRepository {
     suspend fun removeCartProduct(productId: Int)
     suspend fun removeProductsfromCart(): Flow<DataState<Boolean>>
     fun getAllCartProductFromInternal() : Flow<DataState<List<CartProduct>>>
+    suspend fun getProductsFromInternal(productsIds: MutableList<String>) : Flow<DataState<List<Product>>>
 
 }

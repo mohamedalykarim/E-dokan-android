@@ -16,5 +16,14 @@ class DateUtils {
 
             return formatter.format(calendar.time)
         }
+
+        @JvmStatic
+        fun convertMilisToDate(timeInMillis : BigInteger, pattern : String): String {
+            val formatter : DateFormat = SimpleDateFormat(pattern)
+            val calendar = Calendar.getInstance();
+            calendar.timeInMillis = timeInMillis.toLong()
+
+            return formatter.format(calendar.time)
+        }
     }
 }

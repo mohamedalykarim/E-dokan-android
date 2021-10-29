@@ -21,6 +21,6 @@ interface OrderRepository {
     ) : Flow<DataState<JsonObject>>
 
     fun addOrder(order : Order, fToken: String) : Flow<DataState<Order>>
-    fun getOrderDetails(orderId: Int, fToken: String) : Flow<DataState<Response>>
+    fun getOrderDetails(orderId: Int, fToken: String) : Flow<DataState<Order>>
     fun getOrders(limit: Int, offset: Int, fToken: String): Flow<DataState<List<Order>>>
 }

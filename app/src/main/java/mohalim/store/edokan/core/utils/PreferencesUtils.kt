@@ -71,6 +71,14 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         return preferences?.get(DEFAULT_ADDRESS_ID)
     }
 
+    override fun setRefreshTokenAttemptTime(time: Long) {
+        preferences?.set(REFRESH_TOKEN_ATTEMPT_TIME, time)
+    }
+
+    override fun getRefreshTokenAttemptTime(): Long? {
+        return preferences?.get(REFRESH_TOKEN_ATTEMPT_TIME)
+    }
+
     companion object {
         const val CITY_ID = "city_id"
         const val CITY_NAME = "city_name"
@@ -80,6 +88,7 @@ open class PreferencesUtils(context: Context?) : IPreferenceHelper{
         const val USER_ID = "user_id"
         const val CART_CITY_ID = "cart_city_id"
         const val DEFAULT_ADDRESS_ID = "default_address_id"
+        const val REFRESH_TOKEN_ATTEMPT_TIME = "refresh_token_attempt_time"
 
     }
 

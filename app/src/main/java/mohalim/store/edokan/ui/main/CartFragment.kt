@@ -175,6 +175,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                         1,
                         1,
                         it.marketplaceId,
+                        "",
                         it.lat,
                         it.lng
                     )

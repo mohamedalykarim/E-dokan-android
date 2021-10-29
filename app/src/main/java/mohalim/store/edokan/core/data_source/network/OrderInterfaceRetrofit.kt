@@ -34,7 +34,7 @@ interface OrderInterfaceRetrofit {
     suspend fun getOrderDetails(
         @Path("order_id") orderId: Int,
         @Header("authorization") tokens: String
-    ): JsonObject
+    ): Order
 
     @HTTP(method = "POST", path = "/api/orders/user/", hasBody = true)
     suspend fun getOrders(

@@ -22,7 +22,17 @@
                 android:layout_weight="28">
 
                 <TextView
-                    android:id="@+id/textView52"
+                    android:id="@+id/timeTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="05:00 PM"
+                    app:layout_constraintEnd_toEndOf="@+id/dayTv"
+                    app:layout_constraintStart_toStartOf="@+id/dayTv"
+                    app:layout_constraintTop_toBottomOf="@+id/dayTv" />
+
+                <TextView
+                    android:id="@+id/monthTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -31,22 +41,22 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView48" />
+                    app:layout_constraintTop_toBottomOf="@+id/timeTv" />
 
                 <TextView
-                    android:id="@+id/textView49"
+                    android:id="@+id/yearTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="4dp"
                     android:text="2021"
-                    app:layout_constraintBottom_toTopOf="@+id/textView48"
+                    app:layout_constraintBottom_toTopOf="@+id/dayTv"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView48"
+                    android:id="@+id/dayTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="25"

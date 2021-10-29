@@ -1,9 +1,11 @@
 package mohalim.store.edokan.ui.orders
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
@@ -15,9 +17,13 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.order.Order
+import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.DataState
+import mohalim.store.edokan.core.utils.DateUtils
 import mohalim.store.edokan.databinding.ActivityOrdersBinding
 import mohalim.store.edokan.databinding.RowOrderBinding
+import mohalim.store.edokan.ui.extra.LoadingDialog
+import mohalim.store.edokan.ui.order_details.OrderDetailsActivity
 
 @AndroidEntryPoint
 class OrdersActivity : AppCompatActivity() {
@@ -28,9 +34,13 @@ class OrdersActivity : AppCompatActivity() {
     private val viewModel : OrdersViewModel by viewModels()
     private val firebaseAuth = FirebaseAuth.getInstance()
 
+    private lateinit var loadingDialog : LoadingDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_orders)
+
+        loadingDialog = LoadingDialog()
 
         initRecyclerView()
         subscribeObserver()
@@ -41,27 +51,41 @@ class OrdersActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-            val limit = 10
-            val offset = 0
-            viewModel.getOrders(limit, offset, it.token.toString())
-        }
+        adapterRV.orders.clear()
+        viewModel.offset = 0
 
+        firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+            viewModel.getOrders(viewModel.limit, viewModel.offset, it.token.toString())
+        }
+        showLoading()
+
+    }
+
+    fun showLoading(){
+        if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
+    }
+
+
+    fun hideLoading(){
+        if (loadingDialog.isAdded) loadingDialog.dismiss()
     }
 
     private fun subscribeObserver() {
         viewModel.ordersObserver.observe(this, Observer {
             when(it){
-                is DataState.Loading ->{}
+                is DataState.Loading ->{ }
                 is DataState.Success ->{
-                    adapterRV.orders.clear()
                     adapterRV.orders.addAll(it.data)
                     adapterRV.notifyDataSetChanged()
+                    viewModel.offset += it.data.size
 
-                    Log.d("TAG", "subscribeObserver: "+adapterRV.orders.size)
+                    hideLoading()
+                    binding.moreProgressbar.visibility = View.GONE
+
                 }
                 is DataState.Failure ->{
-                    Log.d("TAG", "subscribeObserver: "+ it.exception.message)
+                    hideLoading()
+                    binding.moreProgressbar.visibility = View.GONE
                 }
             }
         })
@@ -78,6 +102,21 @@ class OrdersActivity : AppCompatActivity() {
         val dividerItemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding.orderRV.addItemDecoration(dividerItemDecoration)
 
+        binding.orderRV.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == adapterRV.orders.size -1){
+
+                    firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
+                        viewModel.getOrders(viewModel.limit, viewModel.offset, it.token.toString())
+                    }
+
+                    binding.moreProgressbar.visibility = View.VISIBLE
+
+
+                }
+            }
+        })
+
     }
 
 
@@ -91,6 +130,17 @@ class OrdersActivity : AppCompatActivity() {
                 binding.deliveryFeesTv.text = String.format("%.2f", order.delivery_value)
                 binding.addressTv.text = order.address_line1 + ", "+ order.address_line2
                 binding.totalTv.text = String.format("%.2f", (order.value + order.delivery_value))
+
+                binding.dayTv.text = DateUtils.convertMilisToDate(order.created_at, "dd")
+                binding.yearTv.text = DateUtils.convertMilisToDate(order.created_at, "yyyy")
+                binding.monthTv.text = DateUtils.convertMilisToDate(order.created_at, "MMMM")
+                binding.timeTv.text = DateUtils.convertMilisToDate(order.created_at, "hh:mm aaa")
+
+                binding.root.setOnClickListener {
+                    val intent = Intent(binding.root.context, OrderDetailsActivity::class.java)
+                    intent.putExtra(Constants.constants.ORDER_ID, order.order_id)
+                    binding.root.context.startActivity(intent)
+                }
             }
         }
 
