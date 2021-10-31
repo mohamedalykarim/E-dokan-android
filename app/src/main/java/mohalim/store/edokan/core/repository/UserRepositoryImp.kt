@@ -72,6 +72,17 @@ class UserRepositoryImp
                 )
 
                 preferenceHelper.setDefaultAddressId(userData.defaultAddressId)
+                when (userData.isSeller) {
+                    0 -> {
+                        preferenceHelper.setIsSeller(false)
+                    }
+                    1 -> {
+                        preferenceHelper.setIsSeller(true)
+                    }
+                    else -> {
+                        preferenceHelper.setIsSeller(false)
+                    }
+                }
 
                 emit(DataState.Success(true))
 

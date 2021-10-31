@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintProperties
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -27,10 +29,7 @@ import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.order.OrderMarketplace
 import mohalim.store.edokan.core.model.order.OrderProduct
-import mohalim.store.edokan.core.utils.Constants
-import mohalim.store.edokan.core.utils.IPreferenceHelper
-import mohalim.store.edokan.core.utils.LocationUtils
-import mohalim.store.edokan.core.utils.PreferencesUtils
+import mohalim.store.edokan.core.utils.*
 import mohalim.store.edokan.databinding.FragmentCartBinding
 import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
@@ -262,6 +261,19 @@ class CartFragment : Fragment(), OnMapReadyCallback {
                 intent.putExtra(Constants.constants.PRODUCT_ID, product.productId)
                 startActivity(intent)
             }
+
+            val params = ConstraintLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ConstraintProperties.WRAP_CONTENT
+            )
+            params.setMargins(
+                DensityUtil.dipToPx(mainActivity, 16f),
+                DensityUtil.dipToPx(mainActivity, 10f),
+                DensityUtil.dipToPx(mainActivity, 16f),
+                DensityUtil.dipToPx(mainActivity, 10f)
+            )
+
+            cartProductBinding.root.layoutParams = params
 
             binding.cartProductsContainer.addView(cartProductBinding.root)
 

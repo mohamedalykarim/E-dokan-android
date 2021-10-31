@@ -103,17 +103,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/bottomHeaderView">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/accountContainer"
+                    android:id="@+id/homeContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:layout_weight="3">
+                    android:layout_weight="2">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/accountContainerBG"
+                        android:id="@+id/homeContainerBG"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/bottom_bar_item_bg"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -128,20 +129,19 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <TextView
-                                android:id="@+id/accountIconTv"
+                                android:id="@+id/homeIcontTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
-                                android:text="حسابي"
+                                android:text="Home"
                                 android:textColor="#fff"
                                 android:textSize="14sp"
-                                android:visibility="gone"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/accountIcon"
+                                app:layout_constraintEnd_toStartOf="@+id/homeIcon"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <ImageView
-                                android:id="@+id/accountIcon"
+                                android:id="@+id/homeIcon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -149,13 +149,13 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/ic_account_not_active" />
+                                app:srcCompat="@drawable/ic_main_active" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cartContainer"
@@ -187,7 +187,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
-                                android:text="سلة المشتريات"
+                                android:text="Cart"
                                 android:textColor="#fff"
                                 android:textSize="14sp"
                                 android:visibility="gone"
@@ -211,20 +211,18 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/homeContainer"
+                    android:id="@+id/accountContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:layout_weight="2">
+                    android:layout_weight="3">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/homeContainerBG"
+                        android:id="@+id/accountContainerBG"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bottom_bar_item_bg"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -239,19 +237,20 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <TextView
-                                android:id="@+id/homeIcontTv"
+                                android:id="@+id/accountIconTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
-                                android:text="الرئيسية"
+                                android:text="Account"
                                 android:textColor="#fff"
                                 android:textSize="14sp"
+                                android:visibility="gone"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/homeIcon"
+                                app:layout_constraintEnd_toStartOf="@+id/accountIcon"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <ImageView
-                                android:id="@+id/homeIcon"
+                                android:id="@+id/accountIcon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -259,9 +258,8 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/ic_main_active" />
+                                app:srcCompat="@drawable/ic_account_not_active" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

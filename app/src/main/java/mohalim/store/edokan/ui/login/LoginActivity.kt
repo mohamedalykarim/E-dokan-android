@@ -156,9 +156,23 @@ class LoginActivity : BaseActivity() {
                 is DataState.Success -> {
                     phoneTokenFragment.setLoadingVisibility(View.GONE)
 
+                    /**
+                     * set Pref user data
+                     */
                     preferenceHelper.setApiToken(it.data.wtoken)
                     preferenceHelper.setUserId(it.data.userId)
                     preferenceHelper.setDefaultAddressId(it.data.defaultAddressId)
+                    when (it.data.isSeller) {
+                        0 -> {
+                            preferenceHelper.setIsSeller(false)
+                        }
+                        1 -> {
+                            preferenceHelper.setIsSeller(true)
+                        }
+                        else -> {
+                            preferenceHelper.setIsSeller(false)
+                        }
+                    }
 
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()

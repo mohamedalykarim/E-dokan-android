@@ -30,7 +30,8 @@ class HomeViewModel
     private val supportItemRepository : SupportItemRepositoryImp,
     private val cityRepository : CityRepositoryImp,
     private val orderRepository: OrderRepositoryImp,
-    private val addressRepository: AddressRepositoryImp
+    private val addressRepository: AddressRepositoryImp,
+    private val userRepositoryImp: UserRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -87,6 +88,8 @@ class HomeViewModel
     private val _addOrderObserver : MutableLiveData<DataState<Order>> = MutableLiveData()
     val addOrderObserver : LiveData<DataState<Order>> get() = _addOrderObserver
 
+    private val _updateUserDataObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
+    val updateUserDataObserver get() = _updateUserDataObserver
 
 
     fun fetchHomeFragmentData (cityId: Int){
@@ -194,6 +197,14 @@ class HomeViewModel
     fun removeInternalCartProducts() {
         viewModelScope.launch {
             productRepository.removeProductsfromCart().collect {  }
+        }
+    }
+
+    fun updateSharedPrefUserData(fToken : String) {
+        viewModelScope.launch {
+            userRepositoryImp.updateUserData(fToken).collect {
+                _updateUserDataObserver.value = it
+            }
         }
     }
 
