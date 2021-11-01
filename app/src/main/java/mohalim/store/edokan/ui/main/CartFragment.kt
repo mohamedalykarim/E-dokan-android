@@ -277,7 +277,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
             binding.cartProductsContainer.addView(cartProductBinding.root)
 
-            marketPlaces.add(MarketPlace(it.marketPlaceId, it.marketPlaceName, it.marketPlaceLat, it.marketPlaceLng,0f))
+            marketPlaces.add(MarketPlace(it.marketPlaceId, it.marketPlaceName, it.marketPlaceLat, it.marketPlaceLng,0f,0,""))
             productIds.add(it.productId)
             productCounts.add(it.productCount)
         }
@@ -474,7 +474,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     fun finishingAndStartOrder(orderId : Int) {
         mainActivity.viewModel.removeInternalCartProducts()
-        mainActivity.loadHome()
 
         val intent = Intent(mainActivity, OrderDetailsActivity::class.java)
         intent.putExtra(Constants.constants.ORDER_ID, orderId)

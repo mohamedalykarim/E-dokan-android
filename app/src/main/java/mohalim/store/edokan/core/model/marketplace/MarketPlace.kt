@@ -5,5 +5,7 @@ data class MarketPlace(
     var marketplaceName : String,
     var lat: Double,
     var lng : Double,
-    var distanceToUser : Float
+    var distanceToUser : Float,
+    var cityId : Int,
+    var marketplaceOwnerId : String
 )

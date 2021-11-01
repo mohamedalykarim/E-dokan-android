@@ -47,10 +47,10 @@ class AccountFragment : Fragment() {
                 is DataState.Loading -> {}
                 is DataState.Success -> {
                     if (preferenceHelper.getIsSeller() == true){
-                        binding.traderContainer.visibility = View.VISIBLE
+                        binding.sellerContainer.visibility = View.VISIBLE
                         binding.traderDevider.visibility = View.VISIBLE
                     }else{
-                        binding.traderContainer.visibility = View.GONE
+                        binding.sellerContainer.visibility = View.GONE
                         binding.traderDevider.visibility = View.GONE
                     }
                 }
@@ -76,6 +76,10 @@ class AccountFragment : Fragment() {
 
         binding.cityContainer.setOnClickListener {
             mainActivity.loadCity()
+        }
+
+        binding.sellerContainer.setOnClickListener {
+            mainActivity.loadSellerMarketplaces()
         }
 
         binding.exitContainer.setOnClickListener {

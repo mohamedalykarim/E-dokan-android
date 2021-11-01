@@ -112,4 +112,12 @@ class NetworkModule {
             .create(AddressInterfaceRetrofit::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideSellerInterfaceRetrofit(retrofit: Retrofit.Builder): SellerInterfaceRetrofit {
+        return retrofit
+            .build()
+            .create(SellerInterfaceRetrofit::class.java)
+    }
+
 }

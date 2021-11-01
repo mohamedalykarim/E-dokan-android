@@ -33,6 +33,7 @@ class MainActivity : BaseActivity() {
     private lateinit var techSupportDialog: TechSupportDialog
     private lateinit var techSupportMessagesDialog: TechSupportMessagesDialog
     private lateinit var cityFragment: CityFragment
+    private lateinit var sellerMarketplacesFragment: SellerMarketplacesFragment
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(this) }
 
@@ -49,7 +50,6 @@ class MainActivity : BaseActivity() {
         handleBottomClicks()
 
         if(preferenceHelper.getCityId()!! > 0 ){
-
             homeFragment = HomeFragment()
             loadFragment(homeFragment)
         }else{
@@ -79,8 +79,13 @@ class MainActivity : BaseActivity() {
                 homeBottom()
             }
             CityFragment::class.java.name ->{
-                homeFragment = HomeFragment()
-                loadFragment(homeFragment)
+                accountFragment = AccountFragment()
+                loadFragment(accountFragment)
+                binding.bottom.visibility = View.VISIBLE
+            }
+            SellerMarketplacesFragment::class.java.name ->{
+                accountFragment = AccountFragment()
+                loadFragment(accountFragment)
                 binding.bottom.visibility = View.VISIBLE
             }
 
@@ -100,9 +105,17 @@ class MainActivity : BaseActivity() {
      * Load City Fragment
      */
     fun loadCity() {
-        homeBottom()
         cityFragment = CityFragment()
         loadFragment(cityFragment)
+        binding.bottom.visibility = View.GONE
+    }
+
+    /**
+     * Load Seller Marketplace Fragment
+     */
+    fun loadSellerMarketplaces() {
+        sellerMarketplacesFragment = SellerMarketplacesFragment()
+        loadFragment(sellerMarketplacesFragment)
         binding.bottom.visibility = View.GONE
     }
 
@@ -327,6 +340,7 @@ class MainActivity : BaseActivity() {
                     }
                     if (it.data.isEmpty()){
                         cartFragment.showNoProducts(true)
+
                         cartFragment.loadingDialog.dismiss()
                     }else{
                         cartFragment.showNoProducts(false)
@@ -434,6 +448,20 @@ class MainActivity : BaseActivity() {
                 is DataState.Failure ->{
                     cartFragment.hideLoading()
                 }
+            }
+        })
+
+
+        /**
+         * Seller Marketplaces Observer
+         */
+        viewModel.sellerMarketplacesObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{}
+                is DataState.Success ->{
+                    sellerMarketplacesFragment.updateMarketplaces(it.data)
+                }
+                is DataState.Failure ->{}
             }
         })
 

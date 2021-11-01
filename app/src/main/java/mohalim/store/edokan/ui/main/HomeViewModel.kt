@@ -11,6 +11,7 @@ import mohalim.store.edokan.core.model.address.Address
 import mohalim.store.edokan.core.model.cart.CartProduct
 import mohalim.store.edokan.core.model.category.Category
 import mohalim.store.edokan.core.model.city.City
+import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.model.offer.Offer
 import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.product.Product
@@ -31,7 +32,8 @@ class HomeViewModel
     private val cityRepository : CityRepositoryImp,
     private val orderRepository: OrderRepositoryImp,
     private val addressRepository: AddressRepositoryImp,
-    private val userRepositoryImp: UserRepositoryImp
+    private val userRepositoryImp: UserRepositoryImp,
+    private val sellerRepositoryImp: SellerRepositoryImp
     ) : ViewModel(){
     var CURRENT_FRAGMENT: String = HomeFragment::class.java.toString();
     val HOME : String = "Home";
@@ -90,6 +92,9 @@ class HomeViewModel
 
     private val _updateUserDataObserver : MutableLiveData<DataState<Boolean>> = MutableLiveData()
     val updateUserDataObserver get() = _updateUserDataObserver
+
+    private val _sellerMarketplacesObserver : MutableLiveData<DataState<List<MarketPlace>>> = MutableLiveData()
+    val sellerMarketplacesObserver get() = _sellerMarketplacesObserver
 
 
     fun fetchHomeFragmentData (cityId: Int){
@@ -204,6 +209,14 @@ class HomeViewModel
         viewModelScope.launch {
             userRepositoryImp.updateUserData(fToken).collect {
                 _updateUserDataObserver.value = it
+            }
+        }
+    }
+
+    fun getSellerMarketplaces(fToken: String) {
+        viewModelScope.launch {
+            sellerRepositoryImp.getMarketplaces(fToken).collect {
+                _sellerMarketplacesObserver.value = it
             }
         }
     }

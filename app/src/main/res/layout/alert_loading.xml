@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="32dp"
-                android:text="جاري التحميل برجاء الانتظار"
+                android:text="Loading, please wait"
                 android:textAlignment="center"
                 android:textColor="@color/primary"
                 app:layout_constraintBottom_toBottomOf="parent"
