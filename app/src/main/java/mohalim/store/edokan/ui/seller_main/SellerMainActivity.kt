@@ -65,6 +65,9 @@ class SellerMainActivity : AppCompatActivity() {
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
             viewModel.getOrders(viewModel.limit, viewModel.offset, marketplaceId, it.token.toString())
         }
+
+        viewModel.getMarketplaceFromCache(marketplaceId)
+
         showLoading()
 
     }
@@ -79,6 +82,9 @@ class SellerMainActivity : AppCompatActivity() {
     }
 
     private fun subscribeObserver() {
+        /**
+         * Observe orders of the chosen marketplace
+         */
         viewModel.ordersObserver.observe(this, Observer {
             when(it){
                 is DataState.Loading ->{ }
@@ -96,6 +102,21 @@ class SellerMainActivity : AppCompatActivity() {
                     binding.moreProgressbar.visibility = View.GONE
                 }
             }
+        })
+
+        /**
+         * Observe the marketplace from internal cache
+         */
+        viewModel.marketplaceObserver.observe(this, Observer {
+            when(it){
+                is DataState.Loading ->{ }
+                is DataState.Success ->{
+                    binding.marketplaceNameTv.text = it.data.marketplaceName
+                }
+                is DataState.Failure ->{ }
+
+            }
+
         })
     }
 

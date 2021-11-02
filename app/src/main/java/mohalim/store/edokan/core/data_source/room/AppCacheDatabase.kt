@@ -7,6 +7,7 @@ import mohalim.store.edokan.core.data_source.room.converter.BigIntegerConverter
 import mohalim.store.edokan.core.model.address.AddressCache
 import mohalim.store.edokan.core.model.cart.CartProductCache
 import mohalim.store.edokan.core.model.category.CategoryCache
+import mohalim.store.edokan.core.model.marketplace.MarketPlaceCache
 import mohalim.store.edokan.core.model.offer.OfferCache
 import mohalim.store.edokan.core.model.product.ProductCache
 import mohalim.store.edokan.core.model.product_image.ProductImageCache
@@ -23,9 +24,10 @@ import mohalim.store.edokan.core.model.user.UserCache
                         SupportItemCache::class,
                         SupportItemMessageCache::class,
                         CartProductCache::class,
-                        AddressCache::class
+                        AddressCache::class,
+                        MarketPlaceCache::class
                      ],
-        version = 4,
+        version = 5,
         exportSchema = false)
 @TypeConverters(BigIntegerConverter::class)
 abstract class AppCacheDatabase : RoomDatabase(){
@@ -39,6 +41,7 @@ abstract class AppCacheDatabase : RoomDatabase(){
     abstract fun supportItemMessageDao() : SupportItemMessageDao
     abstract fun cartProductDao() : CartProductDao
     abstract fun addressDao() : AddressDao
+    abstract fun marketplaceDao() : MarketplaceDao
 
     companion object{
         const val DATABASE_NAME = "e-dokan_app_database"

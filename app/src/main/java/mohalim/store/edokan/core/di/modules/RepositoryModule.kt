@@ -18,6 +18,7 @@ import mohalim.store.edokan.core.model.cart.CartProductCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryCacheMapper
 import mohalim.store.edokan.core.model.category.CategoryNetworkMapper
 import mohalim.store.edokan.core.model.city.CityNetworkMapper
+import mohalim.store.edokan.core.model.marketplace.MarketplaceCacheMapper
 import mohalim.store.edokan.core.model.marketplace.MarketplaceNetworkMapper
 import mohalim.store.edokan.core.model.offer.OfferCacheMapper
 import mohalim.store.edokan.core.model.offer.OfferNetworkMapper
@@ -157,9 +158,11 @@ class RepositoryModule {
     fun provideSellerRepository(
         retrofit: SellerInterfaceRetrofit,
         networkMapper : MarketplaceNetworkMapper,
+        marketplaceCacheMapper : MarketplaceCacheMapper,
+        marketpalaceDao : MarketplaceDao,
         @ApplicationContext context: Context
     ) : SellerRepositoryImp{
-        return SellerRepositoryImp(retrofit,networkMapper, context)
+        return SellerRepositoryImp(retrofit,networkMapper, marketplaceCacheMapper, marketpalaceDao, context)
     }
 
 }

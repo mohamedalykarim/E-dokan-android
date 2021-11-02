@@ -15,5 +15,6 @@ import okhttp3.Response
 interface SellerRepository {
     fun getMarketplaces(fToken: String) : Flow<DataState<List<MarketPlace>>>
     fun getOrders(limit: Int, offset: Int, marketplaceId : Int, fToken: String) : Flow<DataState<List<Order>>>
+    fun getMarketplaceFromCache(marketplaceId: Int) : Flow<DataState<MarketPlace>>
 
 }

@@ -80,4 +80,10 @@ class CahcheDatabaseModule {
     fun provideAddressDao(appCacheDatabase: AppCacheDatabase) : AddressDao{
         return appCacheDatabase.addressDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideMarketplaceDao(appCacheDatabase: AppCacheDatabase) : MarketplaceDao{
+        return appCacheDatabase.marketplaceDao()
+    }
 }
