@@ -57,6 +57,21 @@ class SellerRepositoryImp
             }.flowOn(Dispatchers.IO)
     }
 
+    override fun getOrderDetails(orderId: Int, marketplaceId: Int, fToken: String): Flow<DataState<Order>> {
+        return flow {
+            emit(DataState.Loading)
+
+            try {
+                val order = retrofit.getOrderDetails(orderId, marketplaceId, "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
+                emit(DataState.Success(order))
+
+            }catch (e :Exception){
+                Log.d("TAG", "getOrderDetails: "+e.message)
+                emit(DataState.Failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun getOrders(limit: Int, offset: Int, marketplaceId : Int, fToken: String): Flow<DataState<List<Order>>> {
         return flow {
             emit(DataState.Loading)

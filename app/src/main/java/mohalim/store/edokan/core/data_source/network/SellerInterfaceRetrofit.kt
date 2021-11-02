@@ -15,4 +15,11 @@ interface SellerInterfaceRetrofit {
         @Body getOrdersRequest: GetOrdersRequest,
         @Path("marketplace_id") marketplaceId: Int,
         @Header("authorization") tokens: String): List<Order>
+
+    @HTTP(method = "GET", path = "/api/seller/{marketplace_id}/order/{order_id}")
+    suspend fun getOrderDetails(
+        @Path("order_id") orderId: Int,
+        @Path("marketplace_id") marketplaceId: Int,
+        @Header("authorization") tokens: String
+    ): Order
 }

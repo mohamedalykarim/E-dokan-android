@@ -19,18 +19,15 @@ import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.DateUtils
-import mohalim.store.edokan.databinding.ActivityOrdersBinding
 import mohalim.store.edokan.databinding.ActivitySellerMainBinding
 import mohalim.store.edokan.databinding.RowOrderBinding
 import mohalim.store.edokan.ui.extra.LoadingDialog
-import mohalim.store.edokan.ui.order_details.OrderDetailsActivity
-import mohalim.store.edokan.ui.orders.OrdersActivity
-import mohalim.store.edokan.ui.orders.OrdersViewModel
+import mohalim.store.edokan.ui.seller_order_details.SellerOrderDetailsActivity
 
 @AndroidEntryPoint
 class SellerMainActivity : AppCompatActivity() {
     private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var adapterRV: OrdersActivity.OrderRecyclerView
+    private lateinit var adapterRV: OrderSellerMainRecyclerView
     private lateinit var binding: ActivitySellerMainBinding
 
     private val viewModel : SellerMainViewModel by viewModels()
@@ -122,7 +119,7 @@ class SellerMainActivity : AppCompatActivity() {
 
 
     private fun initRecyclerView() {
-        adapterRV = OrdersActivity.OrderRecyclerView(ArrayList())
+        adapterRV = OrderSellerMainRecyclerView(ArrayList(), marketplaceId)
         layoutManager = LinearLayoutManager(this)
         binding.orderRV.adapter = adapterRV
         binding.orderRV.layoutManager = layoutManager
@@ -148,11 +145,11 @@ class SellerMainActivity : AppCompatActivity() {
     }
 
 
-    class OrderRecyclerView(val orders : MutableList<Order>) : RecyclerView.Adapter<OrderRecyclerView.OrderViewHolder>(){
+    class OrderSellerMainRecyclerView(val orders: MutableList<Order>, val marketplaceId: Int) : RecyclerView.Adapter<OrderSellerMainRecyclerView.OrderViewHolder>(){
 
         class OrderViewHolder(val binding : RowOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
-            fun bindItem(order : Order){
+            fun bindItem(order : Order, marketplaceId: Int){
                 binding.orderNumberTv.setText(order.order_id.toString())
                 binding.orderValueTv.text = String.format("%.2f", order.value)
                 binding.deliveryFeesTv.text = String.format("%.2f", order.delivery_value)
@@ -165,8 +162,9 @@ class SellerMainActivity : AppCompatActivity() {
                 binding.timeTv.text = DateUtils.convertMilisToDate(order.created_at, "hh:mm aaa")
 
                 binding.root.setOnClickListener {
-                    val intent = Intent(binding.root.context, OrderDetailsActivity::class.java)
+                    val intent = Intent(binding.root.context, SellerOrderDetailsActivity::class.java)
                     intent.putExtra(Constants.constants.ORDER_ID, order.order_id)
+                    intent.putExtra(Constants.constants.MARKETPLACE_ID, marketplaceId)
                     binding.root.context.startActivity(intent)
                 }
             }
@@ -184,7 +182,7 @@ class SellerMainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
-            holder.bindItem(orders[position])
+            holder.bindItem(orders[position], marketplaceId)
         }
 
         override fun getItemCount(): Int {

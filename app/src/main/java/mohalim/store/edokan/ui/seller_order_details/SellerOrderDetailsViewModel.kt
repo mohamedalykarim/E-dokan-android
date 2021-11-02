@@ -1,4 +1,4 @@
-package mohalim.store.edokan.ui.order_details
+package mohalim.store.edokan.ui.seller_order_details
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,11 +10,15 @@ import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.repository.OrderRepositoryImp
 import mohalim.store.edokan.core.repository.ProductRepositoryImp
+import mohalim.store.edokan.core.repository.SellerRepositoryImp
 import mohalim.store.edokan.core.utils.DataState
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderViewModel @Inject constructor(private val orderRepository : OrderRepositoryImp, val productRepositoryImp: ProductRepositoryImp) : ViewModel(){
+class SellerOrderDetailsViewModel @Inject constructor(
+    private val sellerRepositoryImp: SellerRepositoryImp,
+    val productRepositoryImp: ProductRepositoryImp
+    ) : ViewModel(){
 
     private val _orderDetailsObserver = MutableLiveData<DataState<Order>>()
     val orderDetailsObserver get() = _orderDetailsObserver
@@ -23,9 +27,9 @@ class OrderViewModel @Inject constructor(private val orderRepository : OrderRepo
     val orderNativeProductsObserver get() = _orderNativeProductsObserver
 
 
-    fun startGetOrderDetails(orderId: Int, fToken: String) {
+    fun startGetOrderDetails(orderId: Int, marketplaceId: Int, fToken: String) {
         viewModelScope.launch {
-            orderRepository.getOrderDetails(orderId, fToken).collect {
+            sellerRepositoryImp.getOrderDetails(orderId, marketplaceId, fToken).collect {
                 _orderDetailsObserver.value = it
             }
         }

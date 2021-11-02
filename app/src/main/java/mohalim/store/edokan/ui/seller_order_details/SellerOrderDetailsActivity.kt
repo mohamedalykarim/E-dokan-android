@@ -1,4 +1,4 @@
-package mohalim.store.edokan.ui.order_details
+package mohalim.store.edokan.ui.seller_order_details
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -22,29 +22,34 @@ import mohalim.store.edokan.core.utils.Constants
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.DensityUtil
 import mohalim.store.edokan.databinding.ActivityOrderDetailsBinding
+import mohalim.store.edokan.databinding.ActivitySellerOrderDetailsBinding
 import mohalim.store.edokan.databinding.RowCartMarketplaceBinding
 import mohalim.store.edokan.databinding.RowCartProductBinding
 import mohalim.store.edokan.ui.product.ProductActivity
 
 @AndroidEntryPoint
-class OrderDetailsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityOrderDetailsBinding
-    val viewModel: OrderDetailsViewModel by viewModels()
+class SellerOrderDetailsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySellerOrderDetailsBinding
+    val viewModel: SellerOrderDetailsViewModel by viewModels()
     val firebaseAuth = FirebaseAuth.getInstance()
 
     var orderId : Int = 0
+    var marketplaceId : Int = 0
     lateinit var orderProducts : List<OrderProduct>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_order_details)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_seller_order_details)
 
-        if (!intent.hasExtra(Constants.constants.ORDER_ID)){
+        if (!intent.hasExtra(Constants.constants.ORDER_ID) || !intent.hasExtra(Constants.constants.MARKETPLACE_ID)){
             finish()
             return
         }
 
+
+
         orderId = intent.getIntExtra(Constants.constants.ORDER_ID, 0)
+        marketplaceId = intent.getIntExtra(Constants.constants.MARKETPLACE_ID, 0)
 
         subscibeObservers()
     }
@@ -53,7 +58,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         super.onResume()
 
         firebaseAuth.currentUser?.getIdToken(false)?.addOnSuccessListener {
-            viewModel.startGetOrderDetails(orderId, it.token.toString())
+            viewModel.startGetOrderDetails(orderId, marketplaceId, it.token.toString())
         }
 
     }
@@ -85,6 +90,10 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateProductUI(products: List<Product>) {
+        var value = 0.0
+        var discount = 0.0
+        var total = 0.0
+
         binding.cartProductsContainer.removeAllViews()
         orderProducts.forEach{ orderProduct ->
             Log.d("TAG", "updateProductUI: orderProducts.foreach ")
@@ -132,13 +141,21 @@ class OrderDetailsActivity : AppCompatActivity() {
                 DensityUtil.dipToPx(this, 10f),
                 DensityUtil.dipToPx(this, 16f),
                 DensityUtil.dipToPx(this, 10f)
-                )
+            )
 
             cartProductBinding.root.layoutParams = params
 
             binding.cartProductsContainer.addView(cartProductBinding.root)
 
+            value += (orderProduct.product_count * orderProduct.product_price)
+            discount += orderProduct.discount
+            total += value
         }
+
+        binding.orderValueTv.text = String.format("%.2f", value)
+        binding.discountValueTv.text = String.format("%.2f", discount)
+        binding.totalTv.text = String.format("%.2f", total)
+
     }
 
     private fun updateUI(order: Order) {
@@ -147,29 +164,10 @@ class OrderDetailsActivity : AppCompatActivity() {
          */
 
         binding.orderNumber.text = "#"+order.order_id.toString()
-        binding.orderValueTv.text = String.format("%.2f", order.value)
-        binding.deliveryValueTv.text = String.format("%.2f", order.delivery_value)
-        binding.totalTv.text = String.format("%.2f", order.value + order.delivery_value)
         binding.distanceTv.text = "Distance to deliver your order is "+ String.format("%.2f", (order.distance/1000)) + " km"
         binding.addressTV.text = order.address_line1 + ", "+ order.address_line2
 
-        /**
-         * Update marketplaces
-          */
-        binding.marketPlaceContainerContainer.removeAllViews()
-        order.order_marketplaces.forEach {
-            val marketplaceBinding : RowCartMarketplaceBinding = DataBindingUtil.inflate(
-                LayoutInflater.from(this),
-                R.layout.row_cart_marketplace,
-                binding.marketPlaceContainerContainer,
-                false
-            )
 
-            Log.d("TAG", "updateUI: "+ it.marketplace_name)
-
-            marketplaceBinding.marketplaceNameTv.text = it.marketplace_name
-            binding.marketPlaceContainerContainer.addView(marketplaceBinding.root)
-        }
 
         /**
          * Start get Products from Internal storage

@@ -18,12 +18,19 @@
         <activity
             android:name=".ui.seller_main.SellerMainActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.seller_order_details.SellerOrderDetailsActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.orders.OrdersActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.order_details.OrderDetailsActivity"
             android:exported="false" />
+
         <activity android:name=".ui.address.AddressActivity" />
 
         <uses-library android:name="com.google.android.maps" />

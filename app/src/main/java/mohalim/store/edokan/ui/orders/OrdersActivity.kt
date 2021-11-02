@@ -120,7 +120,7 @@ class OrdersActivity : AppCompatActivity() {
     }
 
 
-    class OrderRecyclerView(val orders : MutableList<Order>) : RecyclerView.Adapter<OrderRecyclerView.OrderViewHolder>(){
+    class OrderRecyclerView(val orders: MutableList<Order>) : RecyclerView.Adapter<OrderRecyclerView.OrderViewHolder>(){
 
         class OrderViewHolder(val binding : RowOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
