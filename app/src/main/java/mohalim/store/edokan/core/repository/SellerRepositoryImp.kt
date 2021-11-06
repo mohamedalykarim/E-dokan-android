@@ -14,6 +14,7 @@ import mohalim.store.edokan.core.model.marketplace.MarketplaceCacheMapper
 import mohalim.store.edokan.core.model.marketplace.MarketplaceNetworkMapper
 import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.product.Product
+import mohalim.store.edokan.core.model.product.ProductNetworkMapper
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class SellerRepositoryImp
 @Inject constructor(
     val retrofit: SellerInterfaceRetrofit,
-    val networkMapper: MarketplaceNetworkMapper,
+    val marketplaceNetworkMapper : MarketplaceNetworkMapper,
+    val productNetworkMapper: ProductNetworkMapper,
     private val marketplaceCacheMapper: MarketplaceCacheMapper,
     val marketplaceDao: MarketplaceDao,
     val context: Context
@@ -37,9 +39,9 @@ class SellerRepositoryImp
             try {
                 val marketplaces = retrofit.getMarketPlaces("Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken())
                 marketplaces.forEach { marketplace->
-                    marketplaceDao.insert(marketplaceCacheMapper.mapToEntity(networkMapper.mapFromEntity(marketplace)))
+                    marketplaceDao.insert(marketplaceCacheMapper.mapToEntity(marketplaceNetworkMapper.mapFromEntity(marketplace)))
                 }
-                emit(DataState.Success(networkMapper.mapFromEntityList(marketplaces)))
+                emit(DataState.Success(marketplaceNetworkMapper.mapFromEntityList(marketplaces)))
             }catch (e : Exception){
                 emit(DataState.Failure(e))
             }
@@ -103,7 +105,10 @@ class SellerRepositoryImp
                     marketplaceId,
                     "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken()
                 )
+
+                emit(DataState.Success(productNetworkMapper.mapFromEntityList(products)))
             }catch (exception : Exception){
+                Log.d("TAG", "getProducts: "+exception.message)
                 emit(DataState.Failure(exception))
             }
 

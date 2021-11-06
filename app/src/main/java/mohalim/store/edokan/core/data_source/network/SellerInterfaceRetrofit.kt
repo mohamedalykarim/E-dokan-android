@@ -4,6 +4,7 @@ import mohalim.store.edokan.core.data_source.network.req.GetOrdersRequest
 import mohalim.store.edokan.core.model.marketplace.MarketPlaceNetWork
 import mohalim.store.edokan.core.model.order.Order
 import mohalim.store.edokan.core.model.product.Product
+import mohalim.store.edokan.core.model.product.ProductNetwork
 import retrofit2.http.*
 
 
@@ -28,5 +29,5 @@ interface SellerInterfaceRetrofit {
     suspend fun getProducts(
         @Path("marketplace_id") marketplaceId: Int,
         @Header("authorization") tokens: String
-    ): List<Product>
+    ): List<ProductNetwork>
 }

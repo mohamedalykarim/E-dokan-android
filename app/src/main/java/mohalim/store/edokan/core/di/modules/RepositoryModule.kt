@@ -158,11 +158,12 @@ class RepositoryModule {
     fun provideSellerRepository(
         retrofit: SellerInterfaceRetrofit,
         networkMapper : MarketplaceNetworkMapper,
+        productNetworkMapper : ProductNetworkMapper,
         marketplaceCacheMapper : MarketplaceCacheMapper,
         marketpalaceDao : MarketplaceDao,
         @ApplicationContext context: Context
     ) : SellerRepositoryImp{
-        return SellerRepositoryImp(retrofit,networkMapper, marketplaceCacheMapper, marketpalaceDao, context)
+        return SellerRepositoryImp(retrofit,networkMapper, productNetworkMapper, marketplaceCacheMapper, marketpalaceDao, context)
     }
 
 }
