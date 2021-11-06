@@ -35,7 +35,7 @@ data class UserNetwork(
 
         @SerializedName("is_seller")
         @Expose
-        var isSeller : Int,
+        var isSeller : Boolean,
 
         @SerializedName("is_delivery")
         @Expose

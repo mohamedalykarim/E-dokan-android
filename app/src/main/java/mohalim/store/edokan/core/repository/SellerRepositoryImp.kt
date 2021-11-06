@@ -13,6 +13,7 @@ import mohalim.store.edokan.core.model.marketplace.MarketPlace
 import mohalim.store.edokan.core.model.marketplace.MarketplaceCacheMapper
 import mohalim.store.edokan.core.model.marketplace.MarketplaceNetworkMapper
 import mohalim.store.edokan.core.model.order.Order
+import mohalim.store.edokan.core.model.product.Product
 import mohalim.store.edokan.core.utils.DataState
 import mohalim.store.edokan.core.utils.IPreferenceHelper
 import mohalim.store.edokan.core.utils.PreferencesUtils
@@ -23,7 +24,7 @@ class SellerRepositoryImp
 @Inject constructor(
     val retrofit: SellerInterfaceRetrofit,
     val networkMapper: MarketplaceNetworkMapper,
-    val marketplaceCacheMapper: MarketplaceCacheMapper,
+    private val marketplaceCacheMapper: MarketplaceCacheMapper,
     val marketplaceDao: MarketplaceDao,
     val context: Context
 ) : SellerRepository {
@@ -72,6 +73,7 @@ class SellerRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
+
     override fun getOrders(limit: Int, offset: Int, marketplaceId : Int, fToken: String): Flow<DataState<List<Order>>> {
         return flow {
             emit(DataState.Loading)
@@ -93,7 +95,20 @@ class SellerRepositoryImp
         }.flowOn(Dispatchers.IO)
     }
 
+    override fun getProducts(marketplaceId: Int, fToken: String?): Flow<DataState<List<Product>>> {
+        return flow{
+            emit(DataState.Loading)
+            try{
+                val products = retrofit.getProducts(
+                    marketplaceId,
+                    "Bearer "+ fToken+ "///"+ preferenceHelper.getApiToken()
+                )
+            }catch (exception : Exception){
+                emit(DataState.Failure(exception))
+            }
 
+        }.flowOn(Dispatchers.IO)
+    }
 
 
 }

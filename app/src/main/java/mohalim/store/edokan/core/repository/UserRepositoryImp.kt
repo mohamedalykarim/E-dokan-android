@@ -27,6 +27,7 @@ class UserRepositoryImp
     private val userDao: UserDao,
     private val userCacheMapper: UserCacheMapper,
     context: Context
+
 ) : UserRepository {
 
     val TAG : String = "UserRepositoryImp"
@@ -72,17 +73,8 @@ class UserRepositoryImp
                 )
 
                 preferenceHelper.setDefaultAddressId(userData.defaultAddressId)
-                when (userData.isSeller) {
-                    0 -> {
-                        preferenceHelper.setIsSeller(false)
-                    }
-                    1 -> {
-                        preferenceHelper.setIsSeller(true)
-                    }
-                    else -> {
-                        preferenceHelper.setIsSeller(false)
-                    }
-                }
+                preferenceHelper.setIsSeller(userData.isSeller)
+
 
                 emit(DataState.Success(true))
 

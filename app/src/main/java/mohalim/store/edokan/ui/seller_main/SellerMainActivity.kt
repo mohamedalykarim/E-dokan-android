@@ -6,9 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.GridLayout
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +34,7 @@ import mohalim.store.edokan.databinding.ActivitySellerMainBinding
 import mohalim.store.edokan.databinding.RowOrderBinding
 import mohalim.store.edokan.ui.extra.LoadingDialog
 import mohalim.store.edokan.ui.seller_order_details.SellerOrderDetailsActivity
+import mohalim.store.edokan.ui.seller_products.SellerProductsActivity
 
 @AndroidEntryPoint
 class SellerMainActivity : AppCompatActivity() {
@@ -40,6 +52,9 @@ class SellerMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_seller_main)
+        binding.topLinks.setContent {
+            topLinksComponent()
+        }
 
         if (!intent.hasExtra(Constants.constants.MARKETPLACE_ID)) finish()
         marketplaceId = intent.getIntExtra(Constants.constants.MARKETPLACE_ID, 0)
@@ -69,12 +84,12 @@ class SellerMainActivity : AppCompatActivity() {
 
     }
 
-    fun showLoading(){
+    private fun showLoading(){
         if (!loadingDialog.isAdded) loadingDialog.show(supportFragmentManager, "LoadingDialog")
     }
 
 
-    fun hideLoading(){
+    private fun hideLoading(){
         if (loadingDialog.isAdded) loadingDialog.dismiss()
     }
 
@@ -82,7 +97,7 @@ class SellerMainActivity : AppCompatActivity() {
         /**
          * Observe orders of the chosen marketplace
          */
-        viewModel.ordersObserver.observe(this, Observer {
+        viewModel.ordersObserver.observe(this,  {
             when(it){
                 is DataState.Loading ->{ }
                 is DataState.Success ->{
@@ -104,7 +119,7 @@ class SellerMainActivity : AppCompatActivity() {
         /**
          * Observe the marketplace from internal cache
          */
-        viewModel.marketplaceObserver.observe(this, Observer {
+        viewModel.marketplaceObserver.observe(this,  {
             when(it){
                 is DataState.Loading ->{ }
                 is DataState.Success ->{
@@ -150,7 +165,7 @@ class SellerMainActivity : AppCompatActivity() {
         class OrderViewHolder(val binding : RowOrderBinding) : RecyclerView.ViewHolder(binding.root) {
 
             fun bindItem(order : Order, marketplaceId: Int){
-                binding.orderNumberTv.setText(order.order_id.toString())
+                binding.orderNumberTv.text = order.order_id.toString()
                 binding.orderValueTv.text = String.format("%.2f", order.value)
                 binding.deliveryFeesTv.text = String.format("%.2f", order.delivery_value)
                 binding.addressTv.text = order.address_line1 + ", "+ order.address_line2
@@ -187,6 +202,45 @@ class SellerMainActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int {
             return orders.size
+        }
+    }
+
+    @Composable
+    private fun topLinksComponent() {
+        Surface {
+            Row (modifier = Modifier.height(IntrinsicSize.Min)) {
+                /**
+                 * Products button
+                 */
+
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(this@SellerMainActivity, SellerProductsActivity::class.java)
+                        intent.putExtra(Constants.constants.MARKETPLACE_ID, marketplaceId)
+                        startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = Color.Red,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(1f)
+                        .padding(0.dp, 0.dp,8.dp,0.dp)
+                ){
+                    Column (horizontalAlignment = Alignment.CenterHorizontally){
+                        Image(
+                            painter = painterResource(R.drawable.market_icon),
+                            contentDescription = null,
+                            modifier = Modifier.width(30.dp).height(30.dp),
+                        )
+
+                        Text(text = "Products", textAlign = TextAlign.Center, color = Color.White)
+
+                    }
+                }
+
+
+            }
         }
     }
 }

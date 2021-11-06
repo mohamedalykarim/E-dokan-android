@@ -162,17 +162,8 @@ class LoginActivity : BaseActivity() {
                     preferenceHelper.setApiToken(it.data.wtoken)
                     preferenceHelper.setUserId(it.data.userId)
                     preferenceHelper.setDefaultAddressId(it.data.defaultAddressId)
-                    when (it.data.isSeller) {
-                        0 -> {
-                            preferenceHelper.setIsSeller(false)
-                        }
-                        1 -> {
-                            preferenceHelper.setIsSeller(true)
-                        }
-                        else -> {
-                            preferenceHelper.setIsSeller(false)
-                        }
-                    }
+                    preferenceHelper.setIsSeller(it.data.isSeller)
+
 
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()

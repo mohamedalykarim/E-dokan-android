@@ -27,7 +27,7 @@ import mohalim.store.edokan.core.model.user.UserCache
                         AddressCache::class,
                         MarketPlaceCache::class
                      ],
-        version = 5,
+        version = 6,
         exportSchema = false)
 @TypeConverters(BigIntegerConverter::class)
 abstract class AppCacheDatabase : RoomDatabase(){

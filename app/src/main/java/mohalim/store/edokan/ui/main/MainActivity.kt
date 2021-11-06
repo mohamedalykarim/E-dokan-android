@@ -1,7 +1,6 @@
 package mohalim.store.edokan.ui.main
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -12,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.di.base.BaseActivity
@@ -28,7 +26,7 @@ class MainActivity : BaseActivity() {
     lateinit var binding : ActivityMainBinding
     val viewModel : HomeViewModel by viewModels()
     private lateinit var homeFragment : HomeFragment
-    lateinit var cartFragment: CartFragment
+    private lateinit var cartFragment: CartFragment
     private lateinit var accountFragment: AccountFragment
     private lateinit var techSupportDialog: TechSupportDialog
     private lateinit var techSupportMessagesDialog: TechSupportMessagesDialog
@@ -375,30 +373,11 @@ class MainActivity : BaseActivity() {
                 is DataState.Loading -> {
                 }
                 is DataState.Success -> {
-                    val legsJsonArray = it.data.get("directions").asJsonObject.get("routes").asJsonArray[0].asJsonObject.get("legs").asJsonArray
-
-                    val timer = object : CountDownTimer(500,500){
-                        override fun onTick(millisUntilFinished: Long) {}
-                        override fun onFinish() {
-                            /**
-                             * CART FRAGMENT
-                             * First step : Get default address in Cartfragment.class
-                             * Second step : Observe default address in MainActivity.class
-                             * Three step : Update Products of cart in cart fragment
-                             * Four Step : Ask for Order path in cart fragment at @updateProducts() function
-                             * Five step :  Observe path direction
-                             * Then Send direction legs to cart fragment
-                             */
-                            cartFragment.routeLegs(legsJsonArray)
-                        }
-                    }
-
-                    timer.start()
-
                     val orderValue = it.data.get("order_value").asFloat
+                    val distance = it.data.get("distance").asFloat
                     val deliveryValue = it.data.get("delivery_value").asFloat
 
-                    cartFragment.updateOrderValues(orderValue, deliveryValue)
+                    cartFragment.updateOrderValues(orderValue, deliveryValue, distance)
                     cartFragment.directionAndCartDetailsDownloaded = true
                     if (cartFragment.cartProductsFromInternalDownloaded){
                         cartFragment.loadingDialog.dismiss()
@@ -417,7 +396,7 @@ class MainActivity : BaseActivity() {
         /**
          * Observe Default address
          */
-        viewModel.defaultAddressObserver.observe(this, Observer {
+        viewModel.defaultAddressObserver.observe(this, {
             when (it) {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
@@ -434,7 +413,7 @@ class MainActivity : BaseActivity() {
          * After hit add order button Observe the adding process
          */
 
-        viewModel.addOrderObserver.observe(this, Observer {
+        viewModel.addOrderObserver.observe(this, {
             when(it){
                 is DataState.Loading ->{
                     cartFragment.showLoading()
@@ -455,7 +434,7 @@ class MainActivity : BaseActivity() {
         /**
          * Seller Marketplaces Observer
          */
-        viewModel.sellerMarketplacesObserver.observe(this, Observer {
+        viewModel.sellerMarketplacesObserver.observe(this, {
             when(it){
                 is DataState.Loading ->{}
                 is DataState.Success ->{

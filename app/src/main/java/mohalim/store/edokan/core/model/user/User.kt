@@ -8,7 +8,7 @@ data class User(
         var defaultAddress: String,
         var defaultAddressId: Int,
         var profileImage : String,
-        var isSeller : Int,
+        var isSeller : Boolean,
         var isDelivery : Int,
         var isDeliverySupervisor : Int,
         var wtoken : String

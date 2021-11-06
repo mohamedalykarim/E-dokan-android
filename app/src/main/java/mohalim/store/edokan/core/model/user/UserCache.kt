@@ -29,7 +29,7 @@ data class UserCache(
     var defaultAddressId: Int,
 
     @ColumnInfo(name = "is_seller")
-    var isSeller : Int,
+    var isSeller : Boolean,
 
     @ColumnInfo(name = "is_delivery")
     var isDelivery : Int,

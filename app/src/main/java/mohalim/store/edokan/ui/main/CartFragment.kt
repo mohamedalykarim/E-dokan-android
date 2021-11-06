@@ -1,9 +1,6 @@
 package mohalim.store.edokan.ui.main
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -12,15 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintProperties
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.JsonArray
 import dagger.hilt.android.AndroidEntryPoint
 import mohalim.store.edokan.R
 import mohalim.store.edokan.core.model.address.Address
@@ -40,23 +32,19 @@ import mohalim.store.edokan.ui.product.ProductActivity
 
 
 @AndroidEntryPoint
-class CartFragment : Fragment(), OnMapReadyCallback {
+class CartFragment : Fragment() {
 
     private var deliveryValue: Float = 0f
     private var orderValue: Float = 0f
     var directionAndCartDetailsDownloaded: Boolean = false
     var cartProductsFromInternalDownloaded: Boolean = false
 
-    private lateinit var polyline: Polyline
-    private lateinit var googleMap: GoogleMap
     private lateinit var defaultAddress: Address
     lateinit var loadingDialog : LoadingDialog
     lateinit var messagesDialog: MessageDialog
 
     var cartProducts: MutableList<CartProduct> = ArrayList()
     private var firebaseAuth = FirebaseAuth.getInstance()
-    private var isGoogleMapReady = false
-    private var isDirectionReady = false
 
 
     lateinit var binding : FragmentCartBinding
@@ -69,16 +57,12 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     private val preferenceHelper: IPreferenceHelper by lazy { PreferencesUtils(activity) }
 
-    var totalDistance = 0f
 
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cart, container, false)
         mainActivity = activity as MainActivity
-
-        binding.map.onCreate(savedInstanceState)
-        binding.map.getMapAsync(this)
 
         loadingDialog = LoadingDialog()
         messagesDialog = MessageDialog()
@@ -90,9 +74,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-
-        //resume the map
-        binding.map.onResume()
 
         /**
          * Handle address
@@ -119,31 +100,6 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.map.onStart()
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.map.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        binding.map.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.map.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        binding.map.onLowMemory()
-    }
 
     private fun click() {
 
@@ -311,12 +267,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         }
 
         if (marketPlaces.size < 1) {
-            updateOrderValues(0f,0f)
-            googleMap.clear()
-            if (this::polyline.isInitialized){
-                polyline.remove()
-            }
-            binding.distanceTv.text = ""
+            updateOrderValues(0f,0f, 0f)
             return
         }
 
@@ -351,96 +302,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        this.googleMap = googleMap
-        isGoogleMapReady = true
-    }
-
-    /**
-     * Make Directions on the map
-     */
-    private fun makeDirection() {
-        polyline = googleMap.addPolyline(PolylineOptions().color(Color.RED).clickable(true).addAll(path))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(userLocation.latitude, userLocation.longitude), 13f))
-
-        marketPlaces.forEach {
-            val height = 50
-            val width = 50
-            val bitmapDraw = (ContextCompat.getDrawable(mainActivity, R.drawable.market_icon) as BitmapDrawable).bitmap
-            val smallMarker = Bitmap.createScaledBitmap(bitmapDraw, width, height, false)
-
-            googleMap.addMarker(
-                MarkerOptions().position(LatLng(it.lat,it.lng))
-                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)).title(it.marketplaceName)
-            )
-        }
-
-        val height = 50
-        val width = 50
-        val bitmapDraw = (ContextCompat.getDrawable(mainActivity, R.drawable.user_icon) as BitmapDrawable).bitmap
-        val smallMarker = Bitmap.createScaledBitmap(bitmapDraw, width, height, false)
-
-        googleMap.addMarker(
-            MarkerOptions().position(LatLng(userLocation.latitude, userLocation.longitude))
-                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-        )
-
-
-
-    }
-
-    /**
-     * CART FRAGMENT
-     * First step : Get default address in Cartfragment.class
-     * Second step : Observe default address in MainActivity.class
-     * Three step : Update Products of cart in cart fragment
-     * Four Step : Ask for Order path in cart fragment at @updateProducts() function
-     * Five step :  Observe path direction
-     * Then Send direction legs to cart fragment
-     */
-    fun routeLegs(legsJsonArray: JsonArray?) {
-        path.clear()
-        totalDistance = 0f
-
-        if (this::polyline.isInitialized){
-            polyline.remove()
-            googleMap.clear()
-        }
-
-
-        legsJsonArray?.forEach { it ->
-            val stepsJson = it.asJsonObject.get("steps").asJsonArray
-            stepsJson.forEach {
-                val points = it.asJsonObject.get("polyline").asJsonObject.get("points")
-                path.addAll(LocationUtils.DO.decodePoly(points.asString))
-            }
-
-            val distance : Int = it.asJsonObject.get("distance").asJsonObject.get("value").asInt
-            totalDistance += distance
-        }
-
-        binding.distanceTv.text = "المسافة حتى توصيل طلبك هي : " + totalDistance/1000 +" كم"
-
-        isDirectionReady = true
-
-        if (isGoogleMapReady){
-            /**
-             * CART FRAGMENT
-             * First step : Get default address in Cartfragment.class
-             * Second step : Observe default address in MainActivity.class
-             * Three step : Update Products of cart in cart fragment
-             * Four Step : Ask for Order path in cart fragment at @updateProducts() function
-             * Five step :  Observe path direction
-             * Six step : Send direction legs to cart fragment
-             * Then make the direction
-             */
-           makeDirection()
-        }
-
-
-    }
-
-    fun updateOrderValues(orderValue: Float, deliveryValue: Float) {
+    fun updateOrderValues(orderValue: Float, deliveryValue: Float, totalDistance: Float) {
         binding.orderValueTv.text = orderValue.toString()
         binding.deliveryValueTv.text = deliveryValue.toString()
         binding.totalTv.text = (orderValue + deliveryValue).toString()
@@ -448,6 +310,7 @@ class CartFragment : Fragment(), OnMapReadyCallback {
         this.orderValue = orderValue
 
         this.deliveryValue = deliveryValue
+
     }
 
     /**

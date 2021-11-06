@@ -27,10 +27,7 @@ import mohalim.store.edokan.databinding.DialogAddAddressBinding
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 
-import android.content.IntentSender
 import android.content.IntentSender.SendIntentException
-import android.location.Geocoder
-import android.renderscript.ScriptGroup
 
 import com.google.android.gms.common.api.ResolvableApiException
 

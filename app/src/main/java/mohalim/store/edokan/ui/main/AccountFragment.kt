@@ -2,6 +2,7 @@ package mohalim.store.edokan.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +47,9 @@ class AccountFragment : Fragment() {
             when(it){
                 is DataState.Loading -> {}
                 is DataState.Success -> {
+
+                    Log.d("TAG", "subscribeObservers is seller : "+preferenceHelper.getIsSeller())
+
                     if (preferenceHelper.getIsSeller() == true){
                         binding.sellerContainer.visibility = View.VISIBLE
                         binding.traderDevider.visibility = View.VISIBLE

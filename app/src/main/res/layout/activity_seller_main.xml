@@ -7,6 +7,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.seller_main.SellerMainActivity">
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/topLinks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/marketplaceNameTv" />
+
+
         <ProgressBar
             android:id="@+id/moreProgressbar"
             style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
@@ -29,7 +41,7 @@
             app:layout_constraintBottom_toTopOf="@+id/moreProgressbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/marketplaceNameTv" />
+            app:layout_constraintTop_toBottomOf="@+id/topLinks" />
 
         <TextView
             android:id="@+id/marketplaceNameTv"
