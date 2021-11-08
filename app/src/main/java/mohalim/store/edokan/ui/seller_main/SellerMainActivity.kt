@@ -239,6 +239,37 @@ class SellerMainActivity : AppCompatActivity() {
                     }
                 }
 
+                /**
+                 * Completed Order
+                 */
+
+                OutlinedButton(
+                    onClick = {
+
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = Color.Red,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(1f)
+                        .padding(0.dp, 0.dp,8.dp,0.dp)
+                ){
+                    Column (horizontalAlignment = Alignment.CenterHorizontally){
+                        Image(
+                            painter = painterResource(R.drawable.market_icon),
+                            contentDescription = null,
+                            modifier = Modifier.width(30.dp).height(30.dp),
+                        )
+
+                        Text(text = "Completed", textAlign = TextAlign.Center, color = Color.White)
+
+                    }
+                }
+
+
+
+
 
             }
         }
