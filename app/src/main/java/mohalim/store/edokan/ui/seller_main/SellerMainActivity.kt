@@ -264,6 +264,7 @@ class SellerMainActivity : AppCompatActivity() {
 
                         Text(text = "Completed", textAlign = TextAlign.Center, color = Color.White)
 
+
                     }
                 }
 
