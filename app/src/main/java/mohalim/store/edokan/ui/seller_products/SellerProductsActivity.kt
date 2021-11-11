@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,6 +47,7 @@ class SellerProductsActivity : AppCompatActivity() {
     val firebaseAuth = FirebaseAuth.getInstance()
 
     var marketplaceId = 0
+    lateinit var sellerAddProductDialog : SellerAddProductDialog;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +69,8 @@ class SellerProductsActivity : AppCompatActivity() {
             return
         }
 
+        sellerAddProductDialog = SellerAddProductDialog()
+
         subscribeObserver()
     }
 
@@ -81,6 +85,9 @@ class SellerProductsActivity : AppCompatActivity() {
 
 
     private fun subscribeObserver() {
+        /**
+         * Observe products
+         */
         viewModel.productsObserver.observe(this, {
             when(it){
                 is DataState.Loading -> {}
@@ -89,6 +96,19 @@ class SellerProductsActivity : AppCompatActivity() {
                     viewModel.products.addAll(it.data)
                 }
                 is DataState.Failure -> {}
+            }
+        })
+
+        /**
+         * Observe categories for add product
+         */
+        viewModel.categoriesObserver.observe(this, {
+            when(it){
+                is DataState.Loading->{}
+                is DataState.Success->{
+                    sellerAddProductDialog.addtoCategories(it.data)
+                }
+                is DataState.Failure->{}
             }
         })
 
@@ -105,7 +125,10 @@ class SellerProductsActivity : AppCompatActivity() {
                 floatingActionButtonPosition = FabPosition.End,
                 floatingActionButton = {
                     ExtendedFloatingActionButton(
-                        onClick = {},
+                        onClick = {
+                                  if (!sellerAddProductDialog.isAdded)
+                                      sellerAddProductDialog.show(supportFragmentManager, "SellerAddProductDialog")
+                        },
                         icon = {Icon(painter = painterResource(android.R.drawable.ic_input_add), contentDescription = null) },
                         text = {Text("Add")},
                         elevation = FloatingActionButtonDefaults.elevation(8.dp),
@@ -116,7 +139,9 @@ class SellerProductsActivity : AppCompatActivity() {
                 }
 
             ){
-                Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()) {
                     ProductsView(viewModel.products)
                 }
 
@@ -155,22 +180,70 @@ class SellerProductsActivity : AppCompatActivity() {
 
             ){
                 Row (modifier = Modifier.height(IntrinsicSize.Min)){
+                    // Left side of product
+                    Column {
+                        // Thump
+                        Image(
+                            bitmap = img.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(100.dp)
+                                .padding(8.dp, 8.dp, 0.dp, 0.dp)
+                                .border(2.dp, Color.White)
+                                .clip(RoundedCornerShape(30))
+                        )
 
-                    Image(
-                        bitmap = img.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        alignment = Alignment.Center,
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(100.dp)
-                            .padding(8.dp, 8.dp, 0.dp, 0.dp)
-                            .border(2.dp, Color.White)
-                            .clip(RoundedCornerShape(30))
-                    )
+                        Column (
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(50.dp)
+                                .padding(start = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            Row(){
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.edit_icon),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .width(23.dp)
+                                        .height(23.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.edit_cost_icon),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .width(23.dp)
+                                        .height(23.dp)
+
+                                )
+
+
+
+
+
+
+                            }
+                        }
+
+
+                    }
+
 
                     Column(modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 8.dp)) {
 
+                        // Product name
                         Text(
                             text = product.productName + "",
                             color = Color(parseColor("#f6192a")),
@@ -179,6 +252,7 @@ class SellerProductsActivity : AppCompatActivity() {
                             modifier = Modifier.padding(start = 4.dp)
                         )
 
+                        // Product Description
                         Text(
                             text = product.productDescription + "",
                             color = Color(parseColor("#313131")),
@@ -186,34 +260,49 @@ class SellerProductsActivity : AppCompatActivity() {
                             modifier = Modifier.padding(start = 4.dp)
                         )
 
-                        Row(modifier = Modifier.padding(start = 4.dp)){
-                            Text(
-                                text = "Price :",
-                                color = Color(parseColor("#313131")),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            )
+                        Row{
+                            /**
+                             * Price and discount texts
+                             */
+                            Column() {
+                                Row(modifier = Modifier.padding(start = 4.dp)){
+                                    Text(
+                                        text = "Price :",
+                                        color = Color(parseColor("#313131")),
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
 
-                            Text(
-                                text = String.format("%.2f", product.productPrice),
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
-                        }
-                        Row(modifier = Modifier.padding(start = 4.dp)){
-                            Text(
-                                text = "Discount :",
-                                color = Color(parseColor("#313131")),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            )
+                                    Text(
+                                        text = String.format("%.2f", product.productPrice),
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
+                                Row(modifier = Modifier.padding(start = 4.dp)){
+                                    Text(
+                                        text = "Discount :",
+                                        color = Color(parseColor("#313131")),
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
 
-                            Text(
-                                text = String.format("%.2f", product.productDiscount),
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
+                                    Text(
+                                        text = String.format("%.2f", product.productDiscount),
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
+                            }
+
+                            /**
+                             * Edit and edit cost buttons
+                             */
+
+
                         }
+
+
 
 
                     }

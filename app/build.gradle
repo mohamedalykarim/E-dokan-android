@@ -88,6 +88,9 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.5'
     implementation 'androidx.compose.runtime:runtime-rxjava2:1.0.5'
 
+    implementation "com.google.accompanist:accompanist-flowlayout:0.21.2-beta"
+
+
 
 
     // Material design
