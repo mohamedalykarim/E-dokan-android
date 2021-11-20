@@ -15,4 +15,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_seller_order_details">SellerOrderDetailsActivity</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="product_name_error">Product name must be at least 6 characters</string>
 </resources>

@@ -329,20 +329,23 @@ class MainActivity : BaseActivity() {
             when (it) {
                 is DataState.Loading -> { }
                 is DataState.Success -> {
-                    cartFragment.cartProducts.clear()
-                    cartFragment.cartProducts.addAll(it.data)
-                    cartFragment.updateProducts(it.data)
-                    cartFragment.cartProductsFromInternalDownloaded = true
-                    if (cartFragment.directionAndCartDetailsDownloaded){
-                        cartFragment.loadingDialog.dismiss()
-                    }
-                    if (it.data.isEmpty()){
-                        cartFragment.showNoProducts(true)
+                    if(::cartFragment.isInitialized){
+                        cartFragment.cartProducts.clear()
+                        cartFragment.cartProducts.addAll(it.data)
+                        cartFragment.updateProducts(it.data)
+                        cartFragment.cartProductsFromInternalDownloaded = true
+                        if (cartFragment.directionAndCartDetailsDownloaded){
+                            cartFragment.loadingDialog.dismiss()
+                        }
+                        if (it.data.isEmpty()){
+                            cartFragment.showNoProducts(true)
 
-                        cartFragment.loadingDialog.dismiss()
-                    }else{
-                        cartFragment.showNoProducts(false)
+                            cartFragment.loadingDialog.dismiss()
+                        }else{
+                            cartFragment.showNoProducts(false)
+                        }
                     }
+
 
 
 

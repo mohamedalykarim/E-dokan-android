@@ -175,6 +175,7 @@ class SellerProductsActivity : AppCompatActivity() {
             Card(
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.small)
+                    .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
                 elevation = 2.dp
 
